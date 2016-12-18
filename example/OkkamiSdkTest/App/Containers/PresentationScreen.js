@@ -5,11 +5,32 @@ import { ScrollView, Text, Image, View } from 'react-native'
 import { Images } from '../Themes'
 import RoundedButton from '../Components/RoundedButton'
 import { Actions as NavigationActions } from 'react-native-router-flux'
+import OkkamiSdk from 'okkami-sdk';
 
 // Styles
 import styles from './Styles/PresentationScreenStyle'
 
 export default class PresentationScreen extends React.Component {
+
+  constructor(props){
+    super(props);
+
+    /*----test---*/
+    (async function () {
+      try {
+        debugger;
+        var result = await OkkamiSdk.connectToRoom("xxx","yyy");
+
+        console.log("connectToRoom successful..." + result)
+
+      } catch (e) {
+        console.log("connectToRoom failed . error : " + e.message)
+      }
+    })();//call myself !
+
+  }
+
+
   render () {
     return (
       <View style={styles.mainContainer}>
