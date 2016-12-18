@@ -1,0 +1,39 @@
+{
+  "name": "okkami-sdk",
+  "version": "0.1.1",
+  "description": "react-native sdk for okkami core and hub communication",
+  "main": "okkamisdk.js",
+  "scripts": {
+    "start": "exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fingi/okkamiSdk"
+  },
+  "keywords": [
+    "reac-native",
+    "okkami",
+    "okkami-sdk",
+    "okkamisdk",
+    "core",
+    "hub",
+    "ios",
+    "android"
+  ],
+  "author": {
+    "name": "S.K.",
+    "email": "shroukkhan@gmail.com"
+  },
+  "license": "Commercial",
+  "bugs": {
+    "url": "https://fingi1.atlassian.net/"
+  },
+  "homepage": "https://github.com/fingi/okkamiSdk",
+  "dependencies": {
+    "react": "~15.3.1",
+    "react-native": "^0.37.0"
+  },
+  "devDependencies": {
+
+  }
+}
