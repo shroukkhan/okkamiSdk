@@ -13,6 +13,10 @@ class OkkamiSdk {
 
     }
 
+    isHubLoggedIn(){
+        return OkkamiSdkManager.isHubLoggedIn();
+    }
+
     disconnectFromRoom() {
         return OkkamiSdkManager.disconnectFromRoom(loginName, password);
     }

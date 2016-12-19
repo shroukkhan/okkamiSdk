@@ -1,1 +1,1 @@
-cd example\OkkamiSdkTest
+cd example/OkkamiSdkTest

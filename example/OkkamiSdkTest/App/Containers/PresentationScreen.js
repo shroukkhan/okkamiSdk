@@ -18,10 +18,13 @@ export default class PresentationScreen extends React.Component {
     /*----test---*/
     (async function () {
       try {
-        debugger;
-        var result = await OkkamiSdk.connectToRoom("xxx","yyy");
 
-        console.log("connectToRoom successful..." + result)
+
+
+        var result = await OkkamiSdk.connectToRoom("xxx","yyy");
+        var hubLoggedIn  =await OkkamiSdk.isHubLoggedIn();
+
+        console.log("connectToRoom successful..." + result + " / login : "+ hubLoggedIn);
 
       } catch (e) {
         console.log("connectToRoom failed . error : " + e.message)
