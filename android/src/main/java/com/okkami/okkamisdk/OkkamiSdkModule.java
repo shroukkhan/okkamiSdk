@@ -50,7 +50,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void register(Promise registerPromise) {
+    public void registerToCore(Promise registerPromise) {
 
     }
 

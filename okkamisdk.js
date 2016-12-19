@@ -10,16 +10,52 @@ class OkkamiSdk {
 
     connectToRoom(loginName, password) {
         return OkkamiSdkManager.connectToRoom(loginName, password);
-
-    }
-
-    isHubLoggedIn(){
-        return OkkamiSdkManager.isHubLoggedIn();
     }
 
     disconnectFromRoom() {
-        return OkkamiSdkManager.disconnectFromRoom(loginName, password);
+        return OkkamiSdkManager.disconnectFromRoom();
     }
+
+    registerToCore(){
+        return OkkamiSdkManager.registerToCore();
+    }
+
+    connectToHub(){
+        return OkkamiSdkManager.connectToHub();
+    }
+
+    disconnectFromHub(){
+        return OkkamiSdkManager.disconnectFromHub();
+    }
+
+    reconnectToHub(){
+        return OkkamiSdkManager.reconnectToHub();
+    }
+
+    sendCommandToHub(command){
+        return OkkamiSdkManager.sendCommandToHub(command);
+    }
+
+    downloadPresets(){
+        return OkkamiSdkManager.downloadPresets();
+    }
+
+    downloadRoomInfo(){
+        return OkkamiSdkManager.downloadRoomInfo();
+    }
+
+    downloadFromCore(endPoint,getPost,payLoad){
+        return OkkamiSdkManager.reconnectToHub(endPoint,getPost,payLoad);
+    }
+
+    async isHubLoggedIn(){
+        return await OkkamiSdkManager.isHubLoggedIn();
+    }
+
+    async isHubConnected(){
+        return await OkkamiSdkManager.isHubConnected();
+    }
+
 
 
 }
