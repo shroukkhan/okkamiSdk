@@ -8,6 +8,8 @@ class OkkamiSdk {
         //bleh!
     }
 
+
+
     connectToRoom(loginName, password) {
         return OkkamiSdkManager.connectToRoom(loginName, password);
     }

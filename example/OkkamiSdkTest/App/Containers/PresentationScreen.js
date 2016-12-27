@@ -1,10 +1,10 @@
 // @flow
 
 import React from 'react'
-import { ScrollView, Text, Image, View } from 'react-native'
-import { Images } from '../Themes'
+import {ScrollView, Text, Image, View} from 'react-native'
+import {Images} from '../Themes'
 import RoundedButton from '../Components/RoundedButton'
-import { Actions as NavigationActions } from 'react-native-router-flux'
+import {Actions as NavigationActions} from 'react-native-router-flux'
 import OkkamiSdk from 'okkami-sdk';
 
 // Styles
@@ -12,19 +12,18 @@ import styles from './Styles/PresentationScreenStyle'
 
 export default class PresentationScreen extends React.Component {
 
-  constructor(props){
+  constructor(props) {
     super(props);
 
-    /*----test---*/
+    /*----a sample for how to use the sdk calls :) ---*/
     (async function () {
       try {
 
 
+        var result = await OkkamiSdk.connectToRoom("xxx", "yyy");
+        var hubLoggedIn = await OkkamiSdk.isHubLoggedIn();
 
-        var result = await OkkamiSdk.connectToRoom("xxx","yyy");
-        var hubLoggedIn  =await OkkamiSdk.isHubLoggedIn();
-
-        console.log("connectToRoom successful..." + result + " / login : "+ hubLoggedIn);
+        console.log("connectToRoom successful..." + result + " / login : " + hubLoggedIn);
 
       } catch (e) {
         console.log("connectToRoom failed . error : " + e.message)
@@ -34,17 +33,17 @@ export default class PresentationScreen extends React.Component {
   }
 
 
-  render () {
+  render() {
     return (
       <View style={styles.mainContainer}>
-        <Image source={Images.background} style={styles.backgroundImage} resizeMode='stretch' />
+        <Image source={Images.background} style={styles.backgroundImage} resizeMode='stretch'/>
         <ScrollView style={styles.container}>
           <View style={styles.centered}>
-            <Image source={Images.clearLogo} style={styles.logo} />
+            <Image source={Images.clearLogo} style={styles.logo}/>
           </View>
 
-          <View style={styles.section} >
-            <Text style={styles.sectionText} >
+          <View style={styles.section}>
+            <Text style={styles.sectionText}>
               Default screens for development, debugging, and alpha testing
               are available below.
             </Text>
