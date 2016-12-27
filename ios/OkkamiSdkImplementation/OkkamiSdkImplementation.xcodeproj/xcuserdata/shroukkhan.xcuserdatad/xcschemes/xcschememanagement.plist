@@ -4,15 +4,20 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>RCTOkkamiSdk.xcscheme</key>
+		<key>OkkamiSdkImplementation.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>1</integer>
+			<integer>0</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>5D72D2E71C16249000E22EC1</key>
+		<key>FF453E721E123DD10066D524</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>FF453E7B1E123DD10066D524</key>
 		<dict>
 			<key>primary</key>
 			<true/>

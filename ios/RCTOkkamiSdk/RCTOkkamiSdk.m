@@ -1,11 +1,14 @@
 #import "RCTOkkamiSdk.h"
 #import "RCTEventDispatcher.h"
 
+
 @implementation OkkamiSdk
 
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE();
+
+// MICHAEL: make sure to read the comments in OkkamiSdkModule.java file for function definitions..
 
 RCT_EXPORT_METHOD(connectToRoom
                   :(NSString*)username
@@ -14,15 +17,19 @@ RCT_EXPORT_METHOD(connectToRoom
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    if (true) {
-        resolve(@"{}");
-        
-    } else {
-        // example
-        /* NSError *error = ...
-         reject(@"no_events", @"There were no events", error);
-         */
+ /* Example for michael
+    MyOkkamiSDKImplementationLibrary should be a swift library [ framework ? ]
+    @try {
+        NSString * x = [MyOkkamiSDKImplementationLibrary connectToRoom:username :password];
+        resolve(x);
     }
+    @catch (NSException *exception) {
+        reject(@"xxx", @"xxx", exception);
+    }
+    @finally {
+        
+    }
+ */
 }
 
 

@@ -118,6 +118,20 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
+		FF453E921E123EAF0066D524 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FF453E8D1E123EAF0066D524 /* OkkamiSdkImplementation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FF453E731E123DD10066D524;
+			remoteInfo = OkkamiSdkImplementation;
+		};
+		FF453E941E123EAF0066D524 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FF453E8D1E123EAF0066D524 /* OkkamiSdkImplementation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FF453E7C1E123DD10066D524;
+			remoteInfo = OkkamiSdkImplementationTests;
+		};
 		FFC322E21E077D6D0097EF66 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00C302BB1ABCB91800DB3ED1 /* RCTImage.xcodeproj */;
@@ -259,6 +273,7 @@
 		D9E07FBCF42D443AA2CE069B /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
 		DECD567D9C524CAB965E8E48 /* RNVectorIcons.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNVectorIcons.xcodeproj; path = "../node_modules/react-native-vector-icons/RNVectorIcons.xcodeproj"; sourceTree = "<group>"; };
 		F13D9FA9D894492BB18AB0C4 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
+		FF453E8D1E123EAF0066D524 /* OkkamiSdkImplementation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OkkamiSdkImplementation.xcodeproj; path = ../../../ios/OkkamiSdkImplementation/OkkamiSdkImplementation.xcodeproj; sourceTree = "<group>"; };
 		FFC323171E077DC80097EF66 /* RCTOkkamiSdk.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTOkkamiSdk.xcodeproj; path = ../../../ios/RCTOkkamiSdk.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -425,6 +440,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				FF453E8D1E123EAF0066D524 /* OkkamiSdkImplementation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
 				00C302B51ABCB90400DB3ED1 /* RCTGeolocation.xcodeproj */,
@@ -472,6 +488,15 @@
 			children = (
 				13B07F961A680F5B00A75B9A /* OkkamiSdkTest.app */,
 				00E356EE1AD99517003FC87E /* OkkamiSdkTestTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FF453E8E1E123EAF0066D524 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FF453E931E123EAF0066D524 /* OkkamiSdkImplementation.framework */,
+				FF453E951E123EAF0066D524 /* OkkamiSdkImplementationTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -597,6 +622,10 @@
 				{
 					ProductGroup = FFC323121E077D6D0097EF66 /* Products */;
 					ProjectRef = D49980F7A61345D5BD8DA634 /* AirMaps.xcodeproj */;
+				},
+				{
+					ProductGroup = FF453E8E1E123EAF0066D524 /* Products */;
+					ProjectRef = FF453E8D1E123EAF0066D524 /* OkkamiSdkImplementation.xcodeproj */;
 				},
 				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
@@ -736,6 +765,20 @@
 			fileType = archive.ar;
 			path = libRCTText.a;
 			remoteRef = 832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FF453E931E123EAF0066D524 /* OkkamiSdkImplementation.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = OkkamiSdkImplementation.framework;
+			remoteRef = FF453E921E123EAF0066D524 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FF453E951E123EAF0066D524 /* OkkamiSdkImplementationTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = OkkamiSdkImplementationTests.xctest;
+			remoteRef = FF453E941E123EAF0066D524 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		FFC322E31E077D6D0097EF66 /* libRCTImage-tvOS.a */ = {
