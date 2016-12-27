@@ -43,6 +43,17 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
             //example failure response
             connectToRoomPromise.reject(new Throwable());
         */
+        /* example  of calling external lib
+        try{
+            String x = com.okkami.MyOkkamiSDKImplementationLibrary.connectToRoom(xxxx,xxxx);
+            connectToRoomPromise.resolve(x);
+        }catch (Exception e)
+        {
+            connectToRoomPromise.reject(e);
+        }
+        */
+
+
     }
 
 
