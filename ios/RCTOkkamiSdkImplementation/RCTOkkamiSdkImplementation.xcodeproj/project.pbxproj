@@ -7,184 +7,188 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		FF453E7D1E123DD10066D524 /* OkkamiSdkImplementation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF453E731E123DD10066D524 /* OkkamiSdkImplementation.framework */; };
-		FF453E821E123DD10066D524 /* OkkamiSdkImplementationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF453E811E123DD10066D524 /* OkkamiSdkImplementationTests.swift */; };
-		FF453E841E123DD10066D524 /* OkkamiSdkImplementation.h in Headers */ = {isa = PBXBuildFile; fileRef = FF453E761E123DD10066D524 /* OkkamiSdkImplementation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FAC9F8D81E14EC5800EEFC1B /* RCTOkkamiSdkImplementation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAC9F8CE1E14EC5700EEFC1B /* RCTOkkamiSdkImplementation.framework */; };
+		FAC9F8DD1E14EC5800EEFC1B /* RCTOkkamiSdkImplementationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F8DC1E14EC5800EEFC1B /* RCTOkkamiSdkImplementationTests.swift */; };
+		FAC9F8DF1E14EC5800EEFC1B /* RCTOkkamiSdkImplementation.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC9F8D11E14EC5700EEFC1B /* RCTOkkamiSdkImplementation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FAC9F8E91E14EC9800EEFC1B /* RCTOkkamiMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F8E81E14EC9800EEFC1B /* RCTOkkamiMain.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		FF453E7E1E123DD10066D524 /* PBXContainerItemProxy */ = {
+		FAC9F8D91E14EC5800EEFC1B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = FF453E6A1E123DD10066D524 /* Project object */;
+			containerPortal = FAC9F8C51E14EC5700EEFC1B /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = FF453E721E123DD10066D524;
-			remoteInfo = OkkamiSdkImplementation;
+			remoteGlobalIDString = FAC9F8CD1E14EC5700EEFC1B;
+			remoteInfo = RCTOkkamiSdkImplementation;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		FF453E731E123DD10066D524 /* OkkamiSdkImplementation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OkkamiSdkImplementation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		FF453E761E123DD10066D524 /* OkkamiSdkImplementation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OkkamiSdkImplementation.h; sourceTree = "<group>"; };
-		FF453E771E123DD10066D524 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		FF453E7C1E123DD10066D524 /* OkkamiSdkImplementationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OkkamiSdkImplementationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		FF453E811E123DD10066D524 /* OkkamiSdkImplementationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OkkamiSdkImplementationTests.swift; sourceTree = "<group>"; };
-		FF453E831E123DD10066D524 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FAC9F8CE1E14EC5700EEFC1B /* RCTOkkamiSdkImplementation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RCTOkkamiSdkImplementation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAC9F8D11E14EC5700EEFC1B /* RCTOkkamiSdkImplementation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTOkkamiSdkImplementation.h; sourceTree = "<group>"; };
+		FAC9F8D21E14EC5700EEFC1B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FAC9F8D71E14EC5800EEFC1B /* RCTOkkamiSdkImplementationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RCTOkkamiSdkImplementationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAC9F8DC1E14EC5800EEFC1B /* RCTOkkamiSdkImplementationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCTOkkamiSdkImplementationTests.swift; sourceTree = "<group>"; };
+		FAC9F8DE1E14EC5800EEFC1B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FAC9F8E81E14EC9800EEFC1B /* RCTOkkamiMain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RCTOkkamiMain.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		FF453E6F1E123DD10066D524 /* Frameworks */ = {
+		FAC9F8CA1E14EC5700EEFC1B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FF453E791E123DD10066D524 /* Frameworks */ = {
+		FAC9F8D41E14EC5800EEFC1B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FF453E7D1E123DD10066D524 /* OkkamiSdkImplementation.framework in Frameworks */,
+				FAC9F8D81E14EC5800EEFC1B /* RCTOkkamiSdkImplementation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		FF453E691E123DD10066D524 = {
+		FAC9F8C41E14EC5700EEFC1B = {
 			isa = PBXGroup;
 			children = (
-				FF453E751E123DD10066D524 /* OkkamiSdkImplementation */,
-				FF453E801E123DD10066D524 /* OkkamiSdkImplementationTests */,
-				FF453E741E123DD10066D524 /* Products */,
+				FAC9F8D01E14EC5700EEFC1B /* RCTOkkamiSdkImplementation */,
+				FAC9F8DB1E14EC5800EEFC1B /* RCTOkkamiSdkImplementationTests */,
+				FAC9F8CF1E14EC5700EEFC1B /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		FF453E741E123DD10066D524 /* Products */ = {
+		FAC9F8CF1E14EC5700EEFC1B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				FF453E731E123DD10066D524 /* OkkamiSdkImplementation.framework */,
-				FF453E7C1E123DD10066D524 /* OkkamiSdkImplementationTests.xctest */,
+				FAC9F8CE1E14EC5700EEFC1B /* RCTOkkamiSdkImplementation.framework */,
+				FAC9F8D71E14EC5800EEFC1B /* RCTOkkamiSdkImplementationTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		FF453E751E123DD10066D524 /* OkkamiSdkImplementation */ = {
+		FAC9F8D01E14EC5700EEFC1B /* RCTOkkamiSdkImplementation */ = {
 			isa = PBXGroup;
 			children = (
-				FF453E761E123DD10066D524 /* OkkamiSdkImplementation.h */,
-				FF453E771E123DD10066D524 /* Info.plist */,
+				FAC9F8D11E14EC5700EEFC1B /* RCTOkkamiSdkImplementation.h */,
+				FAC9F8E81E14EC9800EEFC1B /* RCTOkkamiMain.swift */,
+				FAC9F8D21E14EC5700EEFC1B /* Info.plist */,
 			);
-			path = OkkamiSdkImplementation;
+			path = RCTOkkamiSdkImplementation;
 			sourceTree = "<group>";
 		};
-		FF453E801E123DD10066D524 /* OkkamiSdkImplementationTests */ = {
+		FAC9F8DB1E14EC5800EEFC1B /* RCTOkkamiSdkImplementationTests */ = {
 			isa = PBXGroup;
 			children = (
-				FF453E811E123DD10066D524 /* OkkamiSdkImplementationTests.swift */,
-				FF453E831E123DD10066D524 /* Info.plist */,
+				FAC9F8DC1E14EC5800EEFC1B /* RCTOkkamiSdkImplementationTests.swift */,
+				FAC9F8DE1E14EC5800EEFC1B /* Info.plist */,
 			);
-			path = OkkamiSdkImplementationTests;
+			path = RCTOkkamiSdkImplementationTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		FF453E701E123DD10066D524 /* Headers */ = {
+		FAC9F8CB1E14EC5700EEFC1B /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FF453E841E123DD10066D524 /* OkkamiSdkImplementation.h in Headers */,
+				FAC9F8DF1E14EC5800EEFC1B /* RCTOkkamiSdkImplementation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		FF453E721E123DD10066D524 /* OkkamiSdkImplementation */ = {
+		FAC9F8CD1E14EC5700EEFC1B /* RCTOkkamiSdkImplementation */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = FF453E871E123DD10066D524 /* Build configuration list for PBXNativeTarget "OkkamiSdkImplementation" */;
+			buildConfigurationList = FAC9F8E21E14EC5800EEFC1B /* Build configuration list for PBXNativeTarget "RCTOkkamiSdkImplementation" */;
 			buildPhases = (
-				FF453E6E1E123DD10066D524 /* Sources */,
-				FF453E6F1E123DD10066D524 /* Frameworks */,
-				FF453E701E123DD10066D524 /* Headers */,
-				FF453E711E123DD10066D524 /* Resources */,
+				FAC9F8C91E14EC5700EEFC1B /* Sources */,
+				FAC9F8CA1E14EC5700EEFC1B /* Frameworks */,
+				FAC9F8CB1E14EC5700EEFC1B /* Headers */,
+				FAC9F8CC1E14EC5700EEFC1B /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = OkkamiSdkImplementation;
-			productName = OkkamiSdkImplementation;
-			productReference = FF453E731E123DD10066D524 /* OkkamiSdkImplementation.framework */;
+			name = RCTOkkamiSdkImplementation;
+			productName = RCTOkkamiSdkImplementation;
+			productReference = FAC9F8CE1E14EC5700EEFC1B /* RCTOkkamiSdkImplementation.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		FF453E7B1E123DD10066D524 /* OkkamiSdkImplementationTests */ = {
+		FAC9F8D61E14EC5800EEFC1B /* RCTOkkamiSdkImplementationTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = FF453E8A1E123DD10066D524 /* Build configuration list for PBXNativeTarget "OkkamiSdkImplementationTests" */;
+			buildConfigurationList = FAC9F8E51E14EC5800EEFC1B /* Build configuration list for PBXNativeTarget "RCTOkkamiSdkImplementationTests" */;
 			buildPhases = (
-				FF453E781E123DD10066D524 /* Sources */,
-				FF453E791E123DD10066D524 /* Frameworks */,
-				FF453E7A1E123DD10066D524 /* Resources */,
+				FAC9F8D31E14EC5800EEFC1B /* Sources */,
+				FAC9F8D41E14EC5800EEFC1B /* Frameworks */,
+				FAC9F8D51E14EC5800EEFC1B /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				FF453E7F1E123DD10066D524 /* PBXTargetDependency */,
+				FAC9F8DA1E14EC5800EEFC1B /* PBXTargetDependency */,
 			);
-			name = OkkamiSdkImplementationTests;
-			productName = OkkamiSdkImplementationTests;
-			productReference = FF453E7C1E123DD10066D524 /* OkkamiSdkImplementationTests.xctest */;
+			name = RCTOkkamiSdkImplementationTests;
+			productName = RCTOkkamiSdkImplementationTests;
+			productReference = FAC9F8D71E14EC5800EEFC1B /* RCTOkkamiSdkImplementationTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		FF453E6A1E123DD10066D524 /* Project object */ = {
+		FAC9F8C51E14EC5700EEFC1B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0810;
-				LastUpgradeCheck = 0810;
-				ORGANIZATIONNAME = "Fingi LLC";
+				LastSwiftUpdateCheck = 0820;
+				LastUpgradeCheck = 0820;
+				ORGANIZATIONNAME = michaelabadi.com;
 				TargetAttributes = {
-					FF453E721E123DD10066D524 = {
-						CreatedOnToolsVersion = 8.1;
+					FAC9F8CD1E14EC5700EEFC1B = {
+						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = 7K2N7LUDL8;
+						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 					};
-					FF453E7B1E123DD10066D524 = {
-						CreatedOnToolsVersion = 8.1;
+					FAC9F8D61E14EC5800EEFC1B = {
+						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = 7K2N7LUDL8;
 						ProvisioningStyle = Automatic;
 					};
 				};
 			};
-			buildConfigurationList = FF453E6D1E123DD10066D524 /* Build configuration list for PBXProject "OkkamiSdkImplementation" */;
+			buildConfigurationList = FAC9F8C81E14EC5700EEFC1B /* Build configuration list for PBXProject "RCTOkkamiSdkImplementation" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = FF453E691E123DD10066D524;
-			productRefGroup = FF453E741E123DD10066D524 /* Products */;
+			mainGroup = FAC9F8C41E14EC5700EEFC1B;
+			productRefGroup = FAC9F8CF1E14EC5700EEFC1B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				FF453E721E123DD10066D524 /* OkkamiSdkImplementation */,
-				FF453E7B1E123DD10066D524 /* OkkamiSdkImplementationTests */,
+				FAC9F8CD1E14EC5700EEFC1B /* RCTOkkamiSdkImplementation */,
+				FAC9F8D61E14EC5800EEFC1B /* RCTOkkamiSdkImplementationTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		FF453E711E123DD10066D524 /* Resources */ = {
+		FAC9F8CC1E14EC5700EEFC1B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FF453E7A1E123DD10066D524 /* Resources */ = {
+		FAC9F8D51E14EC5800EEFC1B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -194,33 +198,34 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		FF453E6E1E123DD10066D524 /* Sources */ = {
+		FAC9F8C91E14EC5700EEFC1B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FAC9F8E91E14EC9800EEFC1B /* RCTOkkamiMain.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FF453E781E123DD10066D524 /* Sources */ = {
+		FAC9F8D31E14EC5800EEFC1B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FF453E821E123DD10066D524 /* OkkamiSdkImplementationTests.swift in Sources */,
+				FAC9F8DD1E14EC5800EEFC1B /* RCTOkkamiSdkImplementationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		FF453E7F1E123DD10066D524 /* PBXTargetDependency */ = {
+		FAC9F8DA1E14EC5800EEFC1B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = FF453E721E123DD10066D524 /* OkkamiSdkImplementation */;
-			targetProxy = FF453E7E1E123DD10066D524 /* PBXContainerItemProxy */;
+			target = FAC9F8CD1E14EC5700EEFC1B /* RCTOkkamiSdkImplementation */;
+			targetProxy = FAC9F8D91E14EC5800EEFC1B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		FF453E851E123DD10066D524 /* Debug */ = {
+		FAC9F8E01E14EC5800EEFC1B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -238,7 +243,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -261,11 +266,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				HEADER_SEARCH_PATHS = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_INCLUDE_PATHS = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -273,7 +280,7 @@
 			};
 			name = Debug;
 		};
-		FF453E861E123DD10066D524 /* Release */ = {
+		FAC9F8E11E14EC5800EEFC1B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -291,7 +298,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -308,9 +315,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				HEADER_SEARCH_PATHS = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_INCLUDE_PATHS = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -319,65 +328,80 @@
 			};
 			name = Release;
 		};
-		FF453E881E123DD10066D524 /* Debug */ = {
+		FAC9F8E31E14EC5800EEFC1B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 7K2N7LUDL8;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = OkkamiSdkImplementation/Info.plist;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../../node_modules/react-native/React/**",
+				);
+				INFOPLIST_FILE = RCTOkkamiSdkImplementation/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.okkami.OkkamiSdkImplementation;
+				PRODUCT_BUNDLE_IDENTIFIER = michael.RCTOkkamiSdkImplementation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
-		FF453E891E123DD10066D524 /* Release */ = {
+		FAC9F8E41E14EC5800EEFC1B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 7K2N7LUDL8;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = OkkamiSdkImplementation/Info.plist;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../../node_modules/react-native/React/**",
+				);
+				INFOPLIST_FILE = RCTOkkamiSdkImplementation/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.okkami.OkkamiSdkImplementation;
+				PRODUCT_BUNDLE_IDENTIFIER = michael.RCTOkkamiSdkImplementation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
-		FF453E8B1E123DD10066D524 /* Debug */ = {
+		FAC9F8E61E14EC5800EEFC1B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = 7K2N7LUDL8;
-				INFOPLIST_FILE = OkkamiSdkImplementationTests/Info.plist;
+				INFOPLIST_FILE = RCTOkkamiSdkImplementationTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.okkami.OkkamiSdkImplementationTests;
+				PRODUCT_BUNDLE_IDENTIFIER = michael.RCTOkkamiSdkImplementationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
-		FF453E8C1E123DD10066D524 /* Release */ = {
+		FAC9F8E71E14EC5800EEFC1B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = 7K2N7LUDL8;
-				INFOPLIST_FILE = OkkamiSdkImplementationTests/Info.plist;
+				INFOPLIST_FILE = RCTOkkamiSdkImplementationTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.okkami.OkkamiSdkImplementationTests;
+				PRODUCT_BUNDLE_IDENTIFIER = michael.RCTOkkamiSdkImplementationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -386,34 +410,34 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		FF453E6D1E123DD10066D524 /* Build configuration list for PBXProject "OkkamiSdkImplementation" */ = {
+		FAC9F8C81E14EC5700EEFC1B /* Build configuration list for PBXProject "RCTOkkamiSdkImplementation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FF453E851E123DD10066D524 /* Debug */,
-				FF453E861E123DD10066D524 /* Release */,
+				FAC9F8E01E14EC5800EEFC1B /* Debug */,
+				FAC9F8E11E14EC5800EEFC1B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		FF453E871E123DD10066D524 /* Build configuration list for PBXNativeTarget "OkkamiSdkImplementation" */ = {
+		FAC9F8E21E14EC5800EEFC1B /* Build configuration list for PBXNativeTarget "RCTOkkamiSdkImplementation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FF453E881E123DD10066D524 /* Debug */,
-				FF453E891E123DD10066D524 /* Release */,
+				FAC9F8E31E14EC5800EEFC1B /* Debug */,
+				FAC9F8E41E14EC5800EEFC1B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		FF453E8A1E123DD10066D524 /* Build configuration list for PBXNativeTarget "OkkamiSdkImplementationTests" */ = {
+		FAC9F8E51E14EC5800EEFC1B /* Build configuration list for PBXNativeTarget "RCTOkkamiSdkImplementationTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FF453E8B1E123DD10066D524 /* Debug */,
-				FF453E8C1E123DD10066D524 /* Release */,
+				FAC9F8E61E14EC5800EEFC1B /* Debug */,
+				FAC9F8E71E14EC5800EEFC1B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = FF453E6A1E123DD10066D524 /* Project object */;
+	rootObject = FAC9F8C51E14EC5700EEFC1B /* Project object */;
 }

@@ -1,6 +1,6 @@
 #import "RCTOkkamiSdk.h"
 #import "RCTEventDispatcher.h"
-
+//#import <RCTOkkamiSdkImplementation/RCTOkkamiSdkImplementation-Swift.h>
 
 @implementation OkkamiSdk
 
@@ -17,7 +17,11 @@ RCT_EXPORT_METHOD(connectToRoom
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
- /* Example for michael
+    
+    //RCTOkkamiMain * helloWorld = [RCTOkkamiMain newInstance];
+    //[helloWorld hello];
+    
+/* Example for michael
     MyOkkamiSDKImplementationLibrary should be a swift library [ framework ? ]
     @try {
         NSString * x = [MyOkkamiSDKImplementationLibrary connectToRoom:username :password];
@@ -30,6 +34,7 @@ RCT_EXPORT_METHOD(connectToRoom
         
     }
  */
+    
 }
 
 
@@ -56,7 +61,7 @@ RCT_EXPORT_METHOD(connectToHub
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    
+    [self.bridge.eventDispatcher sendAppEventWithName:@"onHubConnected" body:nil];
 }
 
 
@@ -65,7 +70,7 @@ RCT_EXPORT_METHOD(disconnectFromHub
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    
+    [self.bridge.eventDispatcher sendAppEventWithName:@"onHubDisconnected" body:nil];
 }
 
 
@@ -74,6 +79,9 @@ RCT_EXPORT_METHOD(sendCommandToHub:(NSString*)command
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:@"onHubCommand"
+                                                 body:@{@"command": @"1234 2311 Default | POWER light-1 ON"}];
     
 }
 
@@ -103,6 +111,8 @@ RCT_EXPORT_METHOD(isHubLoggedIn
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:@"onHubLoggedIn" body:nil];
     //ok
     resolve(@YES);
     
@@ -113,6 +123,8 @@ RCT_EXPORT_METHOD(isHubConnected
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:@"onHubConnected" body:nil];
     //ok
     resolve(@YES);
     
