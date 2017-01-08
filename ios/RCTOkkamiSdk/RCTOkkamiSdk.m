@@ -77,7 +77,11 @@ RCT_EXPORT_METHOD(connectToRoom
     @finally {
         
     }
+  
  */
+    
+    
+    
 }
 
 
@@ -122,7 +126,7 @@ RCT_EXPORT_METHOD(connectToHub
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    
+
 }
 
 
