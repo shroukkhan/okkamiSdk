@@ -339,7 +339,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
     *            this.sendEventToJs("onCallHangup", map);
     *  onSipRegistrationStatusChanged
     *            WritableMap map = Arguments.createMap();
-    *            map.putString("STATUS", ""); // status should be one of : REGISTERING, REGISTERED , AUTHENTICATION_FAILURE , UNREGISTERED ,
+    *            map.putString("status", ""); // status should be one of : REGISTERING, REGISTERED , AUTHENTICATION_FAILURE , UNREGISTERED ,
     *            map.putString("eventData", "JSON_STRING");
     *            this.sendEventToJs("onSipRegistrationStatusChanged", map);
     *
@@ -363,7 +363,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
     *
     *  onWifiStatusChanged
     *            WritableMap map = Arguments.createMap();
-    *            map.putString("STATUS", ""); // status should be one of : CONNECTING,CONNECTED,DISCONNECTED
+    *            map.putString("status", ""); // status should be one of : CONNECTING,CONNECTED,DISCONNECTED
     *            map.putString("eventData", "JSON_STRING"); //SSID , encryption etc..
     *            this.sendEventToJs("onWifiStatusChanged", map);
     *
