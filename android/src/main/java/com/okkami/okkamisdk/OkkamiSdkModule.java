@@ -34,7 +34,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      *
      * @param wipeUserDataPromise
      */
-    public void WipeUserData(Promise wipeUserDataPromise) {
+    public void wipeUserData(Promise wipeUserDataPromise) {
 
     }
 
@@ -203,7 +203,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      * @param downloadRoomInfoPromise
      */
     @ReactMethod
-    public void downloadRoomInfo(Promise downloadRoomInfoPromise) {
+    public void downloadRoomInfo(boolean force , Promise downloadRoomInfoPromise) {
 
     }
 
@@ -215,8 +215,8 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      * on failure:  downloadFromCorePromise.reject(Throwable e)
      *
      * @param endPoint                full core url . https://api.fingi.com/devices/v1/register
-     * @param getPost
-     * @param payload
+     * @param getPost                 "GET" or "POST"
+     * @param payload                 JSON encoded payload if it is POST
      * @param downloadFromCorePromise
      */
     @ReactMethod
@@ -295,7 +295,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      * @param preferSip
      * @param dialPromise
      */
-    public void Dial(String calledNumber, boolean preferSip, Promise dialPromise) {
+    public void dial(String calledNumber, boolean preferSip, Promise dialPromise) {
 
     }
 
@@ -304,7 +304,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      *
      * @param acceptPromise
      */
-    public void Receive(Promise acceptPromise) {
+    public void recieve(Promise acceptPromise) {
 
     }
 
@@ -313,7 +313,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      *
      * @param hangupPromise
      */
-    public void Hangup(Promise hangupPromise) {
+    public void hangup(Promise hangupPromise) {
 
     }
 

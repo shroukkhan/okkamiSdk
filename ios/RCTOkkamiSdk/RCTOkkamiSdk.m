@@ -8,8 +8,56 @@
 
 RCT_EXPORT_MODULE();
 
-// MICHAEL: make sure to read the comments in OkkamiSdkModule.java file for function definitions..
 
+
+/*-------------------------------------- Utility   --------------------------------------------------*/
+
+
+/**
+ * Delete stored information of the user
+ */
+RCT_EXPORT_METHOD(wipeUserData
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    
+}
+
+/**
+ * Entry point of the native sdk
+ */
+RCT_EXPORT_METHOD(start
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    
+    
+}
+
+/**
+ * restart the native sdk,
+ * basically stop and call the entry point of the sdk
+ */
+RCT_EXPORT_METHOD(restart
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    
+    
+}
+
+/*---------------------------------------------------------------------------------------------------*/
+
+
+/*-------------------------------------- Hub & Core -------------------------------------------------*/
+
+/**
+ * Connect to room. Applicable to downloadable apps
+ * on success: resolve(NSString* coreResponseJSONString )
+ * on failure: reject(@"xxx", @"xxx", NSError * error)
+ * The native module should take care of persisting the device secret and token obtained from core
+ * and making sure it is secure/encrypted
+ */
 RCT_EXPORT_METHOD(connectToRoom
                   :(NSString*)username
                   :(NSString*)password
@@ -33,6 +81,11 @@ RCT_EXPORT_METHOD(connectToRoom
 }
 
 
+/**
+ * Disconnects from the current room. Applicable to downloadable apps.
+ * on success: resolve(NSString* coreResponseJSONString )
+ * on failure: reject(@"xxx", @"xxx", NSError * error)
+ */
 RCT_EXPORT_METHOD(disconnectFromRoom
                   
                   :(RCTPromiseResolveBlock)resolve
@@ -41,7 +94,14 @@ RCT_EXPORT_METHOD(disconnectFromRoom
     
 }
 
-
+/**
+ * Registers the device with a room using the given UID .
+ * Applicable to property locked Apps
+ * on success: resolve(NSString* coreResponseJSONString )
+ * on failure: reject(@"xxx", @"xxx", NSError * error)
+ * The native module should take care of persisting the device secret and token obtained from core
+ * and making sure it is secure/encrypted
+ */
 RCT_EXPORT_METHOD(registerToCore
                   
                   :(RCTPromiseResolveBlock)resolve
@@ -50,7 +110,13 @@ RCT_EXPORT_METHOD(registerToCore
     
 }
 
-
+/**
+ * Connects to hub using the presets and attempts to login ( send IDENTIFY)
+ * If Hub is already connected, reply with  hubConnectionPromise.resolve(true)
+ * on success: resolve(true)
+ * on failure:  reject(@"xxx", @"xxx", NSError * error)
+ * Native module should also take care of the PING PONG and reconnect if PING drops
+ */
 RCT_EXPORT_METHOD(connectToHub
                   
                   :(RCTPromiseResolveBlock)resolve
@@ -60,6 +126,13 @@ RCT_EXPORT_METHOD(connectToHub
 }
 
 
+/**
+ * Disconnects and cleans up the existing connection
+ * If Hub is already connected, reply with  hubDisconnectionPromise.resolve(true) immediately
+ * on success: resolve(true)
+ * on failure: reject(@"xxx", @"xxx", NSError * error)
+ *
+ */
 RCT_EXPORT_METHOD(disconnectFromHub
                   
                   :(RCTPromiseResolveBlock)resolve
@@ -69,6 +142,18 @@ RCT_EXPORT_METHOD(disconnectFromHub
 }
 
 
+
+/**
+ * Send command to hub. a command can look like this:
+ * POWER light-1 ON
+ * 2311 Default | POWER light-1 ON
+ * 1234 2311 Default | POWER light-1 ON
+ * <p>
+ * The native module should fill in the missing info based on the command received
+ * such as filling in room , group , none if not provided and skip those if provied already
+ * on success ( successful write ) : sendMessageToHubPromise.resolve(true)
+ * on failure:  hubDisconnectionPromise.reject(@"xxx", @"xxx", NSError * error)
+ */
 RCT_EXPORT_METHOD(sendCommandToHub:(NSString*)command
                   
                   :(RCTPromiseResolveBlock)resolve
@@ -78,7 +163,15 @@ RCT_EXPORT_METHOD(sendCommandToHub:(NSString*)command
 }
 
 
+/**
+ * downloads presets from core.
+ * If force == YES, force download from core
+ * If force == NO, and there is already presets from core, reply with that
+ * on success : resolve(coreResponseJSONString)
+ * on failure:  reject(@"xxx", @"xxx", NSError * error)
+ */
 RCT_EXPORT_METHOD(downloadPresets
+                  :(BOOL)force
                   
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
@@ -86,8 +179,33 @@ RCT_EXPORT_METHOD(downloadPresets
     
 }
 
+/**
+ * Similar strategy as downloadPresets method
+ *
+ */
+RCT_EXPORT_METHOD(downloadRoomInfo
+                  :(BOOL)force
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    
+}
 
-RCT_EXPORT_METHOD(downloadRoomInfo:(NSString*)endPoint
+/**
+ * The purpose of this method is to provide general purpose way to call any core endpoint.
+ * Internally, the downloadPresets,downloadRoomInfo,connectToRoom all of them should use this method.
+ * <p>
+ * on success : resolve(coreResponseJSONString)
+ * on failure:  reject(@"xxx", @"xxx", NSError * error)
+ *
+ * @param endPoint                full core url . https://api.fingi.com/devices/v1/register
+ * @param getPost                 "GET" or "POST"
+ * @param payload                 JSON encoded payload if it is POST
+ */
+RCT_EXPORT_METHOD(downloadFromCore
+                  
+                  :(NSString*)endPoint
                   :(NSString*)getPost
                   :(NSString*)payLoad
                   
@@ -98,6 +216,12 @@ RCT_EXPORT_METHOD(downloadRoomInfo:(NSString*)endPoint
 }
 
 
+/**
+ * if hub is currently connected + logged in :
+ * resolve(true);
+ * else
+ * resolve(false);
+ */
 RCT_EXPORT_METHOD(isHubLoggedIn
                   
                   :(RCTPromiseResolveBlock)resolve
@@ -108,6 +232,13 @@ RCT_EXPORT_METHOD(isHubLoggedIn
     
 }
 
+/**
+ * if hub is currently connected ( regardless of logged in )  :
+ * resolve(true);
+ * else
+ * resolve(false);
+*
+ */
 RCT_EXPORT_METHOD(isHubConnected
                   
                   :(RCTPromiseResolveBlock)resolve
@@ -117,6 +248,7 @@ RCT_EXPORT_METHOD(isHubConnected
     resolve(@YES);
     
 }
+
 
 
 //Events emission
@@ -146,6 +278,127 @@ RCT_EXPORT_METHOD(isHubConnected
 
 
 
+/*---------------------------------------------------------------------------------------------------*/
+
+/*-------------------------------------- SIP / PhoneCall --------------------------------------------*/
+
+
+// SIP should be enabled / disabled autometically by the native sdk based on what is set in the preset
+// If Downloadable app, registration should not persist when app is in background
+// If property locked app, registration should persist even in background . Not applicable to iOS apps .
+// Registration should happen as soon as downloadPresets is successful
+
+
+/**
+ * Dial a number. if voip Not available, dial using native dialer
+ *
+ * @param calledNumber
+ * @param preferSip
+ */
+RCT_EXPORT_METHOD(dial
+                  
+                  :(NSString*)calledNumber
+                  :(BOOL)preferSip
+            
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    
+}
+
+
+/**
+ * Attempt to accept an incoming voip call
+ */
+RCT_EXPORT_METHOD(receive
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+
+    
+}
+/**
+ * Hangup an incoming / ongoing voip Call
+ *
+ * @param hangupPromise
+ */
+RCT_EXPORT_METHOD(hangup
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    //ok
+    resolve(@YES);
+    
+}
+
+
+//Events emission
+/*
+ *  onIncomingCall
+ *            WritableMap map = Arguments.createMap();
+ *            map.putString("caller", "CALLER_NUMBER");
+ *            map.putString("uniqueId", "CALL_UNIQUE_ID");
+ *            map.putString("eventData", "JSON_STRING");
+ *            this.sendEventToJs("onIncomingCall", map);
+ *
+ *   [self.bridge.eventDispatcher sendAppEventWithName:@"onIncomingCall"
+ *       body:@{@"caller": @"CALLER_NUMBER",  @"uniqueId":  @"CALL_UNIQUE_ID", @"eventData":  @""}];
+ *
+ *  onSipEvent
+ *            WritableMap map = Arguments.createMap();
+ *            map.putString("eventNumber", "SIP_EVENT_NUMBER_LIKE_200_400_404_ETC");
+ *            map.putString("eventData", "JSON_STRING");
+ *            this.sendEventToJs("onSipEvent", map);
+ *  onCallHangup
+ *            WritableMap map = Arguments.createMap();
+ *            map.putString("caller", "CALLER_NUMBER");
+ *            map.putString("uniqueId", "CALL_UNIQUE_ID");
+ *            map.putString("eventData", "JSON_STRING");
+ *            this.sendEventToJs("onCallHangup", map);
+ *  onSipRegistrationStatusChanged
+ *            WritableMap map = Arguments.createMap();
+ *            map.putString("STATUS", ""); // status should be one of : REGISTERING, REGISTERED , AUTHENTICATION_FAILURE , UNREGISTERED ,
+ *            map.putString("eventData", "JSON_STRING");
+ *            this.sendEventToJs("onSipRegistrationStatusChanged", map);
+ *
+ *            */
+
+
+
+
+/*---------------------------------------------------------------------------------------------------*/
+
+
+
+/*-------------------------------------- WIFI --------------------------------------------------------*/
+
+//wifi status is to be managed by the native sdk internally.
+//for property locked app, the sdk should set SSID and password as soon as downloadPresets is successful
+
+
+//Events emission
+/*
+ *
+ *  onWifiStatusChanged
+ *            WritableMap map = Arguments.createMap();
+ *            map.putString("STATUS", ""); // status should be one of : CONNECTING,CONNECTED,DISCONNECTED
+ *            map.putString("eventData", "JSON_STRING"); //SSID , encryption etc..
+ *            this.sendEventToJs("onWifiStatusChanged", map);
+ *
+ *            */
+
+
+/*---------------------------------------------------------------------------------------------------*/
+
+
+/*-------------------------------------- Keys --------------------------------------------------------*/
+
+//?? need discussion
+
+
+/*---------------------------------------------------------------------------------------------------*/
 
 
 
