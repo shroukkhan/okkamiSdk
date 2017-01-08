@@ -337,33 +337,25 @@ RCT_EXPORT_METHOD(hangup
 //Events emission
 /*
  *  onIncomingCall
- *            WritableMap map = Arguments.createMap();
- *            map.putString("caller", "CALLER_NUMBER");
- *            map.putString("uniqueId", "CALL_UNIQUE_ID");
- *            map.putString("eventData", "JSON_STRING");
- *            this.sendEventToJs("onIncomingCall", map);
  *
  *   [self.bridge.eventDispatcher sendAppEventWithName:@"onIncomingCall"
- *       body:@{@"caller": @"CALLER_NUMBER",  @"uniqueId":  @"CALL_UNIQUE_ID", @"eventData":  @""}];
+ *       body:@{@"caller": @"CALLER_NUMBER",  @"uniqueId":  @"CALL_UNIQUE_ID", @"eventData":  @"JSON_STRING"}];
  *
  *  onSipEvent
- *            WritableMap map = Arguments.createMap();
- *            map.putString("eventNumber", "SIP_EVENT_NUMBER_LIKE_200_400_404_ETC");
- *            map.putString("eventData", "JSON_STRING");
- *            this.sendEventToJs("onSipEvent", map);
- *  onCallHangup
- *            WritableMap map = Arguments.createMap();
- *            map.putString("caller", "CALLER_NUMBER");
- *            map.putString("uniqueId", "CALL_UNIQUE_ID");
- *            map.putString("eventData", "JSON_STRING");
- *            this.sendEventToJs("onCallHangup", map);
- *  onSipRegistrationStatusChanged
- *            WritableMap map = Arguments.createMap();
- *            map.putString("STATUS", ""); // status should be one of : REGISTERING, REGISTERED , AUTHENTICATION_FAILURE , UNREGISTERED ,
- *            map.putString("eventData", "JSON_STRING");
- *            this.sendEventToJs("onSipRegistrationStatusChanged", map);
  *
- *            */
+ *   [self.bridge.eventDispatcher sendAppEventWithName:@"onSipEvent"
+ *       body:@{@"eventNumber": @"SIP_EVENT_NUMBER_LIKE_200_400_404_ETC", @"JSON_STRING"}];
+ *
+ *  onCallHangup
+ *
+ *   [self.bridge.eventDispatcher sendAppEventWithName:@"onCallHangup"
+ *       body:@{@"caller": @"CALLER_NUMBER",  @"uniqueId":  @"CALL_UNIQUE_ID", @"eventData":  @"JSON_STRING"}];
+ *
+ *  onSipRegistrationStatusChanged
+ *
+ *   [self.bridge.eventDispatcher sendAppEventWithName:@"onSipRegistrationStatusChanged"
+ *       body:@{@"status": @"STATUS", @"eventData":  @"JSON_STRING"}]; // status should be one of : REGISTERING, REGISTERED , AUTHENTICATION_FAILURE , UNREGISTERED ,
+ */
 
 
 
@@ -382,12 +374,10 @@ RCT_EXPORT_METHOD(hangup
 /*
  *
  *  onWifiStatusChanged
- *            WritableMap map = Arguments.createMap();
- *            map.putString("STATUS", ""); // status should be one of : CONNECTING,CONNECTED,DISCONNECTED
- *            map.putString("eventData", "JSON_STRING"); //SSID , encryption etc..
- *            this.sendEventToJs("onWifiStatusChanged", map);
  *
- *            */
+ *   [self.bridge.eventDispatcher sendAppEventWithName:@"onWifiStatusChanged"
+ *       body:@{@"status": @"STATUS", @"eventData":  @"JSON_STRING"}]; // status should be one of : CONNECTING,CONNECTED,DISCONNECTED
+ **/
 
 
 /*---------------------------------------------------------------------------------------------------*/
