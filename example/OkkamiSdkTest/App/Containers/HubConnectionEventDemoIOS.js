@@ -1,7 +1,7 @@
 // @flow
 
 import React , {NativeModules} from 'react'
-import { ScrollView, Text, KeyboardAvoidingView } from 'react-native'
+import { ScrollView, Text, KeyboardAvoidingView, View } from 'react-native'
 import { connect } from 'react-redux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -22,9 +22,10 @@ import I18n from 'react-native-i18n'
 //const OkkamiSdkManager = NativeModules.OkkamiSdk;
 //var {NativeModules} = React;
 //const OkkamiSdkManager = NativeModules.OkkamiSdk;
+var subscriptions = Array()
 
 class HubConnectionEventDemoIOS extends React.Component {
-  subscriptions = [];
+//  subscriptions = [1,2,3];
 
   /*constructor(props) {
     super(props);
@@ -46,13 +47,12 @@ class HubConnectionEventDemoIOS extends React.Component {
     aSubscription = DeviceEventEmitter.addListener('onHubCommand', function (e) {
       console.log('onHubCommand --> ',e, e.command)
     });
-
-    this.subscriptions.push(aSubscription)
+    subscriptions.push(aSubscription)
   }
 
   componentWillUnmount() {
     console.log('unsubscribe here')
-    for (var i = 0; i < this.subscriptions.length; i++) {
+    for (var i = 0; i < subscriptions.length; i++) {
       subscriptions[i].remove();
     }
   }

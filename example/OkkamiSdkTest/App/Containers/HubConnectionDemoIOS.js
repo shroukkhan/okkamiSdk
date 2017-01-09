@@ -18,17 +18,41 @@ import styles from './Styles/HubConnectionDemoIOSStyle'
 
 // I18n
 import I18n from 'react-native-i18n'
+import {DeviceEventEmitter} from 'react-native'
+
+var subscriptions = Array()
+
 
 class HubConnectionDemoIOS extends React.Component {
+
+  componentWillMount() {
+    console.log('subscribe here')
+    aSubscription = DeviceEventEmitter.addListener('onHubCommand', function (e) {
+      console.log('onHubCommand --> ',e, e.command)
+    });
+
+    subscriptions.push(aSubscription)
+  }
+
+  componentWillUnmount() {
+    console.log('unsubscribe here')
+    for (var i = 0; i < subscriptions.length; i++) {
+      subscriptions[i].remove();
+    }
+  }
+
   connectToHub(){
-    try {
+    /*<RoundedButton onPress={NavigationActions.HubConnectionEventDemoIOS}>
+            Hub Connection Event Demo IOS
+          </RoundedButton>
+
+      try {
         var result = OkkamiSdk.connectToHub();
-//        var hubLoggedIn = await OkkamiSdk.isHubLoggedIn();
         console.log("connectToHub successful..." + result );
         
       } catch (e) {
         console.log("connectToHub failed . error : " + e.message)
-      }
+      }*/
   }
   disconnectFromHub(){
 
@@ -43,7 +67,7 @@ class HubConnectionDemoIOS extends React.Component {
         console.log("sendCommandToHub failed . error : " + e.message)
       }
   }
-  
+
   isHubLoggedIn(){
 
   }
@@ -73,10 +97,6 @@ class HubConnectionDemoIOS extends React.Component {
 
           <RoundedButton onPress={this.isHubConnected}>
             Is Hub Connected
-          </RoundedButton>
-
-          <RoundedButton onPress={NavigationActions.HubConnectionEventDemoIOS}>
-            Hub Connection Event Demo IOS
           </RoundedButton>
 
         </ScrollView>
