@@ -35,17 +35,17 @@ export default class PresentationScreen extends React.Component {
   }
 
   componentWillMount() {
-    console.log('subscribing to --> hub shit')
+    console.log('subscribe here')
     aSubscription = DeviceEventEmitter.addListener('onHubCommand', function (e) {
-      console.log('onHubCommand --> ', e.command)
+      console.log('onHubCommand --> ',e, e.command)
     });
 
     this.subscriptions.push(aSubscription)
   }
 
   componentWillUnmount() {
+    console.log('unsubscribe here')
     for (var i = 0; i < this.subscriptions.length; i++) {
-      console.log('unsubscribing... hub');
       subscriptions[i].remove();
     }
   }
