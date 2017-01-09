@@ -34,8 +34,16 @@ class HubConnectionDemoIOS extends React.Component {
 
   }
   sendCommandToHub(){
-
+    try {
+        var result = OkkamiSdk.sendCommandToHub("Power");
+//        var hubLoggedIn = await OkkamiSdk.isHubLoggedIn();
+        console.log("sendCommandToHub successful..." + result );
+        
+      } catch (e) {
+        console.log("sendCommandToHub failed . error : " + e.message)
+      }
   }
+  
   isHubLoggedIn(){
 
   }

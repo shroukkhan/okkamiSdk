@@ -12,9 +12,7 @@ import Animatable from 'react-native-animatable'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 import OkkamiSdk,{OkkamiSdkManager} from 'okkami-sdk';
 
-console.log(OkkamiSdk)
-console.log(OkkamiSdkManager)
-console.log(OkkamiSdk.getSdkManager())
+import {DeviceEventEmitter} from 'react-native'
 
 // Styles
 import styles from './Styles/HubConnectionEventDemoIOSStyle'
@@ -26,20 +24,37 @@ import I18n from 'react-native-i18n'
 //const OkkamiSdkManager = NativeModules.OkkamiSdk;
 
 class HubConnectionEventDemoIOS extends React.Component {
-   
-  constructor(props) {
+  subscriptions = [];
+
+  /*constructor(props) {
     super(props);
     this.state = {hubMessages: []};
     console.log("Nat Result " + React);
     
     console.log("OkkamiSDK Result " + OkkamiSdkManager);
     OkkamiSdkManager.on("onHubCommand", this.hubMsgReceived);
-  }
+  }*/
 
   hubMsgReceived(msg) {
     this.setState({
       hubMessages: this.state.hubMessages.push(msg)
     })
+  }
+
+  componentWillMount() {
+    console.log('subscribe here')
+    aSubscription = DeviceEventEmitter.addListener('onHubCommand', function (e) {
+      console.log('onHubCommand --> ',e, e.command)
+    });
+
+    this.subscriptions.push(aSubscription)
+  }
+
+  componentWillUnmount() {
+    console.log('unsubscribe here')
+    for (var i = 0; i < this.subscriptions.length; i++) {
+      subscriptions[i].remove();
+    }
   }
 
   render () {
