@@ -7,29 +7,47 @@ import RoundedButton from '../Components/RoundedButton'
 import {Actions as NavigationActions} from 'react-native-router-flux'
 import OkkamiSdk from 'okkami-sdk';
 
+import {DeviceEventEmitter} from 'react-native'
+
 // Styles
 import styles from './Styles/PresentationScreenStyle'
 
 export default class PresentationScreen extends React.Component {
 
+  subscriptions = [];
+
   constructor(props) {
     super(props);
+
 
     /*----a sample for how to use the sdk calls :) ---*/
     (async function () {
       try {
 
-
-        var result = await OkkamiSdk.connectToRoom("xxx", "yyy");
-        var hubLoggedIn = await OkkamiSdk.isHubLoggedIn();
-
-        console.log("connectToRoom successful..." + result + " / login : " + hubLoggedIn);
+        console.log('calling : connectToHub')
+        var result = await OkkamiSdk.connectToHub();
 
       } catch (e) {
         console.log("connectToRoom failed . error : " + e.message)
       }
     })();//call myself !
 
+  }
+
+  componentWillMount() {
+    console.log('subscribe here')
+    aSubscription = DeviceEventEmitter.addListener('onHubCommand', function (e) {
+      console.log('onHubCommand --> ',e, e.command)
+    });
+
+    this.subscriptions.push(aSubscription)
+  }
+
+  componentWillUnmount() {
+    console.log('unsubscribe here')
+    for (var i = 0; i < this.subscriptions.length; i++) {
+      subscriptions[i].remove();
+    }
   }
 
 

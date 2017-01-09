@@ -37,3 +37,121 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
+
+
+
+down vote
+accepted
+Update: Since Android Studio 2.2, new projects are created with this gitignore file:
+
+*.iml
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+Verify if it suits your needs and if not, read on.
+
+Previous:
+
+A late answer but none of the answers here and here was right on the money for us...
+
+So, here's our gitignore file:
+
+#built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Windows thumbnail db
+Thumbs.db
+
+
+# Eclipse project files
+.classpath
+.project
+
+build/
+
+#NDK
+obj/
+
+
+# Xcode
+#
+# gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
+
+## Build generated
+DerivedData/
+
+## Various settings
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+
+## Other
+*.moved-aside
+*.xccheckout
+*.xcscmblueprint
+
+# Most part of this file is created by https://www.gitignore.io
+
+
+# Compiled binary addons (http://nodejs.org/api/addons.html)
+
+
+
+
+
+### OSX ###
+
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+
+### Xcode ###
+DerivedData
+*.xcuserstate

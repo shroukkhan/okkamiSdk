@@ -1,17 +1,35 @@
-import React from 'react-native';
-var {NativeModules} = React;
+import {NativeModules, DeviceEventEmitter} from 'react-native';
 const OkkamiSdkManager = NativeModules.OkkamiSdk;
 
 
 class OkkamiSdk {
     constructor() {
-        //bleh!
+
     }
 
+    /*-------------------------------------- Utility   --------------------------------------------------*/
+
+    start() {
+        return OkkamiSdkManager.start();
+    }
+
+<<<<<<< HEAD
     getSdkManager()
     {
         return OkkamiSdkManager;
     }
+=======
+    restart() {
+        return OkkamiSdkManager.restart();
+    }
+
+    wipeUserData() {
+        return OkkamiSdkManager.wipeUserData();
+    }
+
+    /*---------------------------------------------------------------------------------------------------*/
+    /*-------------------------------------- Hub & Core -------------------------------------------------*/
+>>>>>>> develop
 
     connectToRoom(loginName, password) {
         return OkkamiSdkManager.connectToRoom(loginName, password);
@@ -21,46 +39,60 @@ class OkkamiSdk {
         return OkkamiSdkManager.disconnectFromRoom();
     }
 
-    registerToCore(){
+    registerToCore() {
         return OkkamiSdkManager.registerToCore();
     }
 
-    connectToHub(){
+    connectToHub() {
         return OkkamiSdkManager.connectToHub();
     }
 
-    disconnectFromHub(){
+    disconnectFromHub() {
         return OkkamiSdkManager.disconnectFromHub();
     }
 
-    reconnectToHub(){
+    reconnectToHub() {
         return OkkamiSdkManager.reconnectToHub();
     }
 
-    sendCommandToHub(command){
+    sendCommandToHub(command) {
         return OkkamiSdkManager.sendCommandToHub(command);
     }
 
-    downloadPresets(){
+    downloadPresets() {
         return OkkamiSdkManager.downloadPresets();
     }
 
-    downloadRoomInfo(){
+    downloadRoomInfo() {
         return OkkamiSdkManager.downloadRoomInfo();
     }
 
-    downloadFromCore(endPoint,getPost,payLoad){
-        return OkkamiSdkManager.reconnectToHub(endPoint,getPost,payLoad);
+    downloadFromCore(endPoint, getPost, payLoad) {
+        return OkkamiSdkManager.reconnectToHub(endPoint, getPost, payLoad);
     }
 
-    async isHubLoggedIn(){
+    async isHubLoggedIn() {
         return await OkkamiSdkManager.isHubLoggedIn();
     }
 
-    async isHubConnected(){
+    async isHubConnected() {
         return await OkkamiSdkManager.isHubConnected();
     }
 
+    /*---------------------------------------------------------------------------------------------------*/
+
+    /*-------------------------------------- SIP / PhoneCall --------------------------------------------*/
+    dial(calledNumber, preferSip) {
+        return OkkamiSdkManager.dial(calledNumber, preferSip);
+    }
+
+    receive() {
+        return OkkamiSdkManager.receive();
+    }
+
+    hangup() {
+
+    }
 
 
 }
