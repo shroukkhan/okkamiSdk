@@ -28,10 +28,8 @@
     "lodash": "^4.17.2",
     "querystringify": "0.0.4",
     "ramda": "^0.22.1",
-
     "react": "15.4.1",
     "react-native": "0.39.2",
-
     "react-native-animatable": "^0.6.0",
     "react-native-config": "^0.1.2",
     "react-native-device-info": "^0.9.6",
@@ -39,7 +37,9 @@
     "react-native-i18n": "^0.1.1",
     "react-native-maps": "^0.11.0",
     "react-native-router-flux": "^3.37.0",
+    "react-native-swiper": "^1.5.4",
     "react-native-vector-icons": "^3.0.0",
+    "react-native-video": "^0.9.0",
     "react-redux": "^4.4.6",
     "redux": "^3.6.0",
     "redux-logger": "^2.7.4",
@@ -67,15 +67,10 @@
     "reactotron-redux-saga": "^1.5.2",
     "snazzy": "^5.0.0",
     "standard-flow": "^1.0.0",
-
-
     "babel-jest": "18.0.0",
     "babel-preset-react-native": "1.9.1",
     "jest": "18.0.0",
     "react-test-renderer": "15.4.1"
-
-
-
   },
   "jest": {
     "preset": "react-native"
@@ -106,5 +101,4 @@
       "React$Element"
     ]
   }
-
 }
