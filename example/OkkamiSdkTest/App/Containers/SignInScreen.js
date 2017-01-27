@@ -12,8 +12,10 @@ import {
 import {connect} from 'react-redux'
 import Styles from './Styles/SignInScreenStyle'
 import {Images, Metrics} from '../Themes'
+import Img from './Styles/Images'
 import {Actions as NavigationActions} from 'react-native-router-flux'
 import Video  from 'react-native-video'
+import OkkamiSdk from 'okkami-sdk'
 
 // I18n
 import I18n from 'react-native-i18n'
@@ -25,6 +27,8 @@ class SignInScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      username: 'khan',
+      password: '1234',
       selectLanguage: '',
       paused: false,
       rate: 1,
@@ -34,23 +38,32 @@ class SignInScreen extends React.Component {
       duration: 0.0,
       currentTime: 0.0,
     }
+    this.isAttempting = false
   }
 
   handlePressSignup = () => {
     NavigationActions.signUpScreen({type: "replace"})
   }
 
-  render() {
+  handlePressLogin = () => {
+    const {username, password} = this.state
+    this.isAttempting = true
+    console.log(username + " " + password)
+    // attempt a login - a saga is listening to pick it up from here.
+    //this.props.attemptLogin(username, password)
+  }
 
+  render() {
+    const {username, password} = this.state
+    const {fetching} = this.props
     return (
 
-      <View style={Styles.container}>
-        <Image source={require('../Images/okkami.png')} style={Styles.backgroundImage} />
+      <View style={Styles.mainContainer}>
+        <Image source={Img.backgroundOkkami} style={Styles.backgroundImage} />
 
-        {/* video not config for on ios  */}
-        <TouchableOpacity style={Styles.backgroundVideo} onPress={() => {this.setState({paused: !this.state.paused})}}>
-          {/* <Video source={require("../Videos/thailand.mp4")} */}
-          <Video source={{uri:'https://www.fingi.com/wp-content/uploads/2014/28/Aloft%20BKK%207%20FEB12.mov%20-%20Batch%20upload-20120207.mp4'}}
+         <TouchableOpacity style={Styles.backgroundVideo} onPress={() => {this.setState({paused: !this.state.paused})}}>
+          {/* <Video source={{uri:'https://www.fingi.com/wp-content/uploads/2014/28/Aloft%20BKK%207%20FEB12.mov%20-%20Batch%20upload-20120207.mp4'}}  */}
+          <Video source={Img.videoBg}
              style={Styles.backgroundVideo}
              rate={this.state.rate}
              paused={this.state.paused}
@@ -62,7 +75,8 @@ class SignInScreen extends React.Component {
              onEnd={() => { console.log('Done!') }}
              repeat={false} />
         </TouchableOpacity>
-        <ScrollView style={Styles.formScroll} >        
+
+        <ScrollView style={Styles.container} >        
         <View style={Styles.formOver}>
           <Image
             source={require('../Images/avatar.png')}
@@ -87,7 +101,7 @@ class SignInScreen extends React.Component {
             </TouchableOpacity>
 
             {/* TODO login to core */}
-            <TouchableOpacity style={Styles.buttonFireSplitTwo} >
+            <TouchableOpacity style={Styles.buttonFireSplitTwo} onPress={this.handlePressLogin} >
               <Text style={Styles.buttonText}>Sign In</Text>
             </TouchableOpacity>
           </View>
@@ -106,22 +120,30 @@ class SignInScreen extends React.Component {
 }
 
 SignInScreen.propTypes = {
-
+  // dispatch: PropTypes.func,
+  // fetching: PropTypes.bool,
+  // error: PropTypes.string,
+  // loggedIn: PropTypes.bool,
+  // attemptLogin: PropTypes.func
 }
 
 SignInScreen.defaultProps = {
-
+  // loggedIn: false,
+  // fetching: false,
 }
 
 const mapStateToProps = state => {
   return {
-
+    // fetching: false,
+    // error: null,
+    // loggedIn: false,
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
 
+    // attemptLogin: (username, password) => dispatch(OkkamiSdk.connectToRoom(username, password))
   }
 }
 

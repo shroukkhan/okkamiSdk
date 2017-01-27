@@ -26,6 +26,9 @@ import PromotionScreen from '../Containers/PromotionScreen'
 import SignUpScreen from '../Containers/SignUpScreen'
 import Splash from '../Containers/Splash'
 import SignInScreen from '../Containers/SignInScreen'
+import SocialConnectionScreen from '../Containers/SocialConnectionScreen'
+import SocialConnectionSignInScreen from '../Containers/SocialConnectionSignInScreen'
+import RoomControlsScreen from '../Containers/RoomControlsScreen'
 
 
 /* **************************
@@ -57,6 +60,10 @@ class NavigationRouter extends Component {
             <Scene key="promotionScreen" component={PromotionScreen} title='Promotion'/>
             <Scene key="signUpScreen" component={SignUpScreen} title='Sign Up'/>
             <Scene key="signInScreen" component={SignInScreen} title='Sign In'/>
+            <Scene key="socialConnectionScreen" component={SocialConnectionScreen} title='Social Connection'/>
+            <Scene key="socialConnectionSignInScreen" component={SocialConnectionSignInScreen} title='Social Connection'/>
+            <Scene key="roomControlsScreen" component={RoomControlsScreen} title='Room Controls'/>
+
 
           </Scene>
         </Scene>

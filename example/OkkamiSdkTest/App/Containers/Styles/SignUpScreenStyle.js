@@ -1,67 +1,59 @@
 import { StyleSheet } from 'react-native'
-import { Fonts, Colors, Metrics } from '../../Themes'
+import { Fonts, Colors, Metrics, ApplicationStyles } from '../../Themes'
 
 const width = Metrics.screenWidth
 const height = Metrics.screenHeight
+const inputWidth = width*0.75 //width 75%
 
 export default StyleSheet.create({
-  container: {
-    paddingTop: 50,
-    backgroundColor: Colors.background,
-    flex: 1
-  },
+  ...ApplicationStyles.screen,
   backgroundImage: {
     width: width,
     height: height,
     position: "absolute"
   },
-  formScroll: {
-    height:Metrics.screenHeight,
-    width:Metrics.screenWidth,
-    backgroundColor: Colors.windowTint,
+  container: {
+    flex: 1,
+    paddingTop: Metrics.baseMargin,
+    backgroundColor: Colors.windowTint
   },
   formOver: {
-    paddingTop:50,
-    paddingBottom:50,
-    width: width,
-    // height: height,
-    // position: "absolute",
+    paddingTop: 50,
+    paddingBottom: 50,
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'center'
   },
   textInput: {
-    width: width/1.3,
+    width: inputWidth,
     height: 40,
     borderRadius: 2,
     backgroundColor: Colors.snow,
-    marginTop:10,
+    marginTop: 10,
     textAlign: 'center',
   },
   selectInput:{
-    width: width/1.3,
+    width: inputWidth,
     height: 40,
     borderRadius: 2,
     backgroundColor: Colors.snow,
     marginTop:10,
   },
   buttonSnow: {
-    width: width/1.3,
+    width: inputWidth,
     height: 40,
     borderRadius: 5,
     marginHorizontal: Metrics.section,
-    // marginVertical: Metrics.baseMargin,
     marginTop:10,
     backgroundColor: Colors.snow,
     justifyContent: 'center'
   },
   buttonFire: {
-    width: width/1.3,
+    width: inputWidth,
     height: 40,
     borderRadius: 5,
     marginHorizontal: Metrics.section,
-    // marginVertical: Metrics.baseMargin,
-    marginTop:10,
+    marginTop: 10,
     backgroundColor: Colors.fire,
     justifyContent: 'center'
   },
@@ -80,7 +72,7 @@ export default StyleSheet.create({
     marginVertical: Metrics.baseMargin
   },
   buttonCreate: {
-    width: width/1.3,
+    width: inputWidth,
     height: 45,
     borderRadius: 5,
     marginHorizontal: Metrics.section,

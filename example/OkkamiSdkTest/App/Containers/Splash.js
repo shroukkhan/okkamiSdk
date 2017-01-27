@@ -8,12 +8,13 @@ import {Metrics} from '../Themes'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Animatable from 'react-native-animatable'
 import {Actions as NavigationActions} from 'react-native-router-flux'
-
-// Styles
-// import styles from './Styles/SplashStyle'
+import Img from './Styles/Images'
 
 // I18n
 import I18n from 'react-native-i18n'
+
+const width = Metrics.screenWidth
+const height = Metrics.screenHeight
 
 class Splash extends React.Component {
 
@@ -25,15 +26,8 @@ class Splash extends React.Component {
 
   render() {
     return (
-      <View style={{
-        width: Metrics.screenWidth,
-        height: Metrics.screenHeight
-      }}>
-        <Image source={require('../Images/okkami.png')} style={{
-          width: Metrics.screenWidth,
-          height: Metrics.screenHeight
-        }}>
-        </Image>
+      <View style={{ width: width,height: height }}>
+        <Image source={Img.backgroundOkkami} style={{width: width,height: height}} />
       </View>
     )
   }
