@@ -18,6 +18,8 @@ class Panel extends Component{
             animation   : new Animated.Value(),
             firstStart  : true,
             child       : props.child,
+            maxHeight   : 1,
+            minHeight   : 1,
         };
 
         console.log("-- Start panel --");
@@ -26,19 +28,16 @@ class Panel extends Component{
 
     toggle(){
 
+          //console.log(this.state.minHeight + " " + this.state.maxHeight)
+
           let initialValue    = this.state.expanded? this.state.maxHeight + this.state.minHeight : this.state.minHeight,
               finalValue      = this.state.expanded? this.state.minHeight : this.state.maxHeight + this.state.minHeight;
-
-          console.log("initialValue :" + initialValue)
-          console.log("finalValue :" + finalValue)
-
+            
           this.setState({
               expanded : !this.state.expanded
-          });
+          });  
 
-          console.log("expanded :" + this.state.expanded)
-
-          this.state.animation.setValue(initialValue);
+          this.state.animation.setValue(initialValue)
           Animated.spring(
               this.state.animation,
               {
@@ -49,9 +48,13 @@ class Panel extends Component{
     }
 
     _setMaxHeight(event){
-        this.setState({
-            maxHeight   : event.nativeEvent.layout.height
-        });
+        let h = event.nativeEvent.layout.height
+        if(this.state.maxHeight < h){
+          //console.log("setmax : " + event.nativeEvent.layout.height);
+          this.setState({
+              maxHeight   : event.nativeEvent.layout.height
+          });         
+        }
     }
 
     _setMinHeight(event){
@@ -81,6 +84,7 @@ class Panel extends Component{
                         // onPress={this.toggle.bind(this)}
                         onPress={(this.state.child == "true") ? this.toggle.bind(this) : this.props.onPress  }
                         underlayColor="#CB0000">
+
                         <View style={styles.button}>
                           <Text style={styles.titleText}>{this.state.title}</Text>
                           <View style={{flex:1,height:30,alignItems:'center'}}>
@@ -89,20 +93,14 @@ class Panel extends Component{
                                 source={icon}
                             />
                           </View>
-                          {/* <Text style={{flex:5,fontSize:18,fontWeight: 'bold',color:'#ffffff',backgroundColor: "#445566",}}>Vivianne White</Text>
-                          <View style={{flex:1,height:30}}>
-
-                            <Icon name='gear'
-                                  size={Metrics.icons.medium}
-                                  color={Colors.snow}
-                            />
-                          </View> */}
                         </View>
                     </TouchableHighlight>
+
+
                 </View>
 
                 <View style={styles.body} onLayout={this._setMaxHeight.bind(this)}>
-                    {this.props.children}
+                  {this.props.children}
                 </View>
 
             </Animated.View>
@@ -119,37 +117,37 @@ Panel.defaultProps = {
 }
 
 var styles = StyleSheet.create({
-    container   : {
-        backgroundColor: Colors.fire,
-        // margin:10,
-        overflow:'hidden'
+    container: {
+      backgroundColor: Colors.fire,
+      // margin:10,
+      overflow:'hidden'
     },
     titleContainer : {
-        flexDirection: 'row',
-        // backgroundColor: Colors.fire,
+      flexDirection: 'row',
+      // backgroundColor: Colors.fire,
     },
     titleViewLeft:{
 
     },
-    titleText       : {
-        flex    : 5,
-        paddingLeft : 10,
-        color   :'#ffffff',
-        fontWeight:'bold',
-        fontSize:16,
+    titleText : {
+      flex    : 5,
+      paddingLeft : 10,
+      color   :'#ffffff',
+      fontWeight:'bold',
+      fontSize:16,
     },
-    button      : {
+    button : {
       flex:1,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center'
     },
     buttonImage : {
-        width   : 30,
-        height  : 25
+      width: 30,
+      height: 25
     },
-    body        : {
-        paddingTop  : 0,
+    body: {
+      paddingTop: 0,
     },
     imageHidden: {
       width: 0,

@@ -126,13 +126,13 @@ class DrawerContent extends Component {
         </View>
 
         <View style={Styles.mainMenu}>
-
           <ScrollView style={{
               flex            : 1,
               backgroundColor : Colors.fire,
               paddingTop      : 0}}
           >
-            <Panel title="MY ACCOUNT" child="true" >
+
+             <Panel title="MY ACCOUNT" child="true" >
               <TouchableHighlight  underlayColor="#ffffff" onPress={this.handlePromotionScreen} >
                 <View style={Styles.panelRow}>
                   <Text style={Styles.panelText}>Detail account</Text>
@@ -167,9 +167,7 @@ class DrawerContent extends Component {
               </TouchableHighlight>
             </Panel>
 
-
           </ScrollView>
-
         </View>
       </View>
     )

@@ -29,6 +29,7 @@ import SignInScreen from '../Containers/SignInScreen'
 import SocialConnectionScreen from '../Containers/SocialConnectionScreen'
 import SocialConnectionSignInScreen from '../Containers/SocialConnectionSignInScreen'
 import RoomControlsScreen from '../Containers/RoomControlsScreen'
+import UploadPictureScreen from '../Containers/UploadPictureScreen'
 
 
 /* **************************
@@ -63,6 +64,7 @@ class NavigationRouter extends Component {
             <Scene key="socialConnectionScreen" component={SocialConnectionScreen} title='Social Connection'/>
             <Scene key="socialConnectionSignInScreen" component={SocialConnectionSignInScreen} title='Social Connection'/>
             <Scene key="roomControlsScreen" component={RoomControlsScreen} title='Room Controls'/>
+            <Scene key="uploadPictureScreen" component={UploadPictureScreen} title='Upload Picutre'/>
 
 
           </Scene>
