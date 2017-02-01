@@ -53,7 +53,7 @@ class DrawerContent extends Component {
   handleWebview(url){
     this.toggleDrawer()
     // NavigationActions.webview({url: 'http://www.kapook.com'})
-    //NavigationActions.openWebView({url:url})
+    NavigationActions.openWebView({url:url})
   }
 
   handleLandingScreen = () => {
@@ -132,7 +132,7 @@ class DrawerContent extends Component {
               paddingTop      : 0}}
           >
 
-             <Panel title="MY ACCOUNT" child="true" >
+             <Panel title="My Account" child="false" onPress={this.handleLandingScreen} >
               <TouchableHighlight  underlayColor="#ffffff" onPress={this.handlePromotionScreen} >
                 <View style={Styles.panelRow}>
                   <Text style={Styles.panelText}>Detail account</Text>
@@ -145,26 +145,35 @@ class DrawerContent extends Component {
               </TouchableHighlight>
             </Panel>
 
-            <Panel title="OKKAMI CONCIERGE" child="false" onPress={this.handlePressLobby}>
+            <Panel title="Okkami Conclerge" child="false" onPress={this.handlePressLobby}>
               <View></View>
             </Panel>
 
-            <Panel title="MY BOOKINGS" child="true" >
+            <Panel title="My Booking" child="true" >
               <TouchableHighlight  underlayColor="#ffffff" onPress={this.handleWebview.bind(this,'http://whitelabel.dohop.com/w/okkami/')} >
                 <View style={Styles.panelRow}>
-                  <Text style={Styles.panelText}>FLIGHTS</Text>
+                  <Text style={Styles.panelText}>Flights</Text>
                 </View>
               </TouchableHighlight>
               <TouchableHighlight  underlayColor="#ffffff" onPress={this.handleWebview.bind(this,'http://www.booking.com/?aid=1151726')} >
                 <View style={Styles.panelRow}>
-                  <Text style={Styles.panelText}>HOTELS</Text>
+                  <Text style={Styles.panelText}>Hotels</Text>
                 </View>
               </TouchableHighlight>
               <TouchableHighlight  underlayColor="#ffffff" onPress={this.handleWebview.bind(this,'https://www.partner.viator.com/en/19488')} >
                 <View style={Styles.panelRow}>
-                  <Text style={Styles.panelText}>ACTIVITES</Text>
+                  <Text style={Styles.panelText}>Activities</Text>
                 </View>
               </TouchableHighlight>
+            </Panel>
+            <Panel title="Concierge Chat" child="false" onPress={this.handlePressLobby}>
+              <View></View>
+            </Panel>
+            <Panel title="Check Out" child="false" onPress={this.handlePressLobby}>
+              <View></View>
+            </Panel>
+            <Panel title="Languages" child="false" onPress={this.handlePressLobby}>
+              <View></View>
             </Panel>
 
           </ScrollView>

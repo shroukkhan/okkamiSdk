@@ -49,8 +49,8 @@ class SignInScreen extends React.Component {
     const {username, password} = this.state
     this.isAttempting = true
     console.log(username + " " + password)
-    // attempt a login - a saga is listening to pick it up from here.
-    //this.props.attemptLogin(username, password)
+
+    NavigationActions.landingScreen({type: "replace"})
   }
 
   render() {

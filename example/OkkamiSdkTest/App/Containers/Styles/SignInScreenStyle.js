@@ -18,7 +18,7 @@ export default StyleSheet.create({
     backgroundColor: Colors.windowTint,
   },
   formOver: {
-    paddingTop:50,
+    paddingTop:25,
     paddingBottom:50,
     flexDirection: 'column',
     justifyContent: 'flex-start',
@@ -91,8 +91,8 @@ export default StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     alignSelf: 'center',
-    width: width/1.2,
-    height: width/1.2,
+    width: width/1.5,
+    height: width/1.5,
     borderRadius: width/2,
   },
   formButton: {
