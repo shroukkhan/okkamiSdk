@@ -30,6 +30,7 @@ export default StyleSheet.create({
     borderRadius: 2,
     backgroundColor: Colors.snow,
     marginTop:10,
+    alignSelf: 'center',
   },
   selectInput:{
     width: inputWidth,
@@ -91,9 +92,9 @@ export default StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     alignSelf: 'center',
-    width: width/1.5,
-    height: width/1.5,
-    borderRadius: width/2,
+    width: inputWidth,
+    height: inputWidth,
+    borderRadius: inputWidth/2,
   },
   formButton: {
     width: inputWidth,

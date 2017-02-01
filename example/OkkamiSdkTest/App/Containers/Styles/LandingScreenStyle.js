@@ -64,7 +64,7 @@ export default StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: "#9BBACF"
+    // backgroundColor: "#9BBACF"
   },
   bottomView:{
     // flex: 1,

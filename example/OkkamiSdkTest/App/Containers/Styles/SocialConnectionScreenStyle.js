@@ -65,11 +65,11 @@ export default StyleSheet.create({
     marginVertical: Metrics.baseMargin
   },
   avatar: {
-    marginTop:50,
-    marginBottom:50,
+    marginTop:10,
+    marginBottom:10,
     alignSelf: 'center',
-    width:inputWidth/1.2,
-    height:inputWidth/1.2,
+    width: inputWidth,
+    height: inputWidth,
     borderRadius: inputWidth/2,
   },
   formCheckBox: {
@@ -86,6 +86,7 @@ export default StyleSheet.create({
     borderRadius: 2,
     backgroundColor: Colors.snow,
     marginTop:10,
+    alignSelf: 'center',
   },
   textAreaInput: {
     width: inputWidth,

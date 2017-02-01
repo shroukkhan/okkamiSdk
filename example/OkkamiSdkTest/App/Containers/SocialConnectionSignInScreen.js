@@ -46,10 +46,10 @@ class SocialConnectionSignInScreen extends React.Component {
     NavigationActions.signUpScreen({type: "replace"})
   }
 
-   componentWillUnmount() {
-     clearTimeout(this._timer);
-     console.log('unmount')
-   }
+  componentWillUnmount() {
+   clearTimeout(this._timer);
+   console.log('unmount')
+  }
 
   componentDidMount() {
     // this.setToggleTimeout();
@@ -68,13 +68,11 @@ class SocialConnectionSignInScreen extends React.Component {
   }
 
   setToggleTimeout() {
-  //  this.state.animating = !this.state.animating
-   this._timer = setTimeout(() => {
+    //  this.state.animating = !this.state.animating
+    this._timer = setTimeout(() => {
      this.setState({animating: true});
-   }, 100);
-
-   this.clearToggleTimeout()
-
+    }, 100);
+    this.clearToggleTimeout()
   }
 
   checkTimeout(){
@@ -154,7 +152,7 @@ class SocialConnectionSignInScreen extends React.Component {
             <ActivityIndicator
               animating={this.state.animating}
               style={[{alignItems: 'center', justifyContent: 'center', padding: 8}, {height: 80}]}
-              size={75}
+              size="large"
                />
           </View>
 

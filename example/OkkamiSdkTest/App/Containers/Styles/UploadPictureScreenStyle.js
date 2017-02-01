@@ -28,8 +28,8 @@ export default StyleSheet.create({
     marginTop:50,
     marginBottom:50,
     alignSelf: 'center',
-    width:inputWidth/1.2,
-    height:inputWidth/1.2,
+    width: inputWidth,
+    height: inputWidth,
     borderRadius: inputWidth/2,
   },
   formButton: {
