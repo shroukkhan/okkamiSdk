@@ -14,7 +14,6 @@
 		00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302E41ABCB9EE00DB3ED1 /* libRCTVibration.a */; };
 		00E356F31AD99517003FC87E /* OkkamiSdkTestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* OkkamiSdkTestTests.m */; };
 		0934728A2E984AC591CA9EFB /* libReactNativeConfig.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1934D0D3B3CB423FA2D0538D /* libReactNativeConfig.a */; };
-		0F2DF5F5549014038AEBE0AD /* Pods_OkkamiSdkTestTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C2D3820D442869B2266ABB6 /* Pods_OkkamiSdkTestTests.framework */; };
 		133E29F31AD74F7200F7D852 /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C398B91ACF4ADC00677621 /* libRCTLinking.a */; };
 		139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139105C11AF99BAD00B5F7CC /* libRCTSettings.a */; };
 		139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139FDEF41B06529B00C62182 /* libRCTWebSocket.a */; };
@@ -29,9 +28,10 @@
 		24B25D4CC5754EB183953401 /* libRNVectorIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B36707A874F1419AA1A3855B /* libRNVectorIcons.a */; };
 		290FADF0D7764D8A83D31D74 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A7E124421AE44C0E9EE321EE /* SimpleLineIcons.ttf */; };
 		33558EDF5C81426BBA962828 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 91333D3A5FAC41D4AC65D39C /* Ionicons.ttf */; };
+		41AE73A5642DAE54E9418672 /* Pods_OkkamiSdkTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F64BF761745B285FB74EE4A3 /* Pods_OkkamiSdkTest.framework */; };
 		4EC85C28C65A412E9C15BAEF /* libRNDeviceInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02B38C713FF4465A84DB58B1 /* libRNDeviceInfo.a */; };
-		524E86FB69A94C7E4B9966D9 /* Pods_OkkamiSdkTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F945BBE1521AF2950D50F102 /* Pods_OkkamiSdkTest.framework */; };
 		5FF6AB9108D24843BA7D5A5A /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 37676137C208408DA896ACA0 /* EvilIcons.ttf */; };
+		6D383D0B6132290D06CECD82 /* Pods_OkkamiSdkTestTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94503C5C5AD63549CAA96D57 /* Pods_OkkamiSdkTestTests.framework */; };
 		7CA03CA58BF041D98476FCE5 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4D58585CEC5C4D4AA706D6CA /* Entypo.ttf */; };
 		823E478966A44DD3ACD9DDB1 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5B0DC37A57CE440082FB2A0F /* Octicons.ttf */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
@@ -135,19 +135,103 @@
 			remoteGlobalIDString = 2D2A28201D9B03D100D4039D;
 			remoteInfo = "RCTAnimation-tvOS";
 		};
-		FAC9F8EF1E14ECF400EEFC1B /* PBXContainerItemProxy */ = {
+		FAF1090E1E48E30C000B1E84 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = FAC9F8EA1E14ECF400EEFC1B /* RCTOkkamiSdkImplementation.xcodeproj */;
+			containerPortal = FAF109091E48E30C000B1E84 /* RCTOkkamiSdkImplementation.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = FAC9F8CE1E14EC5700EEFC1B;
 			remoteInfo = RCTOkkamiSdkImplementation;
 		};
-		FAC9F8F11E14ECF400EEFC1B /* PBXContainerItemProxy */ = {
+		FAF109101E48E30C000B1E84 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = FAC9F8EA1E14ECF400EEFC1B /* RCTOkkamiSdkImplementation.xcodeproj */;
+			containerPortal = FAF109091E48E30C000B1E84 /* RCTOkkamiSdkImplementation.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = FAC9F8D71E14EC5800EEFC1B;
 			remoteInfo = RCTOkkamiSdkImplementationTests;
+		};
+		FAF109231E48E635000B1E84 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 44A356FE0D5CAD2847AACF56B1C10EFE;
+			remoteInfo = Alamofire;
+		};
+		FAF109251E48E635000B1E84 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8CEE9DA3275A7B474849D05B3411B35D;
+			remoteInfo = ModelMapper;
+		};
+		FAF109271E48E635000B1E84 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7FABC4FD0475EFBDC07B86FE18378599;
+			remoteInfo = Moya;
+		};
+		FAF109291E48E635000B1E84 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 864FD5BF7DAB5D07C85F3AB8D5E681B2;
+			remoteInfo = "Moya-ModelMapper";
+		};
+		FAF1092B1E48E635000B1E84 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EEA6CEF60210A242DE885EC8A14352B2;
+			remoteInfo = "Pods-RCTOkkamiSdkImplementation";
+		};
+		FAF1092D1E48E635000B1E84 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1CF591AD6F607B7AC8D2D84CFF4EB798;
+			remoteInfo = "Pods-RCTOkkamiSdkImplementationTests";
+		};
+		FAF1092F1E48E635000B1E84 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1337AB67C3FAF45458E64847153E7534;
+			remoteInfo = Realm;
+		};
+		FAF109311E48E635000B1E84 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = C8289E6FEA4FDCEF6D0D6B4254B88CA7;
+			remoteInfo = RealmSwift;
+		};
+		FAF109331E48E635000B1E84 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8C8699D177BBB4D459C77836069D2BA0;
+			remoteInfo = Result;
+		};
+		FAF109351E48E635000B1E84 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7087C00FAC4B1FA11DDED146A8337A09;
+			remoteInfo = RxCocoa;
+		};
+		FAF109371E48E635000B1E84 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 55DB305362358913B60430A0F1157280;
+			remoteInfo = RxOptional;
+		};
+		FAF109391E48E635000B1E84 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BC7E7BA0316E3CE9CED5F79EBBFCC7D2;
+			remoteInfo = RxSwift;
 		};
 		FAF229831E14161900F3C9C1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -275,8 +359,6 @@
 		00E356F21AD99517003FC87E /* OkkamiSdkTestTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OkkamiSdkTestTests.m; sourceTree = "<group>"; };
 		021313E3A5A74D0183C24FBB /* libAirMaps.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libAirMaps.a; sourceTree = "<group>"; };
 		02B38C713FF4465A84DB58B1 /* libRNDeviceInfo.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNDeviceInfo.a; sourceTree = "<group>"; };
-		043DA70009509967D45D9A9D /* Pods-OkkamiSdkTestTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OkkamiSdkTestTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-OkkamiSdkTestTests/Pods-OkkamiSdkTestTests.debug.xcconfig"; sourceTree = "<group>"; };
-		10741B61E25C3426E3B9B1D7 /* Pods-OkkamiSdkTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OkkamiSdkTest.release.xcconfig"; path = "Pods/Target Support Files/Pods-OkkamiSdkTest/Pods-OkkamiSdkTest.release.xcconfig"; sourceTree = "<group>"; };
 		139105B61AF99BAD00B5F7CC /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = "../node_modules/react-native/Libraries/Settings/RCTSettings.xcodeproj"; sourceTree = "<group>"; };
 		139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = "../node_modules/react-native/Libraries/WebSocket/RCTWebSocket.xcodeproj"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* OkkamiSdkTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OkkamiSdkTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -288,30 +370,36 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = OkkamiSdkTest/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 		1934D0D3B3CB423FA2D0538D /* libReactNativeConfig.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libReactNativeConfig.a; sourceTree = "<group>"; };
-		254FE0C1EEA22B9546740CB9 /* Pods-OkkamiSdkTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OkkamiSdkTest.debug.xcconfig"; path = "Pods/Target Support Files/Pods-OkkamiSdkTest/Pods-OkkamiSdkTest.debug.xcconfig"; sourceTree = "<group>"; };
+		2E8CED5A161692180BAD911B /* Pods-OkkamiSdkTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OkkamiSdkTest.release.xcconfig"; path = "Pods/Target Support Files/Pods-OkkamiSdkTest/Pods-OkkamiSdkTest.release.xcconfig"; sourceTree = "<group>"; };
 		37676137C208408DA896ACA0 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 		4D58585CEC5C4D4AA706D6CA /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		5B0DC37A57CE440082FB2A0F /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
-		5C2D3820D442869B2266ABB6 /* Pods_OkkamiSdkTestTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_OkkamiSdkTestTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6B3889BCD83F47EBB681014C /* libRNI18n.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNI18n.a; sourceTree = "<group>"; };
 		6DF0680C0ED741C49F85E094 /* ReactNativeConfig.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = ReactNativeConfig.xcodeproj; path = "../node_modules/react-native-config/ios/ReactNativeConfig.xcodeproj"; sourceTree = "<group>"; };
+		6E8FABAD29F44762787D2429 /* Pods-OkkamiSdkTestTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OkkamiSdkTestTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-OkkamiSdkTestTests/Pods-OkkamiSdkTestTests.debug.xcconfig"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		91333D3A5FAC41D4AC65D39C /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
+		94503C5C5AD63549CAA96D57 /* Pods_OkkamiSdkTestTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_OkkamiSdkTestTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		97EA12C87B8E41EC875E23F7 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		A2A7364F00AC4F52ADF2853D /* RNI18n.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNI18n.xcodeproj; path = "../node_modules/react-native-i18n/RNI18n.xcodeproj"; sourceTree = "<group>"; };
 		A7E124421AE44C0E9EE321EE /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
+		A7F279741254E9D7D0BEE8EF /* Pods-OkkamiSdkTestTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OkkamiSdkTestTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-OkkamiSdkTestTests/Pods-OkkamiSdkTestTests.release.xcconfig"; sourceTree = "<group>"; };
 		B36707A874F1419AA1A3855B /* libRNVectorIcons.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVectorIcons.a; sourceTree = "<group>"; };
-		B82BBFC6BA8479B5F5D2D0FB /* Pods-OkkamiSdkTestTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OkkamiSdkTestTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-OkkamiSdkTestTests/Pods-OkkamiSdkTestTests.release.xcconfig"; sourceTree = "<group>"; };
 		BF6D286346A348148F9E3838 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
 		CC3A4AB19216473DA9DFFC11 /* RNDeviceInfo.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNDeviceInfo.xcodeproj; path = "../node_modules/react-native-device-info/RNDeviceInfo.xcodeproj"; sourceTree = "<group>"; };
 		D49980F7A61345D5BD8DA634 /* AirMaps.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = AirMaps.xcodeproj; path = "../node_modules/react-native-maps/ios/AirMaps.xcodeproj"; sourceTree = "<group>"; };
+		D8F42E8C2B4653206A9A9E09 /* Pods-OkkamiSdkTest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OkkamiSdkTest.debug.xcconfig"; path = "Pods/Target Support Files/Pods-OkkamiSdkTest/Pods-OkkamiSdkTest.debug.xcconfig"; sourceTree = "<group>"; };
 		D9E07FBCF42D443AA2CE069B /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
 		DECD567D9C524CAB965E8E48 /* RNVectorIcons.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNVectorIcons.xcodeproj; path = "../node_modules/react-native-vector-icons/RNVectorIcons.xcodeproj"; sourceTree = "<group>"; };
 		F13D9FA9D894492BB18AB0C4 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
-		F945BBE1521AF2950D50F102 /* Pods_OkkamiSdkTest.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_OkkamiSdkTest.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F64BF761745B285FB74EE4A3 /* Pods_OkkamiSdkTest.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_OkkamiSdkTest.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA900D8E1E1CA64100473B24 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
-		FAC9F8EA1E14ECF400EEFC1B /* RCTOkkamiSdkImplementation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTOkkamiSdkImplementation.xcodeproj; path = ../../../ios/RCTOkkamiSdkImplementation/RCTOkkamiSdkImplementation.xcodeproj; sourceTree = "<group>"; };
+		FAF1086C1E48D757000B1E84 /* Pods_OkkamiSdkTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_OkkamiSdkTest.framework; path = "Pods/../build/Debug-iphoneos/Pods_OkkamiSdkTest.framework"; sourceTree = "<group>"; };
+		FAF1088E1E48DE34000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_RCTOkkamiSdkImplementation.framework; path = ../../../../../../../Desktop/Pods_RCTOkkamiSdkImplementation.framework; sourceTree = "<group>"; };
+		FAF1088F1E48DE34000B1E84 /* RCTOkkamiSdkImplementation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RCTOkkamiSdkImplementation.framework; path = ../../../../../../../Desktop/RCTOkkamiSdkImplementation.framework; sourceTree = "<group>"; };
+		FAF109091E48E30C000B1E84 /* RCTOkkamiSdkImplementation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTOkkamiSdkImplementation.xcodeproj; path = ../../../ios/RCTOkkamiSdkImplementation/RCTOkkamiSdkImplementation.xcodeproj; sourceTree = "<group>"; };
+		FAF109141E48E634000B1E84 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = ../../../ios/RCTOkkamiSdkImplementation/Pods/Pods.xcodeproj; sourceTree = "<group>"; };
 		FAF2297D1E14161800F3C9C1 /* OkkamiSdkImplementation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OkkamiSdkImplementation.xcodeproj; path = OkkamiSdkImplementation/OkkamiSdkImplementation.xcodeproj; sourceTree = "<group>"; };
 		FFC323171E077DC80097EF66 /* RCTOkkamiSdk.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTOkkamiSdk.xcodeproj; path = ../../../ios/RCTOkkamiSdk.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -322,7 +410,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */,
-				0F2DF5F5549014038AEBE0AD /* Pods_OkkamiSdkTestTests.framework in Frameworks */,
+				6D383D0B6132290D06CECD82 /* Pods_OkkamiSdkTestTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -347,7 +435,7 @@
 				D7B2A7CFFEFC4172AE10A1AC /* libRNI18n.a in Frameworks */,
 				1EB111E3DE124CEC8B5253EA /* libAirMaps.a in Frameworks */,
 				24B25D4CC5754EB183953401 /* libRNVectorIcons.a in Frameworks */,
-				524E86FB69A94C7E4B9966D9 /* Pods_OkkamiSdkTest.framework in Frameworks */,
+				41AE73A5642DAE54E9418672 /* Pods_OkkamiSdkTest.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -413,15 +501,6 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		0383ACF1BC9489231DDBFABF /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				F945BBE1521AF2950D50F102 /* Pods_OkkamiSdkTest.framework */,
-				5C2D3820D442869B2266ABB6 /* Pods_OkkamiSdkTestTests.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		139105B71AF99BAD00B5F7CC /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -479,13 +558,13 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
-		7110F1F6F8F719CA29DBCE31 /* Pods */ = {
+		494EAEEEB8606D2DA96C6E6C /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				254FE0C1EEA22B9546740CB9 /* Pods-OkkamiSdkTest.debug.xcconfig */,
-				10741B61E25C3426E3B9B1D7 /* Pods-OkkamiSdkTest.release.xcconfig */,
-				043DA70009509967D45D9A9D /* Pods-OkkamiSdkTestTests.debug.xcconfig */,
-				B82BBFC6BA8479B5F5D2D0FB /* Pods-OkkamiSdkTestTests.release.xcconfig */,
+				D8F42E8C2B4653206A9A9E09 /* Pods-OkkamiSdkTest.debug.xcconfig */,
+				2E8CED5A161692180BAD911B /* Pods-OkkamiSdkTest.release.xcconfig */,
+				6E8FABAD29F44762787D2429 /* Pods-OkkamiSdkTestTests.debug.xcconfig */,
+				A7F279741254E9D7D0BEE8EF /* Pods-OkkamiSdkTestTests.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -502,8 +581,9 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				FAF109141E48E634000B1E84 /* Pods.xcodeproj */,
+				FAF109091E48E30C000B1E84 /* RCTOkkamiSdkImplementation.xcodeproj */,
 				FA900D8E1E1CA64100473B24 /* RCTAnimation.xcodeproj */,
-				FAC9F8EA1E14ECF400EEFC1B /* RCTOkkamiSdkImplementation.xcodeproj */,
 				FAF2297D1E14161800F3C9C1 /* OkkamiSdkImplementation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
@@ -542,8 +622,8 @@
 				00E356EF1AD99517003FC87E /* OkkamiSdkTestTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				3E8D4A0425834F6B9F75E769 /* Resources */,
-				7110F1F6F8F719CA29DBCE31 /* Pods */,
-				0383ACF1BC9489231DDBFABF /* Frameworks */,
+				494EAEEEB8606D2DA96C6E6C /* Pods */,
+				91B96F2BAF0E9ABA9851F4A3 /* Frameworks */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -558,6 +638,18 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		91B96F2BAF0E9ABA9851F4A3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FAF1088E1E48DE34000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework */,
+				FAF1088F1E48DE34000B1E84 /* RCTOkkamiSdkImplementation.framework */,
+				FAF1086C1E48D757000B1E84 /* Pods_OkkamiSdkTest.framework */,
+				F64BF761745B285FB74EE4A3 /* Pods_OkkamiSdkTest.framework */,
+				94503C5C5AD63549CAA96D57 /* Pods_OkkamiSdkTestTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		FA900D8F1E1CA64100473B24 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -567,11 +659,30 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		FAC9F8EB1E14ECF400EEFC1B /* Products */ = {
+		FAF1090A1E48E30C000B1E84 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				FAC9F8F01E14ECF400EEFC1B /* RCTOkkamiSdkImplementation.framework */,
-				FAC9F8F21E14ECF400EEFC1B /* RCTOkkamiSdkImplementationTests.xctest */,
+				FAF1090F1E48E30C000B1E84 /* RCTOkkamiSdkImplementation.framework */,
+				FAF109111E48E30C000B1E84 /* RCTOkkamiSdkImplementationTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FAF109151E48E634000B1E84 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAF109241E48E635000B1E84 /* Alamofire.framework */,
+				FAF109261E48E635000B1E84 /* Mapper.framework */,
+				FAF109281E48E635000B1E84 /* Moya.framework */,
+				FAF1092A1E48E635000B1E84 /* Moya_ModelMapper.framework */,
+				FAF1092C1E48E635000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework */,
+				FAF1092E1E48E635000B1E84 /* Pods_RCTOkkamiSdkImplementationTests.framework */,
+				FAF109301E48E635000B1E84 /* Realm.framework */,
+				FAF109321E48E635000B1E84 /* RealmSwift.framework */,
+				FAF109341E48E635000B1E84 /* Result.framework */,
+				FAF109361E48E635000B1E84 /* RxCocoa.framework */,
+				FAF109381E48E635000B1E84 /* RxOptional.framework */,
+				FAF1093A1E48E635000B1E84 /* RxSwift.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -641,12 +752,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "OkkamiSdkTestTests" */;
 			buildPhases = (
-				85420C17DA4899EF5F05E3D9 /* [CP] Check Pods Manifest.lock */,
+				21822C18AD19D7BA7B6F4B27 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				8AE4077670E8C02BFE75EF74 /* [CP] Embed Pods Frameworks */,
-				BDAE3AFCEFE30AA15D024402 /* [CP] Copy Pods Resources */,
+				B5932B170498D9F3A86EB8DB /* [CP] Embed Pods Frameworks */,
+				03B58D85FCE0E00A731C1B3D /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -662,13 +773,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "OkkamiSdkTest" */;
 			buildPhases = (
-				50511C3BCCB1511408D92986 /* [CP] Check Pods Manifest.lock */,
+				CC8EB117ABF4B258E7DE32FD /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				A2441F289CFE95196314A6B4 /* [CP] Embed Pods Frameworks */,
-				96B24440A37042C6FB379D5B /* [CP] Copy Pods Resources */,
+				C9BD4A4F3795B06A64DCC8FC /* [CP] Embed Pods Frameworks */,
+				985D5C8B5422E9AA870E688A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -719,6 +830,10 @@
 					ProjectRef = FAF2297D1E14161800F3C9C1 /* OkkamiSdkImplementation.xcodeproj */;
 				},
 				{
+					ProductGroup = FAF109151E48E634000B1E84 /* Products */;
+					ProjectRef = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
+				},
+				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
 					ProjectRef = 00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */;
 				},
@@ -747,8 +862,8 @@
 					ProjectRef = FFC323171E077DC80097EF66 /* RCTOkkamiSdk.xcodeproj */;
 				},
 				{
-					ProductGroup = FAC9F8EB1E14ECF400EEFC1B /* Products */;
-					ProjectRef = FAC9F8EA1E14ECF400EEFC1B /* RCTOkkamiSdkImplementation.xcodeproj */;
+					ProductGroup = FAF1090A1E48E30C000B1E84 /* Products */;
+					ProjectRef = FAF109091E48E30C000B1E84 /* RCTOkkamiSdkImplementation.xcodeproj */;
 				},
 				{
 					ProductGroup = 139105B71AF99BAD00B5F7CC /* Products */;
@@ -880,18 +995,102 @@
 			remoteRef = FA900D991E1CA64100473B24 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAC9F8F01E14ECF400EEFC1B /* RCTOkkamiSdkImplementation.framework */ = {
+		FAF1090F1E48E30C000B1E84 /* RCTOkkamiSdkImplementation.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = RCTOkkamiSdkImplementation.framework;
-			remoteRef = FAC9F8EF1E14ECF400EEFC1B /* PBXContainerItemProxy */;
+			remoteRef = FAF1090E1E48E30C000B1E84 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAC9F8F21E14ECF400EEFC1B /* RCTOkkamiSdkImplementationTests.xctest */ = {
+		FAF109111E48E30C000B1E84 /* RCTOkkamiSdkImplementationTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = RCTOkkamiSdkImplementationTests.xctest;
-			remoteRef = FAC9F8F11E14ECF400EEFC1B /* PBXContainerItemProxy */;
+			remoteRef = FAF109101E48E30C000B1E84 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FAF109241E48E635000B1E84 /* Alamofire.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Alamofire.framework;
+			remoteRef = FAF109231E48E635000B1E84 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FAF109261E48E635000B1E84 /* Mapper.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Mapper.framework;
+			remoteRef = FAF109251E48E635000B1E84 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FAF109281E48E635000B1E84 /* Moya.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Moya.framework;
+			remoteRef = FAF109271E48E635000B1E84 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FAF1092A1E48E635000B1E84 /* Moya_ModelMapper.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Moya_ModelMapper.framework;
+			remoteRef = FAF109291E48E635000B1E84 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FAF1092C1E48E635000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Pods_RCTOkkamiSdkImplementation.framework;
+			remoteRef = FAF1092B1E48E635000B1E84 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FAF1092E1E48E635000B1E84 /* Pods_RCTOkkamiSdkImplementationTests.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Pods_RCTOkkamiSdkImplementationTests.framework;
+			remoteRef = FAF1092D1E48E635000B1E84 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FAF109301E48E635000B1E84 /* Realm.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Realm.framework;
+			remoteRef = FAF1092F1E48E635000B1E84 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FAF109321E48E635000B1E84 /* RealmSwift.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RealmSwift.framework;
+			remoteRef = FAF109311E48E635000B1E84 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FAF109341E48E635000B1E84 /* Result.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Result.framework;
+			remoteRef = FAF109331E48E635000B1E84 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FAF109361E48E635000B1E84 /* RxCocoa.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RxCocoa.framework;
+			remoteRef = FAF109351E48E635000B1E84 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FAF109381E48E635000B1E84 /* RxOptional.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RxOptional.framework;
+			remoteRef = FAF109371E48E635000B1E84 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FAF1093A1E48E635000B1E84 /* RxSwift.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RxSwift.framework;
+			remoteRef = FAF109391E48E635000B1E84 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		FAF229841E14161900F3C9C1 /* OkkamiSdkImplementation.framework */ = {
@@ -1051,7 +1250,22 @@
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/packager/react-native-xcode.sh";
 		};
-		50511C3BCCB1511408D92986 /* [CP] Check Pods Manifest.lock */ = {
+		03B58D85FCE0E00A731C1B3D /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-OkkamiSdkTestTests/Pods-OkkamiSdkTestTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		21822C18AD19D7BA7B6F4B27 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1066,22 +1280,22 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		85420C17DA4899EF5F05E3D9 /* [CP] Check Pods Manifest.lock */ = {
+		985D5C8B5422E9AA870E688A /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "[CP] Check Pods Manifest.lock";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-OkkamiSdkTest/Pods-OkkamiSdkTest-resources.sh\"\n\"/Users/macbook/Documents/ios/react/okkamiSdk/ios/RCTOkkamiSdkImplementation/Pods/Target Support Files/Pods-RCTOkkamiSdkImplementation/Pods-RCTOkkamiSdkImplementation-resources.sh\"";
 			showEnvVarsInLog = 0;
 		};
-		8AE4077670E8C02BFE75EF74 /* [CP] Embed Pods Frameworks */ = {
+		B5932B170498D9F3A86EB8DB /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1096,22 +1310,7 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-OkkamiSdkTestTests/Pods-OkkamiSdkTestTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		96B24440A37042C6FB379D5B /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-OkkamiSdkTest/Pods-OkkamiSdkTest-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A2441F289CFE95196314A6B4 /* [CP] Embed Pods Frameworks */ = {
+		C9BD4A4F3795B06A64DCC8FC /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1123,22 +1322,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-OkkamiSdkTest/Pods-OkkamiSdkTest-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-OkkamiSdkTest/Pods-OkkamiSdkTest-frameworks.sh\"\n\"/Users/macbook/Documents/ios/react/okkamiSdk/ios/RCTOkkamiSdkImplementation/Pods/Target Support Files/Pods-RCTOkkamiSdkImplementationTests/Pods-RCTOkkamiSdkImplementationTests-frameworks.sh\"\n\n";
 			showEnvVarsInLog = 0;
 		};
-		BDAE3AFCEFE30AA15D024402 /* [CP] Copy Pods Resources */ = {
+		CC8EB117ABF4B258E7DE32FD /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "[CP] Copy Pods Resources";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-OkkamiSdkTestTests/Pods-OkkamiSdkTestTests-resources.sh\"\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1186,7 +1385,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 043DA70009509967D45D9A9D /* Pods-OkkamiSdkTestTests.debug.xcconfig */;
+			baseConfigurationReference = 6E8FABAD29F44762787D2429 /* Pods-OkkamiSdkTestTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -1211,7 +1410,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B82BBFC6BA8479B5F5D2D0FB /* Pods-OkkamiSdkTestTests.release.xcconfig */;
+			baseConfigurationReference = A7F279741254E9D7D0BEE8EF /* Pods-OkkamiSdkTestTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -1233,7 +1432,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 254FE0C1EEA22B9546740CB9 /* Pods-OkkamiSdkTest.debug.xcconfig */;
+			baseConfigurationReference = D8F42E8C2B4653206A9A9E09 /* Pods-OkkamiSdkTest.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1276,7 +1475,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 10741B61E25C3426E3B9B1D7 /* Pods-OkkamiSdkTest.release.xcconfig */;
+			baseConfigurationReference = 2E8CED5A161692180BAD911B /* Pods-OkkamiSdkTest.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1354,11 +1553,21 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../node_modules/react-native/React/**",
-					"$(SRCROOT)..\node_modules\neact-native-configiosReactNativeConfig",
-					"$(SRCROOT)..\node_modules\neact-native-device-infoRNDeviceInfo",
-					"$(SRCROOT)..\node_modules\neact-native-i18nRNI18n",
-					"$(SRCROOT)..\node_modules\neact-native-mapsios/**",
-					"$(SRCROOT)..\node_modules\neact-native-vector-iconsRNVectorIconsManager",
+					"$(SRCROOT)..",
+					ode_modules,
+					"eact-native-configiosReactNativeConfig",
+					"$(SRCROOT)..",
+					ode_modules,
+					"eact-native-device-infoRNDeviceInfo",
+					"$(SRCROOT)..",
+					ode_modules,
+					"eact-native-i18nRNI18n",
+					"$(SRCROOT)..",
+					ode_modules,
+					"eact-native-mapsios/**",
+					"$(SRCROOT)..",
+					ode_modules,
+					"eact-native-vector-iconsRNVectorIconsManager",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -1399,11 +1608,21 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../node_modules/react-native/React/**",
-					"$(SRCROOT)..\node_modules\neact-native-configiosReactNativeConfig",
-					"$(SRCROOT)..\node_modules\neact-native-device-infoRNDeviceInfo",
-					"$(SRCROOT)..\node_modules\neact-native-i18nRNI18n",
-					"$(SRCROOT)..\node_modules\neact-native-mapsios/**",
-					"$(SRCROOT)..\node_modules\neact-native-vector-iconsRNVectorIconsManager",
+					"$(SRCROOT)..",
+					ode_modules,
+					"eact-native-configiosReactNativeConfig",
+					"$(SRCROOT)..",
+					ode_modules,
+					"eact-native-device-infoRNDeviceInfo",
+					"$(SRCROOT)..",
+					ode_modules,
+					"eact-native-i18nRNI18n",
+					"$(SRCROOT)..",
+					ode_modules,
+					"eact-native-mapsios/**",
+					"$(SRCROOT)..",
+					ode_modules,
+					"eact-native-vector-iconsRNVectorIconsManager",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;

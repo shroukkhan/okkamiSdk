@@ -1,7 +1,7 @@
 // @flow
 
 import React , {NativeModules} from 'react'
-import { ScrollView, Text, KeyboardAvoidingView, View } from 'react-native'
+import { AppRegistry, ScrollView, Text, KeyboardAvoidingView, View } from 'react-native'
 import { connect } from 'react-redux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -61,7 +61,7 @@ class HubConnectionEventDemoIOS extends React.Component {
     return (
       <ScrollView style={styles.container}>
         <KeyboardAvoidingView behavior='position'>
-          <Text>HubConnectionEventDemoIOS Container</Text>
+          <Text>console.log({this.props.list})</Text>
         </KeyboardAvoidingView>
       </ScrollView>
     )

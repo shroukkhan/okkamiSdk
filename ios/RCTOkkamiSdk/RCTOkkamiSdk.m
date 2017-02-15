@@ -1,5 +1,8 @@
 #import "RCTOkkamiSdk.h"
 #import "RCTEventDispatcher.h"
+
+#import "RCTBundleURLProvider.h"
+#import "RCTRootView.h"
 //#import <RCTOkkamiSdkImplementation/RCTOkkamiSdkImplementation-Swift.h>
 
 @implementation OkkamiSdk
@@ -26,12 +29,15 @@ RCT_EXPORT_METHOD(wipeUserData
 /**
  * Entry point of the native sdk
  */
+
 RCT_EXPORT_METHOD(start
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
     
-    
+    RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
+    [main preConnect];
+    [self.bridge.eventDispatcher sendAppEventWithName:@"onStart" body:@{@"command": @"On Start"}];
 }
 
 /**
@@ -66,9 +72,9 @@ RCT_EXPORT_METHOD(connectToRoom
                   :(RCTPromiseRejectBlock)reject)
 {
     
-    //RCTOkkamiMain * helloWorld = [RCTOkkamiMain newInstance];
-    //[helloWorld hello];
-    
+    RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
+    [main connectToRoomWithRoom:@"demo3" token:@"1234"];
+    [self.bridge.eventDispatcher sendAppEventWithName:@"connectToRoom" body:@{@"command": @"Connect To Room"}];
 /* Example for michael
     MyOkkamiSDKImplementationLibrary should be a swift library [ framework ? ]
     @try {
@@ -97,7 +103,9 @@ RCT_EXPORT_METHOD(disconnectFromRoom
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    
+    RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
+    [main disconnectFromRoom];
+    [self.bridge.eventDispatcher sendAppEventWithName:@"disconnectFromRoom" body:@{@"command": @"Disconnect From Room"}];
 }
 
 /**
@@ -128,7 +136,28 @@ RCT_EXPORT_METHOD(connectToHub
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    [self.bridge.eventDispatcher sendAppEventWithName:@"onHubConnected" body:nil];
+    /*RCTOkkamiMain * helloWorld = [RCTOkkamiMain newInstance];
+    [helloWorld setupRxWithCompletion:^(NSString *test){
+        //NSLog(@"Test Dictionary return : %@", test);
+        NSDictionary *props = test;
+        [self.bridge.eventDispatcher sendAppEventWithName:@"onHubConnected" body:@{
+                                                                                   @"currentData":props
+                                                                                   }];
+    }];*/
+    
+    RCTOkkamiMain *helloWorld = [RCTOkkamiMain newInstance];
+    //[helloWorld preConnect];
+    //[helloWorld connectToRoom];
+    //[helloWorld postToken];
+    
+    //RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:self.bridge moduleName:@"ImageBrowserApp" initialProperties:[helloWorld setupRx]];
+    //NSString *test = [helloWorld setupRx];
+//    if (test) {
+//        resolve(test);
+//    } else {
+//        //reject(test);
+//    }
+    
 }
 
 
@@ -237,7 +266,7 @@ RCT_EXPORT_METHOD(isHubLoggedIn
                   :(RCTPromiseRejectBlock)reject)
 {
     
-    [self.bridge.eventDispatcher sendAppEventWithName:@"onHubLoggedIn" body:nil];
+    [self.bridge.eventDispatcher sendAppEventWithName:@"onHubLoggedIn" body:@{@"command": @"Hub Logged In"}];
     //ok
     resolve(@YES);
     
