@@ -18,8 +18,8 @@ export default StyleSheet.create({
     backgroundColor: Colors.windowTint
   },
   formOver: {
-    paddingTop: 50,
-    paddingBottom: 50,
+    paddingTop: 10,
+    paddingBottom: 10,
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'center'
@@ -87,6 +87,16 @@ export default StyleSheet.create({
   selectTextStyle:{
     fontWeight: 'bold',
     fontSize: Fonts.size.medium,
-  }
+  },
+  indicatorView: {
+    marginTop: -50,
+    width: width,
+    height: height,
+    position: "absolute",
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // backgroundColor: Colors.windowTint
+  },
 
 })

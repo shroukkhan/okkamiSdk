@@ -32,6 +32,8 @@ import RoomControlsScreen from '../Containers/RoomControlsScreen'
 import UploadPictureScreen from '../Containers/UploadPictureScreen'
 import OpenWebView from '../Containers/OpenWebView'
 import LandingScreen from '../Containers/LandingScreen'
+import FacebookLoginScreen from '../Containers/FacebookLoginScreen'
+import EditProfileScreen from '../Containers/EditProfileScreen'
 
 
 /* **************************
@@ -69,6 +71,8 @@ class NavigationRouter extends Component {
             <Scene key="uploadPictureScreen" component={UploadPictureScreen} title='Upload Picutre'/>
             <Scene key="openWebView" component={OpenWebView} title='Web'/>
             <Scene key="landingScreen" component={LandingScreen} title='Landing Screen'/>
+            <Scene key="facebookLoginScreen" component={FacebookLoginScreen} title='Facebook'/>
+            <Scene key="editProfileScreen" component={EditProfileScreen} title='Edit Profile'/>
 
           </Scene>
         </Scene>

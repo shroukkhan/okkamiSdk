@@ -44,7 +44,11 @@ class SocialConnectionScreen extends React.Component {
   }
 
   handlePressSignIn = () => {
-    NavigationActions.socialConnectionSignInScreen({social: this.state})
+    if(this.state.checkedFacebook){
+      NavigationActions.facebookLoginScreen({facebookAction: "signup"})
+    }else{
+      NavigationActions.socialConnectionSignInScreen({social: this.state})
+    }
   }
 
   render() {
@@ -110,9 +114,7 @@ class SocialConnectionScreen extends React.Component {
 
           </View>
         </ScrollView>
-        
       </View>
-        
     )
   }
 
@@ -134,7 +136,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    // attemptLogin: (username, password) => dispatch()
+
   }
 }
 

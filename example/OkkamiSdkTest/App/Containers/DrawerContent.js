@@ -1,19 +1,34 @@
 // @flow
 
-import React, { Component } from 'react'
+import React, { Component, PropTypes } from 'react'
 import { ScrollView, Image, BackAndroid, View, Text, ListView,TouchableOpacity,TouchableHighlight } from 'react-native'
 import Styles from './Styles/DrawerContentStyle'
 import { Images, Colors, Metrics } from '../Themes'
 import DrawerButton from '../Components/DrawerButton'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import { connect } from 'react-redux'
 import Panel from '../Components/Panel';
+import UserConnectActions, { isLoggedIn } from '../Redux/UserConnectRedux'
+import FacebookLoginActions from '../Redux/FacebookLoginRedux'
+import Img from './Styles/Images'
+import {FBLoginManager} from 'react-native-facebook-login'
 
 
 class DrawerContent extends Component {
 
   constructor(props) {
     super(props)
+    this.state = {
+      login: "llllllll",
+      first_name: "Fingi",
+      last_name: "Test",
+      userImage: Img.avatar,
+    }
+  }
+
+  componentWillMount () {
+
   }
 
   componentDidMount () {
@@ -27,6 +42,7 @@ class DrawerContent extends Component {
   }
 
   toggleDrawer () {
+    this.setState({login:"oooooooo"})
     this.context.drawer.toggle()
   }
 
@@ -52,7 +68,6 @@ class DrawerContent extends Component {
 
   handleWebview(url){
     this.toggleDrawer()
-    // NavigationActions.webview({url: 'http://www.kapook.com'})
     NavigationActions.openWebView({url:url})
   }
 
@@ -91,15 +106,57 @@ class DrawerContent extends Component {
     NavigationActions.presentationScreen()
   }
 
+  handleFacebookLogin= () => {
+    this.toggleDrawer()
+    NavigationActions.facebookLoginScreen()
+  }
+
+  handlePressLogout = () => {
+    this.props.logout()
+    this.props.logoutStateFb()
+    this.logoutFacebook()
+    this.toggleDrawer()
+    NavigationActions.promotionScreen({type: "reset"})
+  }
+
+  handleEditProfile = () => {
+    this.toggleDrawer()
+    NavigationActions.editProfileScreen()
+  }
+
+  _renderButtonLogout = () => {
+    if(this.props.loggedIn){
+      return (
+        <Panel title="Logout" child="false" onPress={this.handlePressLogout}>
+          <View></View>
+        </Panel>
+      );
+    }else{
+      return null;
+    }
+  }
+
+  logoutFacebook = () => {
+    FBLoginManager.logout(function(error, data){
+      if (!error) {
+        // _this.props.onLogout && _this.props.onLogout();
+        console.log(data)
+      } else {
+        console.log(error, data);
+      }
+    });
+  }
+
   render () {
+    const { loggedIn, first_name, last_name } = this.props
     return (
-  <View style={Styles.container}>
+      <View style={Styles.container}>
 
         <View style={Styles.header}>
           <View style={Styles.headerLeft}>
             <Image
               // source={{uri:'https://s3.amazonaws.com/fingi/assets/thumbnail_guest_avatar-2f5072fba40190f1114c2dd37f3bb907.png'}}
-              source={require('../Images/avatar.png')}
+              source={this.state.userImage}
               style={Styles.avatar}
             />
           </View>
@@ -114,12 +171,12 @@ class DrawerContent extends Component {
                 <Icon name='gear'
                       size={Metrics.icons.medium}
                       color={Colors.snow}
-                      onPress={this.handleRoomControlsScreen}
+                      onPress={this.handleEditProfile}
                 />
               </View>
             </View>
             <View style={Styles.headerRightTextButtom}>
-              <Text style={Styles.headerRightTextRoom}>RM 100 | Okkami Test</Text>
+              <Text style={Styles.headerRightTextRoom}>RM 100 | {first_name} {last_name}</Text>
             </View>
 
           </View>
@@ -172,9 +229,14 @@ class DrawerContent extends Component {
             <Panel title="Check Out" child="false" onPress={this.handlePressLobby}>
               <View></View>
             </Panel>
-            <Panel title="Languages" child="false" onPress={this.handlePressLobby}>
+            <Panel title="Languages" child="false" onPress={this.handlePressLogin}>
               <View></View>
             </Panel>
+            {/* <Panel title="Facebook Login" child="false" onPress={this.handleFacebookLogin}>
+              <View></View>
+            </Panel> */}
+
+            {this._renderButtonLogout()}
 
           </ScrollView>
         </View>
@@ -184,8 +246,37 @@ class DrawerContent extends Component {
 
 }
 
+
+DrawerContent.propTypes = {
+  loggedIn: PropTypes.bool,
+  logout: PropTypes.func,
+  first_name: PropTypes.string,
+  last_name: PropTypes.string,
+  logoutStateFb: PropTypes.func,
+}
+
+const mapStateToProps = (state) => {
+
+  let first_name = (state.userConnect.userData != null)?state.userConnect.userData.first_name:"Guest"
+  let last_name = (state.userConnect.userData != null)?state.userConnect.userData.last_name:""
+  return {
+    loggedIn: isLoggedIn(state.userConnect.userData),
+    first_name: first_name,
+    last_name: last_name,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    logout: () => dispatch(UserConnectActions.logout()),
+    logoutStateFb: () => dispatch(FacebookLoginActions.logout()),
+  }
+}
+
+
 DrawerContent.contextTypes = {
   drawer: React.PropTypes.object
 }
 
-export default DrawerContent
+// export default DrawerContent
+export default connect(mapStateToProps, mapDispatchToProps)(DrawerContent)

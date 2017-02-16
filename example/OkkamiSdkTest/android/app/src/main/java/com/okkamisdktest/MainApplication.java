@@ -15,6 +15,7 @@ import com.facebook.react.shell.MainReactPackage;
 import com.okkami.okkamisdk.OkkamiSdkPackage;
 import com.brentvatne.react.ReactVideoPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
+import com.magus.fblogin.FacebookLoginPackage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +39,8 @@ public class MainApplication extends Application implements ReactApplication {
             new ReactNativeConfigPackage(),
             new OkkamiSdkPackage(),
             new ReactVideoPackage(),
-            new LinearGradientPackage()
+            new LinearGradientPackage(),
+            new FacebookLoginPackage()
       );
     }
   };

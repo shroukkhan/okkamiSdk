@@ -43,12 +43,11 @@ class LandingScreen extends React.Component {
       interval: null,
       position: 0,
       listViewData: [
-        ['CONNECT TO MY HOTEL',true,true,"text",""],
-        ['TOURS & ACTIVITIES',true,false,"text","Detail Tours & activities"],
-        ['TRAVEL RESOURCES',true,false,"text","Detail Travel resources"],
-        ['ESSENTIAL TRAVEL APPS',true,false,"text","Detail essential travel"],
-        ['MY REWARDS',true,false,"text","Detail my rewards"],
-        
+        ['CONNECT TO MY HOTEL',true,true,"text","","signUpScreen"],
+        ['TOURS & ACTIVITIES',true,false,"text","Detail Tours & activities","signInScreen"],
+        ['TRAVEL RESOURCES',true,false,"text","Detail Travel resources",""],
+        ['ESSENTIAL TRAVEL APPS',true,false,"text","Detail essential travel",""],
+        ['MY REWARDS',true,false,"text","Detail my rewards",""],
       ]
     }
   }
@@ -71,7 +70,7 @@ class LandingScreen extends React.Component {
   }
 
   handlePressItem = () => {
-    NavigationActions.signUpScreen()
+    // NavigationActions.apiScreen()
   }
 
   render() {
@@ -91,15 +90,13 @@ class LandingScreen extends React.Component {
               )
             })}
           </Swiper>
-          <ScrollView style={Styles.container} >        
+          <ScrollView style={Styles.container} >
             {/* Swipe listview */}
             <View style={Styles.bodyView} >
             {
             <SwipeListView
               dataSource={this.ds.cloneWithRows(this.state.listViewData)}
               renderRow={ (data, secId, rowId, rowMap) => (
-
-              
 
               <SwipeRow
                 disableRightSwipe={data[1]}

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">OkkamiSdkTest</string>
+    <string name="fb_app_id">1879613675591009</string>
+    <string name="fb_login_protocol_scheme">fb1879613675591009</string>
 </resources>

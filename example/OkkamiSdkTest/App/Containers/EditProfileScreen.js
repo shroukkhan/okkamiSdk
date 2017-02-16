@@ -19,43 +19,42 @@ import {Actions as NavigationActions} from 'react-native-router-flux'
 import ModalPicker from '../Components/Picker'
 import ApiUserConn from '../Services/ApiUserConn'
 import UserConnectActions, { isAppToken, isLoggedIn } from '../Redux/UserConnectRedux'
-import FacebookLoginActions from '../Redux/FacebookLoginRedux'
 import FJSON from 'format-json'
-import {FBLoginManager} from 'react-native-facebook-login'
 
 
 // I18n
 import I18n from 'react-native-i18n'
 
-class SignUpScreen extends React.Component {
+class EditProfileScreen extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
       selectLanguage: '',
-      first_name: 'yo',
-      last_name: 'fingi',
-      email: 'yo@fingi.com',
-      password: '12345678',
-      password_confirmation: '12345678',
-      phone: '0877777777',
+      first_name: "",
+      last_name: '',
+      email: '',
+      password: '',
+      password_confirmation: '',
+      phone: '',
       avatar: '',
-      country: 'Thailand',
-      state: 'thai',
-      city: 'bangkok',
+      country: '',
+      state: '',
+      city: '',
       response: '',
       wait: false,
       appToken:null,
       userToken:null,
     }
+    // this.getAppToken()
   }
 
   componentWillReceiveProps (newProps) {
+
   }
 
   componentWillMount () {
-    this.logoutFacebook()
-
+    this.setEditProfile()
     if(!this.props.appTokenStatus){
       this.getAppToken()
     }else{
@@ -64,8 +63,27 @@ class SignUpScreen extends React.Component {
   }
 
   componentWillUnmount () {
-
   }
+
+  setEditProfile = () => {
+    const { userProfile } = this.props
+    if(userProfile != null){
+      this.setState({
+        selectLanguage: userProfile.language,
+        first_name: userProfile.first_name,
+        last_name: userProfile.last_name,
+        email: userProfile.email,
+        password: '',
+        password_confirmation: '',
+        phone: userProfile.phone,
+        avatar: userProfile.avatar,
+        country: userProfile.country,
+        state: userProfile.state,
+        city: userProfile.city,
+      })
+    }
+  }
+
 
   getAppToken = () => {
     let obj = {}
@@ -76,6 +94,7 @@ class SignUpScreen extends React.Component {
         this.props.attemptAppToken(res.data)
       }
     })
+
   }
 
   createUser = () => {
@@ -96,7 +115,6 @@ class SignUpScreen extends React.Component {
         }
       }
     }
-
     this.api = ApiUserConn.appCreateUser(obj)
     this.api['getCreateUser'].apply(this, ['']).then((res)=>{
       this.setState({wait: false}) //Close wait
@@ -108,21 +126,17 @@ class SignUpScreen extends React.Component {
           window.alert(FJSON.plain(res.data))
           NavigationActions.landingScreen({type: "reset"});
         }else{
-          this.logoutFacebook()
-          this.props.logoutStateFb()
           window.alert(FJSON.plain(res.data.error))
         }
       }else{
-        this.logoutFacebook()
-        this.props.logoutStateFb()
         window.alert(FJSON.plain(res))
       }
     })
   }
 
-  handlePressLogin = () => {
+  handlePressSave = () => {
     this.setState({wait: true})
-    this.createUser()
+    //TODO Upate user
   }
 
   handleChangeFirstname = (text) => {
@@ -167,6 +181,7 @@ class SignUpScreen extends React.Component {
 
   _renderWait = () => {
     if(this.state.wait){
+      console.log('Render wait')
       return (
         <View style={Styles.indicatorView}>
           <ActivityIndicator
@@ -180,17 +195,6 @@ class SignUpScreen extends React.Component {
     }else{
       return null
     }
-  }
-
-  logoutFacebook = () => {
-    FBLoginManager.logout(function(error, data){
-      if (!error) {
-        // _this.props.onLogout && _this.props.onLogout();
-        console.log(data)
-      } else {
-        console.log(error, data);
-      }
-    });
   }
 
   render() {
@@ -216,15 +220,15 @@ class SignUpScreen extends React.Component {
         { key: 'ru', label: 'Russian' },
     ];
 
+    var lookupLanguage = {}
+    for (var i=0, len = data.length; i < len; i++) {
+      lookupLanguage[data[i].key] = data[i].label
+    }
     const { appTokenStatus, loggedIn, appToken } = this.props
 
-    if(loggedIn){
-      console.log('User login')
-    }else{
-      console.log('User not login [' + appToken +']')
-    }
-
     return (
+
+
       <View style={Styles.mainContainer}>
         <Image source={Img.backgroundOkkami} style={Styles.backgroundImage} />
 
@@ -323,17 +327,22 @@ class SignUpScreen extends React.Component {
                 sectionTextStyle={Styles.sectionTextStyle}
                 selectStyle={{height:100}}
                 data={data}
-                initValue="Prefer Languages"
-                onChange={(lang) => this.setState({selectLanguage: lang.key})} />
+                initValue={lookupLanguage[this.state.selectLanguage]}
+                onChange={(lang) => this.setState({selectLanguage: lang.key})}
+            >
+            {/* <View>
+                 <Text>{this.state.selectLanguage === '' ? 'Prefer Languages' : this.state.selectLanguageLabel}</Text>
+            </View> */}
+            </ModalPicker>
 
-            <TouchableOpacity style={Styles.buttonSnow} onPress={NavigationActions.socialConnectionScreen}>
+            {/* <TouchableOpacity style={Styles.buttonSnow} onPress={NavigationActions.socialConnectionScreen}>
               <Text style={Styles.buttonTextSnow}>Social Connection</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity style={Styles.buttonSnow} onPress={NavigationActions.uploadPictureScreen}>
               <Text style={Styles.buttonTextSnow}>Avatar/Picture</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={Styles.buttonCreate} onPress={this.handlePressLogin}>
-              <Text style={Styles.buttonText}>Create</Text>
+            <TouchableOpacity style={Styles.buttonCreate} onPress={this.handlePressSave}>
+              <Text style={Styles.buttonText}>Save</Text>
             </TouchableOpacity>
 
           </View>
@@ -348,14 +357,14 @@ class SignUpScreen extends React.Component {
 
 }
 
-SignUpScreen.propTypes = {
+EditProfileScreen.propTypes = {
   appTokenStatus: PropTypes.bool,
   loggedIn: PropTypes.bool,
   appToken: PropTypes.string,
-  logoutStateFb: PropTypes.func,
+  userProfile: PropTypes.object
 }
 
-SignUpScreen.defaultProps = {
+EditProfileScreen.defaultProps = {
 
 }
 
@@ -364,17 +373,17 @@ const mapStateToProps = state => {
   return {
     appTokenStatus: isAppToken(state.userConnect),
     loggedIn: isLoggedIn(state.userConnect.userData),
-    appToken: appToken
+    appToken: appToken,
+    userProfile: state.userConnect.userData
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
     logout: () => dispatch(UserConnectActions.logout()),
-    logoutStateFb: () => dispatch(FacebookLoginActions.logout()),
     attemptUpdateUserData: (userData) => dispatch(UserConnectActions.userConnectUserData(userData)),
     attemptAppToken: (appToken) => dispatch(UserConnectActions.userConnectRequest(appToken))
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SignUpScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(EditProfileScreen)

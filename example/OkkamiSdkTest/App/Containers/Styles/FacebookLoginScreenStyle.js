@@ -120,13 +120,5 @@ export default StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.windowTint
   },
-  buttonFacebook: {
-    width: inputWidth,
-    height: 40,
-    borderRadius: 5,
-    marginTop:10,
-    backgroundColor: "#4267B2",
-    justifyContent: 'center'
-  },
 
 })

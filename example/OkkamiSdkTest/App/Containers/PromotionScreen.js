@@ -11,6 +11,8 @@ import Styles from './Styles/PromotionScreenStyle'
 import {Images, Metrics} from '../Themes'
 import {Actions as NavigationActions} from 'react-native-router-flux'
 import Swiper from 'react-native-swiper'
+import { isAppToken, isLoggedIn } from '../Redux/UserConnectRedux'
+import {FBLoginManager} from 'react-native-facebook-login'
 
 // I18n
 import I18n from 'react-native-i18n'
@@ -23,6 +25,24 @@ class PromotionScreen extends React.Component {
       items: []
     }
   }
+
+  componentWillMount () {
+    const {loggedIn } = this.props
+    let _this = this
+    if(loggedIn){
+      NavigationActions.landingScreen({type: "reset"});
+    }else{
+    //   FBLoginManager.logout(function(error, data){
+    //     if (!error) {
+    //       // _this.props.onLogout && _this.props.onLogout();
+    //       console.log(data)
+    //     } else {
+    //       console.log(error, data);
+    //     }
+    //   });
+    }
+  }
+
 
   componentDidMount () {
     this.setState({
@@ -58,18 +78,23 @@ class PromotionScreen extends React.Component {
             <TouchableOpacity style={Styles.button} onPress={NavigationActions.signInScreen}>
               <Text style={Styles.buttonText}>Sign In</Text>
             </TouchableOpacity>
-        </View> 
-      </View> 
-     
+        </View>
+      </View>
+
     )
   }
 
 }
 
 
+PromotionScreen.propTypes = {
+  loggedIn: PropTypes.bool,
+  onLogout: PropTypes.func,
+}
+
 const mapStateToProps = (state) => {
   return {
-
+    loggedIn: isLoggedIn(state.userConnect.userData)
   }
 }
 

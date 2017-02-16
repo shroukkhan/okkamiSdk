@@ -16,6 +16,7 @@ import Img from './Styles/Images'
 import {Images, Metrics} from '../Themes'
 import {Actions as NavigationActions} from 'react-native-router-flux'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 
 
 // I18n
@@ -48,7 +49,6 @@ class SocialConnectionSignInScreen extends React.Component {
 
   componentWillUnmount() {
    clearTimeout(this._timer);
-   console.log('unmount')
   }
 
   componentDidMount() {
@@ -56,7 +56,6 @@ class SocialConnectionSignInScreen extends React.Component {
     this._timer = setTimeout(() => {
       this.setState({animating: false});
     }, 100);
-    console.log('didmount')
   }
 
   clearToggleTimeout(){
@@ -73,10 +72,6 @@ class SocialConnectionSignInScreen extends React.Component {
      this.setState({animating: true});
     }, 100);
     this.clearToggleTimeout()
-  }
-
-  checkTimeout(){
-    console.log(this._timer)
   }
 
   toggleRenderCheck(){
@@ -100,10 +95,7 @@ class SocialConnectionSignInScreen extends React.Component {
     }
   }
 
-
   render() {
-    
-    console.log('checkfacebook:' + this.state.checkedFacebook)
 
     let image = Img.avatar
     if(this.state.checkedFacebook) {
@@ -145,6 +137,8 @@ class SocialConnectionSignInScreen extends React.Component {
             {/* <TouchableOpacity style={Styles.buttonFire} onPress={this.toggleRenderCheck.bind(this)}>
               <Text style={Styles.buttonText}>Test check</Text>
             </TouchableOpacity> */}
+
+            <KeyboardSpacer/>
 
           </View>
 
