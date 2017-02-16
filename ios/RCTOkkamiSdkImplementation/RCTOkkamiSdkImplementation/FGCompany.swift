@@ -13,7 +13,7 @@ import RealmSwift
 
 class FGCompany: FGEntity {
  
-    convenience required init(identifier: NSNumber) {
+    convenience required init(identifier: NSString) {
         self.init()
         self.identifier = identifier
     }
@@ -21,7 +21,7 @@ class FGCompany: FGEntity {
     convenience required init(dictionary: Dictionary<String, AnyObject>) {
         self.init()
         self.name = dictionary["name"] as! NSString
-        self.identifier = dictionary["id"] as! NSNumber
+        self.identifier = dictionary["id"] as! NSString
     }
     
     /*public override func loadFromRealm() -> FGCompany{

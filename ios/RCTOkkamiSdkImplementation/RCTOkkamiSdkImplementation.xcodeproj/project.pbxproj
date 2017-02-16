@@ -43,6 +43,8 @@
 		FAC9F8DF1E14EC5800EEFC1B /* RCTOkkamiSdkImplementation.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC9F8D11E14EC5700EEFC1B /* RCTOkkamiSdkImplementation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FAC9F8E91E14EC9800EEFC1B /* RCTOkkamiMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F8E81E14EC9800EEFC1B /* RCTOkkamiMain.swift */; };
 		FAE75E921E53F98900FABD51 /* WSResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE75E911E53F98900FABD51 /* WSResponse.swift */; };
+		FAE75E941E540B8A00FABD51 /* DisconnectRoomResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE75E931E540B8A00FABD51 /* DisconnectRoomResponse.swift */; };
+		FAE75E971E546C1100FABD51 /* PresetResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE75E961E546C1100FABD51 /* PresetResponse.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -101,6 +103,8 @@
 		FAC9F8DE1E14EC5800EEFC1B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FAC9F8E81E14EC9800EEFC1B /* RCTOkkamiMain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RCTOkkamiMain.swift; sourceTree = "<group>"; };
 		FAE75E911E53F98900FABD51 /* WSResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WSResponse.swift; sourceTree = "<group>"; };
+		FAE75E931E540B8A00FABD51 /* DisconnectRoomResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisconnectRoomResponse.swift; sourceTree = "<group>"; };
+		FAE75E961E546C1100FABD51 /* PresetResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresetResponse.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -149,7 +153,9 @@
 			children = (
 				FA0163D01E531898002345F1 /* ConnectRoomResponse.swift */,
 				FA0163FA1E531B52002345F1 /* PreconnectResponse.swift */,
+				FAE75E931E540B8A00FABD51 /* DisconnectRoomResponse.swift */,
 				FAE75E911E53F98900FABD51 /* WSResponse.swift */,
+				FAE75E961E546C1100FABD51 /* PresetResponse.swift */,
 			);
 			name = RealmResponse;
 			sourceTree = "<group>";
@@ -525,6 +531,7 @@
 				FA1EEC891E4C208F00DDD118 /* FGRoom.swift in Sources */,
 				FA1EEC911E4C2D2F00DDD118 /* FGBrand.swift in Sources */,
 				FA1C0D791E488B0D00304CEB /* FGHTTPNewEndPoint.swift in Sources */,
+				FAE75E971E546C1100FABD51 /* PresetResponse.swift in Sources */,
 				FABAD0D31E45810E006ED98E /* FGHTTP.swift in Sources */,
 				FABAD0E41E4597F5006ED98E /* FGAuth.swift in Sources */,
 				FA0163CE1E5302D0002345F1 /* FGComponentSubClasses.swift in Sources */,
@@ -535,6 +542,7 @@
 				FA8A70321E44D3B7008304D3 /* FGHTTPEndPoint.swift in Sources */,
 				FA9B675F1E47722700D63FA2 /* FGPublicFunction.swift in Sources */,
 				FAB9C1541E498D9D00A8DCBC /* FGUserProfile.swift in Sources */,
+				FAE75E941E540B8A00FABD51 /* DisconnectRoomResponse.swift in Sources */,
 				FA277E921E52A8FF00B3D2F3 /* FGDeviceSubclasses.swift in Sources */,
 				FA0163D11E531898002345F1 /* ConnectRoomResponse.swift in Sources */,
 				FA277E901E52A84400B3D2F3 /* FGControllableBase.swift in Sources */,

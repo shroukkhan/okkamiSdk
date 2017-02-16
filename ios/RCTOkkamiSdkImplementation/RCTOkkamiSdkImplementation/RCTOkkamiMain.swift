@@ -25,109 +25,67 @@ import Realm
     
     /**------------------------------------------------------------ OLD CORE -------------------------------------------------------------**/
     
-    public func setupRealm(){
-        var setup = FGPublicFunction.newInstance()
-        setup.setupRealm()
-    }
-    
-    public func migration(){
-        var config = Realm.Configuration()
-        
-        // Use the default directory, but replace the filename with the username
-        
-        config = Realm.Configuration(
-            // Set the new schema version. This must be greater than the previously used
-            // version (if you've never set a schema version before, the version is 0).
-            schemaVersion: 1,
-            
-            // Set the block which will be called automatically when opening a Realm with
-            // a schema version lower than the one set above
-            migrationBlock: { migration, oldSchemaVersion in
-                // We haven’t migrated anything yet, so oldSchemaVersion == 0
-                if (oldSchemaVersion < 1) {
-                    // Nothing to do!
-                    // Realm will automatically detect new properties and removed properties
-                    // And will update the schema on disk automatically
-                }
-        })
-        
-        // Set this as the configuration used for the default Realm
-        Realm.Configuration.defaultConfiguration = config
-    }
-    
     public func preConnect(){
         
-        /*var config = Realm.Configuration()
-        var schemaVer = try! schemaVersionAtURL(config.fileURL!)
-        // Use the default directory, but replace the filename with the username
-        
-        config = Realm.Configuration(
-            // Set the new schema version. This must be greater than the previously used
-            // version (if you've never set a schema version before, the version is 0).
-            schemaVersion: schemaVer + 1,
-            
-            // Set the block which will be called automatically when opening a Realm with
-            // a schema version lower than the one set above
-            migrationBlock: { migration, oldSchemaVersion in
-                // We haven’t migrated anything yet, so oldSchemaVersion == 0
-                if (oldSchemaVersion < 2) {
-                    // Nothing to do!
-                    // Realm will automatically detect new properties and removed properties
-                    // And will update the schema on disk automatically
-                }
-        })
-        
-        // Set this as the configuration used for the default Realm
-        Realm.Configuration.defaultConfiguration = config*/
-        
         //check preconn save data first
-        /*var realm = try! Realm()
-        var checkPrec = realm.objects(FGPreconnect).count
+        var realm = try! Realm()
+        var checkPrec = realm.objects(PreconnectResponse).count
         if checkPrec > 0 {
             print("No need to preconn")
         }else{
-            
-            //check session from database if not found then create new one
-            var realm = try! Realm()
-            var checkSes = realm.objects(FGSession).count
-            var sessionIns = FGSession()
-            if checkSes > 0 {
-                sessionIns = sessionIns.loadFromRealm()
-            }else{
-                sessionIns.coreURL = "https://api.fingi-staging.com"
-                sessionIns.saveToRealm()
-            }
-            
-            //call preconn using saved UDID
+            //call preconn using device UDID
             var httpIns = FGHTTP()
-            httpIns.postPreconnectAuthWithUID(uid: sessionIns.UDID) { (callback) in
+            httpIns.postPreconnectAuthWithUID(uid: FGSession.sharedInstance.UDID) { (callback) in
                 callback.saveToRealm()
+                print("*** Preconnect Successfully Called ***")
             }
-        }*/
+        }
     }
     
     public func connectToRoom(room: String, token: String){
         
-        /*var httpIns = FGHTTP.newInstance()
-        var preconn = FGPreconnect.init()
-        preconn = preconn.loadFromRealm()
-        httpIns.postConnectToRoom(name: room, tokenRoom: token, uid: preconn.uid as String, preconnect: preconn, property_id: "3") { (callback) in
+        var httpIns = FGHTTP()
+        var preconnResp = PreconnectResponse().loadFromRealm()
+        var preconn = FGPreconnect(preconnResp: preconnResp)
+        httpIns.postConnectToRoom(name: room, tokenRoom: token, uid: preconnResp.uid as String, preconnect: preconn, property_id: "3") { (callback) in
             callback.saveToRealm()
-        }*/
+            print("*** Connected to Room ***")
+        }
     }
     
     public func disconnectFromRoom(){
-        /*var httpIns = FGHTTP.newInstance()
+        var httpIns = FGHTTP()
             
         //check room from realm
-        var room = FGRoom.init()
-        room = room.loadFromRealm()
-
-        httpIns.postDisconnectToRoom(room: room) { (callback) in
-            callback.clearFromRealm()
-            print("*** Disconnected From Room ***")
-        }*/
+        var roomResp = ConnectRoomResponse().loadFromRealm()
+        if (roomResp != nil) {
+            var room = FGRoom(connectResp: roomResp!)
+            
+            httpIns.postDisconnectToRoom(room: room) { (callback) in
+                callback.saveToRealm()
+                print("*** Disconnected From Room ***")
+            }
+        }else{
+            
+        }
+    }
+    
+    public func downloadPresets(force : Bool){
         
+        if force {
+            var httpIns = FGHTTP()
+            
+            //take entity from realm
+            var roomResp = ConnectRoomResponse().loadFromRealm()
+            var room = FGRoom(connectResp: roomResp!)
+            
+            httpIns.getPresetToEntity(entity: room) { (callback) in
+                callback.saveToRealm()
+                print("*** Download Entity Presets ***")
+            }
+        }else{
+            //use realm db preset
+        }
     }
     
     /**------------------------------------------------------------ NEW CORE -------------------------------------------------------------**/

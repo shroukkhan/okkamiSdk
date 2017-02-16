@@ -13,50 +13,42 @@ import RealmSwift
 class FGEntity : NSObject{
     
     /** Entity name and id **/
-    private var _identifier:NSNumber = 0
-    var identifier : NSNumber = 0
+    var identifier : NSString = ""
     
-    private var _name:NSString = ""
     var name : NSString = ""
     
     /** Entity auth. **/
-    private var _auth:FGAuth? = nil
     var auth : FGAuth? = nil
     
     /** Entity room. **/
-    private var _room:FGRoom? = nil
     var room : FGRoom? = nil
     
     /** Entity property. **/
-    private var _property:FGProperty? = nil
     var property: FGProperty? = nil
     
     /** Entity brand. **/
-    private var _brand:FGBrand? = nil
     var brand: FGBrand? = nil
     
     /** Entity company. **/
-    private var _company:FGCompany? = nil
     var company: FGCompany? = nil
     
     /** Room login/connect credentials. **/
-    private var _connect:FGConnect? = nil
     var connect : FGConnect? = nil
     
     
     convenience required init(dictionary: Dictionary<String, AnyObject>){
         self.init()
         self.name = dictionary["name"] as! NSString
-        self.identifier = dictionary["id"] as! NSNumber
+        self.identifier = dictionary["id"] as! NSString
     }
     
-    convenience required init(identifier: NSNumber){
+    convenience required init(identifier: NSString){
         self.init()
         self.identifier = identifier
     }
     
     
-    public func connectWithObject() {
+    public func connectWithObject(connect: FGConnect) {
         
     }
     

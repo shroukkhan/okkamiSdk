@@ -11,16 +11,16 @@ import RealmSwift
 import Realm
 
 class FGPreconnect: NSObject, NSCoding {
-    var id = 0
-    var identifier : NSNumber = 0.0
+    
+    var identifier : NSString = ""
     var guest_id : NSString = ""
     var uid : NSString = ""
     var auth : FGAuth?
     
-    convenience required init(_ dictionary: Dictionary<String, AnyObject>) {
+    convenience required init(dictionary: Dictionary<String, AnyObject>) {
         self.init()
         var guestDeviceDict : NSDictionary = dictionary["guest_device"] as! NSDictionary
-        identifier = guestDeviceDict["id"] as! NSNumber
+        identifier = guestDeviceDict["id"] as! NSString
         if ((guestDeviceDict["guest_id"] as? NSString) != nil) {
             guest_id = guestDeviceDict["guest_id"] as! NSString
         }else{
@@ -28,14 +28,22 @@ class FGPreconnect: NSObject, NSCoding {
         }
         uid = guestDeviceDict["uid"] as! NSString
         var authDict : NSDictionary = guestDeviceDict["authentication"] as! NSDictionary
-        auth = FGAuth(token: authDict["auth_token"] as! NSString, secret: authDict["auth_secret"] as! NSString)
+        auth = FGPreconnectAuth(token: authDict["auth_token"] as! NSString, secret: authDict["auth_secret"] as! NSString)
+    }
+    
+    convenience required init(preconnResp : PreconnectResponse) {
+        self.init()
+        self.identifier = preconnResp.identifier
+        self.guest_id = preconnResp.guest_id
+        self.uid = preconnResp.uid
+        self.auth = FGAuth(token: preconnResp.auth!.token, secret: preconnResp.auth!.secret)
     }
     
     
     convenience required init?(coder aDecoder: NSCoder) {
         self.init()
         
-        identifier = aDecoder.decodeObject(forKey: "identifier") as! NSNumber
+        identifier = aDecoder.decodeObject(forKey: "identifier") as! NSString
         guest_id = aDecoder.decodeObject(forKey: "guest_id") as! NSString
         uid = aDecoder.decodeObject(forKey: "uid") as! NSString
         

@@ -59,6 +59,10 @@ class HubConnectionDemoIOS extends React.Component {
           console.log('Command --> ',e, e.command)
     });
 
+    aSubscription = DeviceEventEmitter.addListener('downloadPresets', function (e) {
+          console.log('Command --> ',e, e.command)
+    });
+
     subscriptions.push(aSubscription)
   }
 
@@ -171,6 +175,16 @@ class HubConnectionDemoIOS extends React.Component {
     }    
   }
 
+  downloadPresets(){
+    try {
+        var result = OkkamiSdk.downloadPresets("true");
+        console.log("downloadPresets successful..." + result );
+        
+      } catch (e) {
+        console.log("downloadPresets failed . error : " + e.message)
+      }
+
+  }
   /*<RoundedButton onPress={this.preconnect}>
             preconnect
           </RoundedButton>
@@ -205,6 +219,10 @@ class HubConnectionDemoIOS extends React.Component {
 
           <RoundedButton onPress={this.disconnectFromRoom}>
             Disconnect To Room
+          </RoundedButton>
+
+          <RoundedButton onPress={this.downloadPresets}>
+            Download Presets 
           </RoundedButton>
 
         

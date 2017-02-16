@@ -22,17 +22,17 @@ class FGProperty: FGEntity {
         return self.brand
     }
     
-    convenience required init(identifier: NSNumber) {
+    convenience required init(identifier: NSString) {
         self.init()
         self.identifier = identifier
-        self.room = FGRoom(identifier: 0)
+        self.room = FGRoom(identifier: "0")
         self.room?.property = self
     }
     
     convenience required init(dictionary: Dictionary<String, AnyObject>) {
         self.init()
         self.name = dictionary["name"] as! NSString
-        self.identifier = dictionary["id"] as! NSNumber
+        self.identifier = dictionary["id"] as! NSString
     }
     
     /*public override func saveToRealm(){

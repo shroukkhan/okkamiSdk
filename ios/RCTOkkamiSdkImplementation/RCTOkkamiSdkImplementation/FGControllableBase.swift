@@ -29,4 +29,8 @@ class FGControllableBase: NSObject {
         //var sortedResults: NSArray = sortedArrayUsingDescriptors([descriptor])
         return descriptor
     }
+    
+    public func getType()->NSString{
+        return type
+    }
 }

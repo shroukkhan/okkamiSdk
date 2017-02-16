@@ -9,23 +9,60 @@
 import Foundation
 import RealmSwift
 
+
+class Room : Object {
+    
+    dynamic var company_id : NSString = "-1"
+    dynamic var brand_id : NSString = "-1"
+    dynamic var property_id : NSString = "-1"
+    dynamic var room_id : NSString = "-1"
+    dynamic var number : NSString = "-1"
+    dynamic var presetsAsJson : NSString = ""
+    dynamic var groupsAsJson : NSString = ""
+    dynamic var checked_inAsJson : NSString = ""
+    dynamic var devicesAsJson : NSString = ""
+    dynamic var frcdsAsJson : NSString = ""
+    
+    convenience required init (node : Dictionary<String, Any>) {
+        self.init()
+        self.company_id = (node["company_id"] as! NSNumber).stringValue as! NSString
+        self.brand_id = (node["brand_id"] as! NSNumber).stringValue as! NSString
+        self.property_id = (node["property_id"] as! NSNumber).stringValue as! NSString
+        self.room_id = (node["room_id"] as! NSNumber).stringValue as! NSString
+        self.number = node["number"] as! NSString
+        var jsonPresetData: NSData = try! JSONSerialization.data(withJSONObject: node["presets"], options: .prettyPrinted) as NSData
+        self.presetsAsJson = NSString(data: jsonPresetData as Data, encoding: String.Encoding.utf8.rawValue)!
+        var groupString = ((node["groups"] as! NSArray).description) as! NSString
+        self.groupsAsJson = groupString
+        var jsonCheckData: NSData = try! JSONSerialization.data(withJSONObject: node["checked_in"], options: .prettyPrinted) as NSData
+        self.checked_inAsJson = NSString(data: jsonCheckData as Data, encoding: String.Encoding.utf8.rawValue)!
+        var devicesString = ((node["devices"] as! NSArray).description) as! NSString
+        var frcdString = ((node["frcds"] as! NSArray).description) as! NSString
+        self.devicesAsJson = devicesString
+        self.frcdsAsJson = frcdString
+    }
+}
+
 class ConnectRoomResponse: Object {
     
     dynamic var id = 0
-    dynamic private var auth : Authentication? = nil
-    dynamic private var room : Room? = nil
-
+    dynamic var auth : Authentication? = nil
+    dynamic var room : Room? = nil
+    dynamic var roomName : NSString = ""
+    dynamic var roomToken : NSString = ""
     
     override class func primaryKey() -> String? {
         return "id"
     }
     
-    convenience required init(dictionary: Dictionary<String, AnyObject>) {
+    convenience required init(dictionary: Dictionary<String, AnyObject>, name: NSString, token: NSString ) {
         self.init()
-        var auth : Authentication = Authentication(node: dictionary)
-        var room : Room = Room(node: dictionary)
+        var auth : Authentication = Authentication(node: dictionary["authentication"] as! Dictionary<String, Any>)
+        var room : Room = Room(node: dictionary["room"] as! Dictionary<String, Any>)
         self.auth = auth
         self.room = room
+        self.roomName = name
+        self.roomToken = token
     }
     
     public func saveToRealm(){
@@ -33,7 +70,8 @@ class ConnectRoomResponse: Object {
         newData.id = 0
         newData.auth = auth
         newData.room = room
-
+        newData.roomToken = roomToken
+        newData.roomName = roomName
         // Insert from NSData containing JSON
         var realm = try! Realm()
         
@@ -48,56 +86,14 @@ class ConnectRoomResponse: Object {
         }
     }
     
-    public func loadFromRealm() -> ConnectRoomResponse{
+    public func loadFromRealm() -> ConnectRoomResponse?{
         var realm = try! Realm()
         let preconnect = realm.object(ofType: ConnectRoomResponse.self, forPrimaryKey: 0)
         print("*** Load Room Response From Database ***")
-        return preconnect!
+        return preconnect
     }
     
     public func clearFromRealm(){
         
     }
-    
-    private class Authentication : Object{
-        
-        dynamic var token : NSString = ""
-        dynamic var secret : NSString = ""
-        
-        convenience init(node : Dictionary<String, Any>) {
-            self.init()
-            self.token = node["token"] as! NSString
-            self.secret = node["secret"] as! NSString
-        }
-    }
-    
-    private class Room : Object {
-    
-        dynamic var company_id : NSString = "-1"
-        dynamic var brand_id : NSString = "-1"
-        dynamic var property_id : NSString = "-1"
-        dynamic var room_id : NSString = "-1"
-        dynamic var number : NSString = "-1"
-        dynamic var presetsAsJson : NSString = ""
-        dynamic var groupsAsJson : NSString = ""
-        dynamic var checked_inAsJson : NSString = ""
-        dynamic var devicesAsJson : NSString = ""
-        dynamic var frcdsAsJson : NSString = ""
-        
-        convenience required init (node : Dictionary<String, Any>) {
-            self.init()
-            self.company_id = node["company_id"] as! NSString
-            self.brand_id = node["brand_id"] as! NSString
-            self.property_id = node["property_id"] as! NSString
-            self.room_id = node["room_id"] as! NSString
-            self.number = node["number"] as! NSString
-            self.presetsAsJson = node["presets"] as! NSString
-            self.groupsAsJson = node["groups"] as! NSString
-            self.checked_inAsJson = node["checked_in"] as! NSString
-            self.devicesAsJson = node["devices"] as! NSString
-            self.frcdsAsJson = node["frcds"] as! NSString
-        }
-    }
-    
-
 }

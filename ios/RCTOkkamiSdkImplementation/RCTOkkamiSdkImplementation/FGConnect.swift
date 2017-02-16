@@ -14,9 +14,9 @@ import Realm
 class FGConnect: NSObject, NSCoding {
     var name : NSString = ""
     var tokenRoom : NSString = ""
-    var room_id : NSNumber = 0
+    var room_id : NSString = ""
     
-    convenience required init(nameRoom: NSString, roomToken : NSString, rooms_id : NSNumber) {
+    convenience required init(nameRoom: NSString, roomToken : NSString, rooms_id : NSString) {
         self.init()
         name = nameRoom
         tokenRoom = roomToken

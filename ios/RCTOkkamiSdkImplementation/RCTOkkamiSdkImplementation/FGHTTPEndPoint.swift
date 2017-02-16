@@ -33,13 +33,13 @@ public enum API {
     case postPreconnectWithUID(String)
     case postAPNSToken(String, String)
     case postConnectToRoomWithEntity(String, String, String, String, String)
-    case postDisconnectToRoom(String, String, String, NSNumber, String)
+    case postDisconnectToRoom(String, String, String, NSString, String)
     case postUsingAuth(String, String, String)
     case postPreset(Dictionary<String, String>)
     case postMarkMessageAsRead(String, String)
     case getRoomInfo
     case getDeviceRoomsWithCallback(String)
-    case getPresetsOfEntity(String, String)
+    case getPresetsOfEntity(String, Dictionary<String, Any>)
     case getGuestServicesOfEntity(String, String, String, String, String)
     case getParanetGuestOfDeviceWithAuth
     case getFolioOfRoom
@@ -100,11 +100,33 @@ extension API: TargetType {
             return "/v1/device/room_info"
         case .getDeviceRoomsWithCallback(let udid):
             return "/v1/devices/\(udid.urlEscaped)/rooms"
-        case .getPresetsOfEntity(let path, let udid):
-            if path == "v1" {
+        case .getPresetsOfEntity(let udid, let item):
+            /*if path == "v1" {
                 return "/v1/presets?uid=\(udid.urlEscaped)"
             }else{
                 return "/v3/presets"
+            }*/
+            /*if entity.isKind(of: FGRoom.self) {
+                return "/v1/presets?uid=\(udid.urlEscaped)"
+            }else{
+                if entity.property != nil {
+                    return ""
+                }else if entity.brand != nil{
+                    return ""
+                }else{
+                    return ""
+                }
+            }*/
+            if item["room_id"] != nil {
+                return "/v1/presets?uid=\(udid.urlEscaped)"
+            }else{
+                if item["property_id"] != nil {
+                    return "/v3/companies/\(item["company_id"])/brands/\(item["brand_id"])/properties/\(item["property_id"])/presets"
+                }else if item["brand_id"] != nil{
+                    return "/v3/companies/\(item["company_id"])/brands/\(item["brand_id"])/presets"
+                }else{
+                    return "/v3/companies/\(item["company_id"])/presets"
+                }
             }
         case .getGuestServicesOfEntity(let lang, let long, let country, let state_province, let city):
             return "/v3/guest_services?lat=\(lang.urlEscaped)&lng=\(long.urlEscaped)&country=\(country.urlEscaped)&state_province=\(state_province.urlEscaped)&city=\(city.urlEscaped)"

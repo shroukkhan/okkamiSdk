@@ -22,14 +22,14 @@ class FGRoom: FGEntity {
     var lastName : NSString? = nil
     
     /** FGDeviceGroup objects representing ALL groups in the room, sorted by name in ascending order. */
-    var allGroups : Array<FGEntity>? = nil
+    var allGroups : Array<FGDeviceGroup>? = nil
     
     /** FGDeviceGroup objects representing groups that has guest's phone uid,
      sorted by name in ascending order. There could be more than one group. */
-    var guestDeviceGroups : Array<FGEntity>? = nil
+    var guestDeviceGroups : Array<FGDeviceGroup>? = nil
     
     /** FGDevice objects, sorted by uid in ascending order. */
-    var allDevices : Array<FGEntity>? = nil
+    var allDevices : Array<FGDevice>? = nil
     
     /** parent entity. */
     var parent : FGEntity?{
@@ -54,15 +54,26 @@ class FGRoom: FGEntity {
         return self.property
     }
     
+    public func convertToDictionary(text: String) -> [String: Any]? {
+        if let data = text.data(using: .utf8) {
+            do {
+                return try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        return nil
+    }
+    
     public func mergeWithDictionary(dict : Dictionary<String, Any>){
-        self.identifier = dict["room_id"] as! NSNumber
+        self.identifier = dict["room_id"] as! NSString
         self.number = dict["number"] as! NSString
-        var checkedIn = dict["checked_in"] as! Dictionary<String,Any>
-        self.reservationName = checkedIn["reservation_name"] as! NSString
-        self.lastName = checkedIn["last_name"] as! NSString
+        var checkedIn = convertToDictionary(text: dict["checked_in"] as! String)
+        self.reservationName = checkedIn!["reservation_name"] as! NSString
+        self.lastName = checkedIn!["last_name"] as! NSString
         var mdDeviceUIDs : Dictionary<String,Any>?
         var allGroupNames : Array<Any>?
-        var g = dict["groups"] as! [Any]
+        //var g = dict["groups"] as! [Any]
     
         //read group and its component UIDs
         /*for (key, devices) in g{
@@ -75,8 +86,8 @@ class FGRoom: FGEntity {
         }*/
         
         //create FGGroup and FGDevice
-        var mGroups : Array<Any>?
-        var mDevices: Array<Any>?
+        //var mGroups : Array<Any>?
+        //var mDevices: Array<Any>?
         
         /*
         var devices = dict["devices"] as! Dictionary<String,Any>
@@ -86,8 +97,27 @@ class FGRoom: FGEntity {
         
     }
     
-    
-    convenience required init(identifier: NSNumber) {
+    convenience required init(connectResp: ConnectRoomResponse) {
+        self.init()
+        var dict : [String:Any] = [
+        "company_id":connectResp.room?.company_id,
+        "brand_id":connectResp.room?.brand_id,
+        "property_id":connectResp.room?.property_id,
+        "room_id":connectResp.room?.room_id,
+        "number":connectResp.room?.number,
+        "presets":connectResp.room?.presetsAsJson,
+        "groups":connectResp.room?.groupsAsJson,
+        "checked_in":connectResp.room?.checked_inAsJson,
+        "frcds":connectResp.room?.frcdsAsJson
+        ]
+        self.connectWithObject(connect: FGConnect(nameRoom: connectResp.roomName, roomToken: connectResp.roomToken, rooms_id: connectResp.room!.room_id))
+        self.property = FGProperty(identifier: connectResp.room!.property_id)
+        self.brand = FGBrand(identifier: connectResp.room!.brand_id)
+        self.company = FGCompany(identifier: connectResp.room!.company_id)
+        self.auth = FGDeviceAuth(token: connectResp.auth!.token, secret: connectResp.auth!.secret)
+        self.mergeWithDictionary(dict: dict)
+    }
+    convenience required init(identifier: NSString) {
         self.init()
         self.identifier = identifier
     }
@@ -95,7 +125,31 @@ class FGRoom: FGEntity {
     convenience required init(dictionary: Dictionary<String, AnyObject>) {
         self.init()
         self.name = dictionary["name"] as! NSString
-        self.identifier = dictionary["id"] as! NSNumber
+        self.identifier = dictionary["id"] as! NSString
+    }
+    
+    public override func connectWithObject(connect: FGConnect) {
+        self.connect = connect
+        /*
+        // verify
+        if (![connect isKindOfClass:[FGConnect class]]) return;
+        BOOL reachable = [FGReachability isReachableAndShowAlertIfNoWithRetryHandler:^{
+            [weakSelf connectWithObject:connect]; // retry
+            }];
+        if (!reachable) return;
+        if (self.isInConnectedStates) return;
+        
+        // keep track of connect, and add entity line to it
+        connect.line = [FGEntityLine lineFromCompanyId:self.property.brand.company.identifier
+            brandId:self.property.brand.identifier
+            propertyId:self.property.identifier
+            error:nil];
+        self.connect = connect;
+        
+        FGLogInfo(@"*** Connecting to propertyID: %@ with name/code: %@/%@", self.property.identifierString, connect.name, connect.code);
+        
+        [self.connConnect cancel]; // cancel any connection that may exist
+        self.state = FGRoomStateConnecting;*/
     }
     
     /*public override func saveToRealm(){

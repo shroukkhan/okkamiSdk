@@ -18,11 +18,28 @@ import Alamofire
 import Mapper
 import CryptoSwift
 
-class FGHTTP: Object, NSURLConnectionDelegate {
+class FGHTTP: NSObject, NSURLConnectionDelegate {
     
     static let sharedInstance: FGHTTP = { newInstance() }()
     var provider: RxMoyaProvider<API>!
     var providerNew: RxMoyaProvider<APINew>!
+    
+    //Payload
+    public enum Payload{
+        case postPreconnect()
+        case postConnect()
+        case postDisconnect()
+    }
+    //getPayLoad on Progress
+    public func getPayload(param : Payload) -> [String:Any]?{
+        switch param {
+        case .postConnect():
+            return nil
+        default:
+            return nil
+        }
+    }
+
     
     //initializer
     public class func newInstance() -> FGHTTP {
@@ -41,14 +58,13 @@ class FGHTTP: Object, NSURLConnectionDelegate {
         }catch{
             
         }
-        //print("hmac return", hmac)
         return hmac
     }
     
     /**------------------------------------------------------------ OLD CORE -------------------------------------------------------------**/
     
     //POST device UID to get guest device auth token using Preconnect
-    public func postPreconnectAuthWithUID(uid : NSString, completion: @escaping (_ precon : FGPreconnect) -> Void){
+    public func postPreconnectAuthWithUID(uid : NSString, completion: @escaping (_ precon : PreconnectResponse) -> Void){
         
         //Set the policies or certificate
         let policies: [String: ServerTrustPolicy] = [
@@ -60,12 +76,13 @@ class FGHTTP: Object, NSURLConnectionDelegate {
             configuration: URLSessionConfiguration.default,
             serverTrustPolicyManager: ServerTrustPolicyManager(policies: policies)
         )
+
         /**to use dynamic base URL
         setBaseURL(baseUrl: "https://api.fingi.com")
         var newUrl = getBaseURL() as! String
         **/
         
-        var jsonDict : [String:String] = ["uid":uid as String]
+        let jsonDict : [String:String] = ["uid":uid as String]
         var data : Data!
         var totalURL : URL!
         do{
@@ -77,18 +94,18 @@ class FGHTTP: Object, NSURLConnectionDelegate {
         }
         
         var baseURL = totalURL as! NSURL
-        var timestamp = NSDate().timeIntervalSince1970
-        var timestampStr:String = String(format:"%.0f", timestamp)
+        let timestamp = NSDate().timeIntervalSince1970
+        let timestampStr:String = String(format:"%.0f", timestamp)
         var datastring = String(data: data, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))
         datastring = datastring!.replacingOccurrences(of: "\n", with: "")
         datastring = datastring!.replacingOccurrences(of: " ", with: "")
         
         //using company token
-        var token = String("Token token=\"32361e1a5a496e0c\", timestamp=\"\(timestampStr)\"")
+        let token = String("Token token=\"32361e1a5a496e0c\", timestamp=\"\(timestampStr)\"")
         
         //finalString to be hashed later
-        var finalStr = String("\(baseURL.absoluteString!)\(timestampStr)\(datastring!)")!
-        var authSign = authSignatureWithString(data: finalStr, key: "92865cbcd9be8a19d0563006f8b81c73")
+        let finalStr = String("\(baseURL.absoluteString!)\(timestampStr)\(datastring!)")!
+        let authSign = authSignatureWithString(data: finalStr, key: "92865cbcd9be8a19d0563006f8b81c73")
 
         //setting the header
         let endpointClosure = { (target: API) -> Endpoint<API> in
@@ -104,7 +121,7 @@ class FGHTTP: Object, NSURLConnectionDelegate {
                 do{
                     let dict = try response.mapJSON()
                     print(dict)
-                    let preconn : FGPreconnect = FGPreconnect.init(dict as! Dictionary<String, AnyObject>)
+                    let preconn : PreconnectResponse = PreconnectResponse(dictionary: dict as! Dictionary<String, AnyObject>)
                     completion(preconn)
                 }catch {
                     print("Something wrong");
@@ -120,7 +137,7 @@ class FGHTTP: Object, NSURLConnectionDelegate {
     
     
     //POST to connect to a room using guest_device auth and property_id.
-    public func postConnectToRoom(name: String, tokenRoom: String, uid : String, preconnect : FGPreconnect, property_id : String, completion: @escaping (_ entity : FGProperty) -> Void){
+    public func postConnectToRoom(name: String, tokenRoom: String, uid : String, preconnect : FGPreconnect, property_id : String, completion: @escaping (_ connectResp : ConnectRoomResponse) -> Void){
         
         let policies: [String: ServerTrustPolicy] = [
             "api.fingi-staging.com" : .disableEvaluation,
@@ -132,7 +149,7 @@ class FGHTTP: Object, NSURLConnectionDelegate {
             serverTrustPolicyManager: ServerTrustPolicyManager(policies: policies)
         )
         
-        var jsonDict : [String:String] = ["name": name as String, "token": tokenRoom as String, "uid":uid as String, "property_id" : property_id as String, "device_type" : "guest_device", "os" : "ios"]
+        let jsonDict : [String:String] = ["name": name as String, "token": tokenRoom as String, "uid":uid as String, "property_id" : property_id as String, "device_type" : "guest_device", "os" : "ios"]
         var data : Data!
         var totalURL : URL!
         do{
@@ -144,19 +161,19 @@ class FGHTTP: Object, NSURLConnectionDelegate {
         }
         
         var baseURL = totalURL as! NSURL
-        var timestamp = NSDate().timeIntervalSince1970
-        var timestampStr:String = String(format:"%.0f", timestamp)
+        let timestamp = NSDate().timeIntervalSince1970
+        let timestampStr:String = String(format:"%.0f", timestamp)
         var datastring = String(data: data, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))
         datastring = datastring!.replacingOccurrences(of: "\n", with: "")
         datastring = datastring!.replacingOccurrences(of: " ", with: "")
         
         //using preconnect guest_device token
-        var auth = FGAuth(token: preconnect.auth!.token, secret: preconnect.auth!.secret)
-        var token = String("Token token=\"\(auth.token)\", timestamp=\"\(timestampStr)\"")
+        let auth = FGAuth(token: preconnect.auth!.token, secret: preconnect.auth!.secret)
+        let token = String("Token token=\"\(auth.token)\", timestamp=\"\(timestampStr)\"")
         
         //finalString to be hashed later
-        var finalStr = String("\(baseURL.absoluteString!)\(timestampStr)\(datastring!)")!
-        var authSign = authSignatureWithString(data: finalStr, key: auth.secret as String)
+        let finalStr = String("\(baseURL.absoluteString!)\(timestampStr)\(datastring!)")!
+        let authSign = authSignatureWithString(data: finalStr, key: auth.secret as String)
         
         //setting the header
         let endpointClosure = { (target: API) -> Endpoint<API> in
@@ -172,7 +189,10 @@ class FGHTTP: Object, NSURLConnectionDelegate {
                 do{
                     let dict = try response.mapJSON()
                     print(dict)
-                    
+                    let connectResp : ConnectRoomResponse = ConnectRoomResponse(dictionary: dict as! Dictionary<String, AnyObject>, name: name as NSString, token: tokenRoom as NSString)
+                    var roomDict = (dict as! Dictionary<String, Any>)["room"] as! Dictionary<String, Any>
+                    print("*** Connected to property id : \(roomDict["property_id"]!) room id : \(roomDict["room_id"]!) room number : \(roomDict["number"]!) ***" )
+                    /*
                     //create the authentication
                     let authenticate : Dictionary<String, Any> = (dict as! Dictionary<String, Any>)["authentication"] as! Dictionary<String, Any>
                     //var auth : FGAuth = FGAuth.authWithToken(token: authenticate["auth_token"] as! NSString, secret: authenticate["auth_secret"] as! NSString, type: "Device")
@@ -189,8 +209,8 @@ class FGHTTP: Object, NSURLConnectionDelegate {
                     property.room?.mergeWithDictionary(dict: roomDict)
                     property.room?.auth = auth
                     property.room?.connect = conn
-
-                    completion(property)
+                    */
+                    completion(connectResp)
                 }catch {
                     print("Something wrong");
                 }
@@ -204,7 +224,7 @@ class FGHTTP: Object, NSURLConnectionDelegate {
     }
     
     //POST to disconnect to a room using guest_device auth and property_id.
-    public func postDisconnectToRoom(room: FGRoom, completion: @escaping (_ room : FGRoom) -> Void){
+    public func postDisconnectToRoom(room: FGRoom, completion: @escaping (_ roomResponse : DisconnectRoomResponse) -> Void){
         
         let policies: [String: ServerTrustPolicy] = [
             "api.fingi-staging.com" : .disableEvaluation,
@@ -216,10 +236,11 @@ class FGHTTP: Object, NSURLConnectionDelegate {
             serverTrustPolicyManager: ServerTrustPolicyManager(policies: policies)
         )
         
-        /*var sessionIns = FGSession()
-        sessionIns = sessionIns.loadFromRealm()
-        */
-        var jsonDict : [String:Any] = ["name": room.connect!.name as String, "token": room.connect!.tokenRoom as String, "uid":FGSession.sharedInstance.UDID as String, "property_id" : room.property!.identifier, "device_type" : "guest_device", "os" : "ios"]
+        //load precon for take the uid
+        var preconnResp = PreconnectResponse().loadFromRealm()
+        var preconn = FGPreconnect(preconnResp: preconnResp)
+        
+        let jsonDict : [String:Any] = ["name": room.connect!.name as String, "token": room.connect!.tokenRoom as String, "uid":preconn.uid as String, "property_id" : room.property!.identifier, "device_type" : "guest_device", "os" : "ios"]
         var data : Data!
         var totalURL : URL!
         do{
@@ -231,20 +252,20 @@ class FGHTTP: Object, NSURLConnectionDelegate {
         }
         
         var baseURL = totalURL as! NSURL
-        var timestamp = NSDate().timeIntervalSince1970
-        var timestampStr:String = String(format:"%.0f", timestamp)
+        let timestamp = NSDate().timeIntervalSince1970
+        let timestampStr:String = String(format:"%.0f", timestamp)
         var datastring = String(data: data, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))
         datastring = datastring!.replacingOccurrences(of: "\n", with: "")
         datastring = datastring!.replacingOccurrences(of: " ", with: "")
         
         //using room token
         //var auth = FGAuth().loadFromRealm(type: "Device")
-        var auth = FGDeviceAuth(token: room.auth!.token, secret: room.auth!.secret)
-        var token = String("Token token=\"\(auth.token)\", timestamp=\"\(timestampStr)\"")
+        let auth = FGDeviceAuth(token: room.auth!.token, secret: room.auth!.secret)
+        let token = String("Token token=\"\(auth.token)\", timestamp=\"\(timestampStr)\"")
         
         //finalString to be hashed later
-        var finalStr = String("\(baseURL.absoluteString!)\(timestampStr)\(datastring!)")!
-        var authSign = authSignatureWithString(data: finalStr, key: auth.secret as String)
+        let finalStr = String("\(baseURL.absoluteString!)\(timestampStr)\(datastring!)")!
+        let authSign = authSignatureWithString(data: finalStr, key: auth.secret as String)
         
         //setting the header
         let endpointClosure = { (target: API) -> Endpoint<API> in
@@ -258,9 +279,95 @@ class FGHTTP: Object, NSURLConnectionDelegate {
             switch event {
             case let .next(response):
                 do{
-                    let dict = try response.mapJSON()                    
-                    var roomSelf = FGRoom()
-                    completion(roomSelf)
+                    let dict = try response.mapJSON()
+                    let discResp : DisconnectRoomResponse =  DisconnectRoomResponse(dict: dict as! Dictionary<String, Any>)
+                    completion(discResp)
+                }catch {
+                    print("Something wrong");
+                }
+            case let .error(error):
+                print("Error : ",error)
+            default:
+                break
+            }
+        }
+        
+    }
+    
+    
+    //GET Preset to download presets.
+    public func getPresetToEntity(entity: FGEntity, completion: @escaping (_ presetResponse : PresetResponse) -> Void){
+        
+        let policies: [String: ServerTrustPolicy] = [
+            "api.fingi-staging.com" : .disableEvaluation,
+            "api.fingi.com" : .disableEvaluation,
+            "app.develop.okkami.com" : .disableEvaluation
+        ]
+        let manager = Manager(
+            configuration: URLSessionConfiguration.default,
+            serverTrustPolicyManager: ServerTrustPolicyManager(policies: policies)
+        )
+        
+        //load precon for take the uid
+        let preconnResp = PreconnectResponse().loadFromRealm()
+        let preconn = FGPreconnect(preconnResp: preconnResp)
+        
+        //create the dictionary
+        var entityDict : Dictionary<String, Any> = [
+        "room_id":entity.room?.identifier,
+        "property_id":entity.property?.identifier,
+        "brand_id":entity.brand?.identifier,
+        "company_id":entity.company?.identifier
+        ]
+        
+        var totalURL : URL!
+        do{
+            if entityDict["room_id"] != nil {
+                totalURL = try String("\(API.getBaseURL.baseURL)/v1/presets?uid=\(preconn.uid)")?.asURL()
+            }else if entityDict["property_id"] != nil {
+                totalURL = try String("\(API.getBaseURL.baseURL)/v3/companies/\(entityDict["company_id"])/brands/\(entityDict["brand_id"])/properties/\(entityDict["property_id"])/presets")?.asURL()
+            }else if entityDict["brand_id"] != nil{
+                totalURL = try String("\(API.getBaseURL.baseURL)/v3/companies/\(entityDict["company_id"])/brands/\(entityDict["brand_id"])/presets")?.asURL()
+            }else{
+                totalURL = try String("\(API.getBaseURL.baseURL)/v3/companies/\(entityDict["company_id"])/presets")?.asURL()
+            }
+            
+            //totalURL = try String("\(newUrl)/v1/disconnect")?.asURL()
+        }catch{
+            print("Error in JSON Serialization")
+        }
+        
+        let timestamp = NSDate().timeIntervalSince1970
+        let timestampStr:String = String(format:"%.0f", timestamp)
+        
+        //for GET, the body data or payload always nil
+        //var datastring = ""
+        
+        //using company token
+        let auth = FGCompanyAuth()
+        let token = String("Token token=\"\(auth.token)\", timestamp=\"\(timestampStr)\"")
+        var baseURL = totalURL as! NSURL
+        
+        //finalString to be hashed later
+        let finalStr = String("\(baseURL.absoluteString!)\(timestampStr)")!
+        let authSign = authSignatureWithString(data: finalStr, key: auth.secret as String)
+        
+        //setting the header
+        let endpointClosure = { (target: API) -> Endpoint<API> in
+            let defaultEndpoint = RxMoyaProvider.defaultEndpointMapping(target)
+            return defaultEndpoint.adding(httpHeaderFields: ["Accept": "application/json", "Content-Type" : "application/json", "Authorization" : token!, "X-Fingi-Signature":authSign], parameterEncoding: JSONEncoding.default)
+        }
+        
+        //call the response
+        self.provider = RxMoyaProvider<API>(endpointClosure: endpointClosure,manager: manager, plugins: [NetworkLoggerPlugin(verbose: true)])
+        self.provider.request(.getPresetsOfEntity(preconn.uid as String, entityDict)).subscribe { event in
+            switch event {
+            case let .next(response):
+                do{
+                    let dict = try response.mapJSON()
+                    print(dict)
+                    let presResp : PresetResponse = PresetResponse()
+                    completion(presResp)
                 }catch {
                     print("Something wrong");
                 }

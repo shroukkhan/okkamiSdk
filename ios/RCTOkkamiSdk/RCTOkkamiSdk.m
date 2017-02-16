@@ -209,12 +209,15 @@ RCT_EXPORT_METHOD(sendCommandToHub:(NSString*)command
  * on failure:  reject(@"xxx", @"xxx", NSError * error)
  */
 RCT_EXPORT_METHOD(downloadPresets
-                  :(BOOL)force
+                  //:(BOOL)force
                   
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    
+    RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
+    [main downloadPresetsWithForce:1];
+    [self.bridge.eventDispatcher sendAppEventWithName:@"downloadPresets"
+                                                 body:@{@"command": @"Download Presets"}];
 }
 
 /**
@@ -222,7 +225,7 @@ RCT_EXPORT_METHOD(downloadPresets
  *
  */
 RCT_EXPORT_METHOD(downloadRoomInfo
-                  :(BOOL)force
+                  //:(BOOL)force
                   
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
