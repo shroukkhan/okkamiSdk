@@ -77,12 +77,38 @@ import Realm
             
             //take entity from realm
             var roomResp = ConnectRoomResponse().loadFromRealm()
-            var room = FGRoom(connectResp: roomResp!)
+            var entity :FGEntity?
             
-            httpIns.getPresetToEntity(entity: room) { (callback) in
-                callback.saveToRealm()
-                print("*** Download Entity Presets ***")
+            //should check from room -> property -> brand -> company
+            if (roomResp != nil) {
+                entity = FGRoom(connectResp: roomResp!)
             }
+            
+            httpIns.getPresetToEntity(entity: entity!) { (callback) in
+                callback.saveToRealm()
+                print("*** Downloaded Entity Presets ***")
+            }
+        }else{
+            //use realm db preset
+        }
+    }
+    
+    public func downloadRoomInfo(force : Bool){
+        
+        if force {
+            var httpIns = FGHTTP()
+            //take entity from realm
+            var roomResp = ConnectRoomResponse().loadFromRealm()
+            var room :FGRoom?
+            //check room
+            if (roomResp != nil) {
+                room = FGRoom(connectResp: roomResp!)
+            }
+            
+            httpIns.getRoomInfo(room: room!, completion: { (callback) in
+                callback.saveToRealm()
+                print("*** Downloaded Room Info ***")
+            })
         }else{
             //use realm db preset
         }

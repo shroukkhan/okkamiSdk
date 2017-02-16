@@ -99,18 +99,20 @@ class FGRoom: FGEntity {
     
     convenience required init(connectResp: ConnectRoomResponse) {
         self.init()
-        var dict : [String:Any] = [
-        "company_id":connectResp.room?.company_id,
-        "brand_id":connectResp.room?.brand_id,
-        "property_id":connectResp.room?.property_id,
-        "room_id":connectResp.room?.room_id,
-        "number":connectResp.room?.number,
-        "presets":connectResp.room?.presetsAsJson,
-        "groups":connectResp.room?.groupsAsJson,
-        "checked_in":connectResp.room?.checked_inAsJson,
-        "frcds":connectResp.room?.frcdsAsJson
+        
+        var dict : [String:String] = [
+        "company_id":connectResp.room!.company_id as String,
+        "brand_id":connectResp.room!.brand_id as String,
+        "property_id":connectResp.room!.property_id as String,
+        "room_id":connectResp.room!.room_id as String,
+        "number":connectResp.room!.number as String,
+        "presets":connectResp.room!.presetsAsJson as String,
+        "groups":connectResp.room!.groupsAsJson as String,
+        "checked_in":connectResp.room!.checked_inAsJson as String,
+        "frcds":connectResp.room!.frcdsAsJson as String
         ]
         self.connectWithObject(connect: FGConnect(nameRoom: connectResp.roomName, roomToken: connectResp.roomToken, rooms_id: connectResp.room!.room_id))
+        self.room = FGRoom(identifier: connectResp.room!.room_id)
         self.property = FGProperty(identifier: connectResp.room!.property_id)
         self.brand = FGBrand(identifier: connectResp.room!.brand_id)
         self.company = FGCompany(identifier: connectResp.room!.company_id)

@@ -223,7 +223,7 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
         
     }
     
-    //POST to disconnect to a room using guest_device auth and property_id.
+    //POST to disconnect to a room using guest_device auth.
     public func postDisconnectToRoom(room: FGRoom, completion: @escaping (_ roomResponse : DisconnectRoomResponse) -> Void){
         
         let policies: [String: ServerTrustPolicy] = [
@@ -313,23 +313,23 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
         let preconn = FGPreconnect(preconnResp: preconnResp)
         
         //create the dictionary
-        var entityDict : Dictionary<String, Any> = [
-        "room_id":entity.room?.identifier,
-        "property_id":entity.property?.identifier,
-        "brand_id":entity.brand?.identifier,
-        "company_id":entity.company?.identifier
+        var entityDict : Dictionary<String, String> = [
+        "room_id":entity.room?.identifier as! String,
+        "property_id":entity.property?.identifier as! String,
+        "brand_id":entity.brand?.identifier as! String,
+        "company_id":entity.company?.identifier as! String
         ]
         
         var totalURL : URL!
         do{
             if entityDict["room_id"] != nil {
-                totalURL = try String("\(API.getBaseURL.baseURL)/v1/presets?uid=\(preconn.uid)")?.asURL()
+                totalURL = try String("\(API.getBaseURL.baseURL)/v1/presets?unflatten=1&uid=\(preconn.uid)")?.asURL()
             }else if entityDict["property_id"] != nil {
-                totalURL = try String("\(API.getBaseURL.baseURL)/v3/companies/\(entityDict["company_id"])/brands/\(entityDict["brand_id"])/properties/\(entityDict["property_id"])/presets")?.asURL()
+                totalURL = try String("\(API.getBaseURL.baseURL)/v3/companies/\(entityDict["company_id"]!)/brands/\(entityDict["brand_id"]!)/properties/\(entityDict["property_id"]!)/presets?unflatten=1")?.asURL()
             }else if entityDict["brand_id"] != nil{
-                totalURL = try String("\(API.getBaseURL.baseURL)/v3/companies/\(entityDict["company_id"])/brands/\(entityDict["brand_id"])/presets")?.asURL()
+                totalURL = try String("\(API.getBaseURL.baseURL)/v3/companies/\(entityDict["company_id"]!)/brands/\(entityDict["brand_id"]!)/presets?unflatten=1")?.asURL()
             }else{
-                totalURL = try String("\(API.getBaseURL.baseURL)/v3/companies/\(entityDict["company_id"])/presets")?.asURL()
+                totalURL = try String("\(API.getBaseURL.baseURL)/v3/companies/\(entityDict["company_id"]!)/presets?unflatten=1")?.asURL()
             }
             
             //totalURL = try String("\(newUrl)/v1/disconnect")?.asURL()
@@ -343,8 +343,70 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
         //for GET, the body data or payload always nil
         //var datastring = ""
         
-        //using company token
-        let auth = FGCompanyAuth()
+        let auth = FGDeviceAuth(token: entity.auth!.token, secret: entity.auth!.secret)
+        let token = String("Token token=\"\(auth.token)\", timestamp=\"\(timestampStr)\"")
+        var baseURL = totalURL as! NSURL
+        
+        //finalString to be hashed later
+        let finalStr = String("\(baseURL.absoluteString!)\(timestampStr)")!
+        let authSign = authSignatureWithString(data: finalStr, key: auth.secret as String)
+        
+        //setting the header
+        let endpointClosure = { (target: API) -> Endpoint<API> in
+            let url = target.baseURL.appendingPathComponent(target.path).absoluteString.removingPercentEncoding!
+            let defaultEndpoint = Endpoint<API>(URL: url, sampleResponseClosure: {.networkResponse(200, target.sampleData)}, method: target.method, parameters: target.parameters)
+            return defaultEndpoint.adding(httpHeaderFields: ["Accept": "application/json", "Content-Type" : "application/json", "Authorization" : token!, "X-Fingi-Signature":authSign], parameterEncoding: JSONEncoding.default)
+        }
+        
+        //call the response
+        self.provider = RxMoyaProvider<API>(endpointClosure: endpointClosure,manager: manager, plugins: [NetworkLoggerPlugin(verbose: true)])
+        self.provider.request(.getPresetsOfEntity(preconn.uid as String, entityDict)).subscribe { event in
+            switch event {
+            case let .next(response):
+                do{
+                    let dict = try response.mapJSON()
+                    print(dict)
+                    let presResp : PresetResponse = PresetResponse(dict: dict as! Dictionary<String, Any>)
+                    completion(presResp)
+                }catch {
+                    print("Something wrong");
+                }
+            case let .error(error):
+                print("Error : ",error)
+            default:
+                break
+            }
+        }
+    }
+    
+    //GET Room Info to download room info.
+    public func getRoomInfo(room: FGRoom, completion: @escaping (_ roomResponse : RoomInfoResponse) -> Void){
+        
+        let policies: [String: ServerTrustPolicy] = [
+            "api.fingi-staging.com" : .disableEvaluation,
+            "api.fingi.com" : .disableEvaluation,
+            "app.develop.okkami.com" : .disableEvaluation
+        ]
+        let manager = Manager(
+            configuration: URLSessionConfiguration.default,
+            serverTrustPolicyManager: ServerTrustPolicyManager(policies: policies)
+        )
+        
+        var totalURL : URL!
+        do{
+            totalURL = try String("\(API.getBaseURL.baseURL)/v1/device/room_info")?.asURL()
+            //totalURL = try String("\(newUrl)/v1/disconnect")?.asURL()
+        }catch{
+            print("Error in JSON Serialization")
+        }
+        
+        let timestamp = NSDate().timeIntervalSince1970
+        let timestampStr:String = String(format:"%.0f", timestamp)
+        
+        //for GET, the body data or payload always nil
+        //var datastring = ""
+        
+        let auth = FGDeviceAuth(token: room.auth!.token, secret: room.auth!.secret)
         let token = String("Token token=\"\(auth.token)\", timestamp=\"\(timestampStr)\"")
         var baseURL = totalURL as! NSURL
         
@@ -360,14 +422,14 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
         
         //call the response
         self.provider = RxMoyaProvider<API>(endpointClosure: endpointClosure,manager: manager, plugins: [NetworkLoggerPlugin(verbose: true)])
-        self.provider.request(.getPresetsOfEntity(preconn.uid as String, entityDict)).subscribe { event in
+        self.provider.request(.getRoomInfo).subscribe { event in
             switch event {
             case let .next(response):
                 do{
                     let dict = try response.mapJSON()
                     print(dict)
-                    let presResp : PresetResponse = PresetResponse()
-                    completion(presResp)
+                    let roominfo : RoomInfoResponse = RoomInfoResponse(dict: dict as! Dictionary<String, Any>)
+                    completion(roominfo)
                 }catch {
                     print("Something wrong");
                 }

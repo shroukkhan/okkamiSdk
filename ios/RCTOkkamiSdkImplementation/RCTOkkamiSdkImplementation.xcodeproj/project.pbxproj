@@ -26,6 +26,7 @@
 		FA277E921E52A8FF00B3D2F3 /* FGDeviceSubclasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA277E911E52A8FF00B3D2F3 /* FGDeviceSubclasses.swift */; };
 		FA277E941E52A91700B3D2F3 /* FGDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA277E931E52A91700B3D2F3 /* FGDevice.swift */; };
 		FA8A70321E44D3B7008304D3 /* FGHTTPEndPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8A70311E44D3B7008304D3 /* FGHTTPEndPoint.swift */; };
+		FA8EDF5D1E559E97002B8202 /* RoomInfoResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8EDF5C1E559E97002B8202 /* RoomInfoResponse.swift */; };
 		FA9B675F1E47722700D63FA2 /* FGPublicFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9B675E1E47722700D63FA2 /* FGPublicFunction.swift */; };
 		FA9B67611E47774500D63FA2 /* FingiProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9B67601E47774500D63FA2 /* FingiProtocol.swift */; };
 		FAB9C1501E498D4100A8DCBC /* FGAppToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB9C14F1E498D4100A8DCBC /* FGAppToken.swift */; };
@@ -81,6 +82,7 @@
 		FA277E911E52A8FF00B3D2F3 /* FGDeviceSubclasses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FGDeviceSubclasses.swift; sourceTree = "<group>"; };
 		FA277E931E52A91700B3D2F3 /* FGDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FGDevice.swift; sourceTree = "<group>"; };
 		FA8A70311E44D3B7008304D3 /* FGHTTPEndPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FGHTTPEndPoint.swift; sourceTree = "<group>"; };
+		FA8EDF5C1E559E97002B8202 /* RoomInfoResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoomInfoResponse.swift; sourceTree = "<group>"; };
 		FA9B675E1E47722700D63FA2 /* FGPublicFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FGPublicFunction.swift; sourceTree = "<group>"; };
 		FA9B67601E47774500D63FA2 /* FingiProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FingiProtocol.swift; sourceTree = "<group>"; };
 		FAB9C14C1E498A9200A8DCBC /* CommonCrypto.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CommonCrypto.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/CommonCrypto-eivnpmqdmbfgekczileukfllbuyv/Build/Products/Debug-iphoneos/CommonCrypto.framework"; sourceTree = "<group>"; };
@@ -156,6 +158,7 @@
 				FAE75E931E540B8A00FABD51 /* DisconnectRoomResponse.swift */,
 				FAE75E911E53F98900FABD51 /* WSResponse.swift */,
 				FAE75E961E546C1100FABD51 /* PresetResponse.swift */,
+				FA8EDF5C1E559E97002B8202 /* RoomInfoResponse.swift */,
 			);
 			name = RealmResponse;
 			sourceTree = "<group>";
@@ -543,6 +546,7 @@
 				FA9B675F1E47722700D63FA2 /* FGPublicFunction.swift in Sources */,
 				FAB9C1541E498D9D00A8DCBC /* FGUserProfile.swift in Sources */,
 				FAE75E941E540B8A00FABD51 /* DisconnectRoomResponse.swift in Sources */,
+				FA8EDF5D1E559E97002B8202 /* RoomInfoResponse.swift in Sources */,
 				FA277E921E52A8FF00B3D2F3 /* FGDeviceSubclasses.swift in Sources */,
 				FA0163D11E531898002345F1 /* ConnectRoomResponse.swift in Sources */,
 				FA277E901E52A84400B3D2F3 /* FGControllableBase.swift in Sources */,

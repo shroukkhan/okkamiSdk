@@ -31,34 +31,16 @@ class FGSession: NSObject {
     }
     
     static let sharedInstance: FGSession = { FGSession() }()
-    /*public func saveToRealm(){
-        var newData : FGSession = FGSession()
-        newData.coreURL = coreURL
-        newData.assetsURL = assetsURL
-        newData.hubURL = hubURL
-        newData.hubPort = hubPort
-        newData.allowShowingAlertViews = allowShowingAlertViews
-        newData.enableSIPAutoConnectFromCurrentPresets = enableSIPAutoConnectFromCurrentPresets
-        newData.UDID = UDID
 
-        var realm = try! Realm()
-        
-        try! realm.write {
-            realm.add(newData, update: true)
+    var _preconnect : FGPreconnect?
+    var preconnect : FGPreconnect? {
+        get{
+            return _preconnect
+        }
+        set{
+            _preconnect = newValue
         }
     }
-    
-    public func loadFromRealm() -> FGSession{
-        var realm = try! Realm()
-        let session = realm.object(ofType: FGSession.self, forPrimaryKey: 0)
-        return session!
-    }
-    
-    public func clearFromRealm(){
-        
-    }*/
-    
-    //var preconnect : FGPreconnect = FGPreconnect().loadFromRealm()
     //dynamic var paranetCRM : FGParanetCRM = FGParanetCRM()
     /*private var _selectedEntity : FGEntity?
     var selectedEntity : FGEntity? {

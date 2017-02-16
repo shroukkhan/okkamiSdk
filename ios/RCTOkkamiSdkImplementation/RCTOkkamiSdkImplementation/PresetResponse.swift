@@ -12,17 +12,20 @@ import RealmSwift
 class PresetResponse: Object {
     
     dynamic var id = 0
-    
+    dynamic var preset : NSString = ""
     override class func primaryKey() -> String? {
         return "id"
     }
     
     convenience required init(dict : Dictionary<String, Any>){
         self.init()
+        var jsonData: Data = try! JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
+        self.preset = NSString(data: jsonData, encoding: String.Encoding.utf8.rawValue)!
     }
     
     public func saveToRealm(){
         var newData : PresetResponse = PresetResponse()
+        newData.preset = preset
         
         // Insert from NSData containing JSON
         var realm = try! Realm()
@@ -40,9 +43,9 @@ class PresetResponse: Object {
     
     public func loadFromRealm() -> PresetResponse{
         var realm = try! Realm()
-        let disc = realm.object(ofType: PresetResponse.self, forPrimaryKey: 0)
+        let pres = realm.object(ofType: PresetResponse.self, forPrimaryKey: 0)
         print("*** Load Preset Response From Database ***")
-        return disc!
+        return pres!
     }
     
     public func clearFromRealm(){

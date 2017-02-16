@@ -101,31 +101,15 @@ extension API: TargetType {
         case .getDeviceRoomsWithCallback(let udid):
             return "/v1/devices/\(udid.urlEscaped)/rooms"
         case .getPresetsOfEntity(let udid, let item):
-            /*if path == "v1" {
-                return "/v1/presets?uid=\(udid.urlEscaped)"
-            }else{
-                return "/v3/presets"
-            }*/
-            /*if entity.isKind(of: FGRoom.self) {
-                return "/v1/presets?uid=\(udid.urlEscaped)"
-            }else{
-                if entity.property != nil {
-                    return ""
-                }else if entity.brand != nil{
-                    return ""
-                }else{
-                    return ""
-                }
-            }*/
             if item["room_id"] != nil {
-                return "/v1/presets?uid=\(udid.urlEscaped)"
+                return "/v1/presets?unflatten=1&uid=\(udid.urlEscaped)"
             }else{
                 if item["property_id"] != nil {
-                    return "/v3/companies/\(item["company_id"])/brands/\(item["brand_id"])/properties/\(item["property_id"])/presets"
+                    return "/v3/companies/\(item["company_id"]!)/brands/\(item["brand_id"]!)/properties/\(item["property_id"]!)/presets?unflatten=1"
                 }else if item["brand_id"] != nil{
-                    return "/v3/companies/\(item["company_id"])/brands/\(item["brand_id"])/presets"
+                    return "/v3/companies/\(item["company_id"]!)/brands/\(item["brand_id"]!)/presets?unflatten=1"
                 }else{
-                    return "/v3/companies/\(item["company_id"])/presets"
+                    return "/v3/companies/\(item["company_id"]!)/presets?unflatten=1"
                 }
             }
         case .getGuestServicesOfEntity(let lang, let long, let country, let state_province, let city):
