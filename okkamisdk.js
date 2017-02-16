@@ -52,12 +52,12 @@ class OkkamiSdk {
         return OkkamiSdkManager.sendCommandToHub(command);
     }
 
-    downloadPresets() {
-        return OkkamiSdkManager.downloadPresets();
+    downloadPresets(force) {
+        return OkkamiSdkManager.downloadPresets(force);
     }
 
-    downloadRoomInfo() {
-        return OkkamiSdkManager.downloadRoomInfo();
+    downloadRoomInfo(force) {
+        return OkkamiSdkManager.downloadRoomInfo(force);
     }
 
     downloadFromCore(endPoint, getPost, payLoad) {
