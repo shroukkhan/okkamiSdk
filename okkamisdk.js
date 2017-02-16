@@ -13,12 +13,11 @@ class OkkamiSdk {
         return OkkamiSdkManager.start();
     }
 
-<<<<<<< HEAD
     getSdkManager()
     {
         return OkkamiSdkManager;
     }
-=======
+
     restart() {
         return OkkamiSdkManager.restart();
     }
@@ -29,7 +28,7 @@ class OkkamiSdk {
 
     /*---------------------------------------------------------------------------------------------------*/
     /*-------------------------------------- Hub & Core -------------------------------------------------*/
->>>>>>> develop
+
 
     connectToRoom(loginName, password) {
         return OkkamiSdkManager.connectToRoom(loginName, password);
@@ -59,12 +58,12 @@ class OkkamiSdk {
         return OkkamiSdkManager.sendCommandToHub(command);
     }
 
-    downloadPresets() {
-        return OkkamiSdkManager.downloadPresets();
+    downloadPresets(force) {
+        return OkkamiSdkManager.downloadPresets(force);
     }
 
-    downloadRoomInfo() {
-        return OkkamiSdkManager.downloadRoomInfo();
+    downloadRoomInfo(force) {
+        return OkkamiSdkManager.downloadRoomInfo(force);
     }
 
     downloadFromCore(endPoint, getPost, payLoad) {
