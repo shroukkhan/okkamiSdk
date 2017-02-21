@@ -34,7 +34,7 @@ class PreconnectResponse: Object {
     
     convenience required init(dictionary: Dictionary<String, AnyObject>) {
         self.init()
-        var guestDeviceDict : NSDictionary = dictionary["guest_device"] as! NSDictionary
+        let guestDeviceDict : NSDictionary = dictionary["guest_device"] as! NSDictionary
         self.identifier = (guestDeviceDict["id"] as! NSNumber).stringValue as NSString
         if ((guestDeviceDict["guest_id"] as? NSString) != nil) {
             self.guest_id = guestDeviceDict["guest_id"] as! NSString
@@ -42,12 +42,12 @@ class PreconnectResponse: Object {
             self.guest_id = ""
         }
         self.uid = guestDeviceDict["uid"] as! NSString
-        var auth : Authentication = Authentication(node: guestDeviceDict["authentication"] as! Dictionary<String, Any>)
+        let auth : Authentication = Authentication(node: guestDeviceDict["authentication"] as! Dictionary<String, Any>)
         self.auth = auth
     }
     
     public func saveToRealm(){
-        var newData : PreconnectResponse = PreconnectResponse()
+        let newData : PreconnectResponse = PreconnectResponse()
         newData.identifier = identifier
         newData.guest_id = guest_id
         newData.uid = uid
@@ -55,21 +55,23 @@ class PreconnectResponse: Object {
         newData.id = 0
         
         // Insert from NSData containing JSON
-        var realm = try! Realm()
+        let realm = try! Realm()
         
         try! realm.write {
-            var checkPrec = realm.objects(PreconnectResponse).count
+            /*var checkPrec = realm.objects(PreconnectResponse).count
             if checkPrec > 0{
             
             }else{
                 print("*** Saved Preconnect to Database ***")
                 realm.add(newData, update: true)
-            }
+            }*/
+            print("*** Saved Preconnect to Database ***")
+            realm.add(newData, update: true)
         }
     }
     
     public func loadFromRealm() -> PreconnectResponse{
-        var realm = try! Realm()
+        let realm = try! Realm()
         let preconnect = realm.object(ofType: PreconnectResponse.self, forPrimaryKey: 0)
         print("*** Load Preconnect From Database ***")
         return preconnect!

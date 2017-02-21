@@ -19,7 +19,7 @@ class FGPreconnect: NSObject, NSCoding {
     
     convenience required init(dictionary: Dictionary<String, AnyObject>) {
         self.init()
-        var guestDeviceDict : NSDictionary = dictionary["guest_device"] as! NSDictionary
+        let guestDeviceDict : NSDictionary = dictionary["guest_device"] as! NSDictionary
         identifier = guestDeviceDict["id"] as! NSString
         if ((guestDeviceDict["guest_id"] as? NSString) != nil) {
             guest_id = guestDeviceDict["guest_id"] as! NSString
@@ -27,7 +27,7 @@ class FGPreconnect: NSObject, NSCoding {
             guest_id = ""
         }
         uid = guestDeviceDict["uid"] as! NSString
-        var authDict : NSDictionary = guestDeviceDict["authentication"] as! NSDictionary
+        let authDict : NSDictionary = guestDeviceDict["authentication"] as! NSDictionary
         auth = FGPreconnectAuth(token: authDict["auth_token"] as! NSString, secret: authDict["auth_secret"] as! NSString)
     }
     
@@ -47,9 +47,9 @@ class FGPreconnect: NSObject, NSCoding {
         guest_id = aDecoder.decodeObject(forKey: "guest_id") as! NSString
         uid = aDecoder.decodeObject(forKey: "uid") as! NSString
         
-        var data : NSData = aDecoder.decodeObject(forKey: "auth") as! NSData
+        let data : NSData = aDecoder.decodeObject(forKey: "auth") as! NSData
         do {
-            try auth = NSKeyedUnarchiver.unarchiveObject(with: data as Data) as! FGAuth
+            try auth = NSKeyedUnarchiver.unarchiveObject(with: data as Data) as? FGAuth
         } catch (exception() as! NSException) as! Realm.Error {
             auth = FGAuth(token: "", secret: "")
         }
@@ -59,46 +59,7 @@ class FGPreconnect: NSObject, NSCoding {
         aCoder.encode(identifier, forKey: "identifier")
         aCoder.encode(guest_id, forKey: "guest_id")
         aCoder.encode(uid, forKey: "uid")
-        var data : NSData = NSKeyedArchiver.archivedData(withRootObject: auth) as NSData
+        let data : NSData = NSKeyedArchiver.archivedData(withRootObject: auth!) as NSData
         aCoder.encode(data, forKey: "auth")
     }
-    
-    /*public func saveToRealm(){
-        var newData : FGPreconnect = FGPreconnect()
-        newData.identifier = identifier
-        newData.guest_id = guest_id
-        newData.uid = uid
-        newData.auth = auth
-        newData.id = 0
-        
-        // Insert from NSData containing JSON
-        var realm = try! Realm()
-        
-        try! realm.write {
-            var checkPrec = realm.objects(FGPreconnect).count
-            if checkPrec > 0{
-                var test = realm.objects(FGAuth).filter("type == %@", "Preconnect").count
-                if test > 0{
-                    
-                }else{
-                    print("*** Saved Preconnect to Database ***")
-                    realm.add(newData, update: true)
-                }
-            }else{
-                print("*** Saved Preconnect to Database ***")
-                realm.add(newData, update: true)
-            }
-        }
-    }
-    
-    public func loadFromRealm() -> FGPreconnect{
-        var realm = try! Realm()
-        let preconnect = realm.object(ofType: FGPreconnect.self, forPrimaryKey: 0)
-        print("*** Load Preconnect From Database ***")
-        return preconnect!
-    }
-        
-    public func clearFromRealm(){
-        
-    }*/
 }

@@ -30,8 +30,8 @@ class FGAppToken: Object {
     }
     
     public func saveToRealm(){
-        var realm = try! Realm()
-        var newData : FGAppToken = FGAppToken()
+        let realm = try! Realm()
+        let newData : FGAppToken = FGAppToken()
         newData.access_token = access_token
         newData.created_at = created_at
         newData.expires_in = expires_in
@@ -45,7 +45,7 @@ class FGAppToken: Object {
     }
     
     public func loadFromRealm() -> FGAppToken{
-        var realm = try! Realm()
+        let realm = try! Realm()
         let fgapptoken = realm.object(ofType: FGAppToken.self, forPrimaryKey: 0)
         return fgapptoken!
     }

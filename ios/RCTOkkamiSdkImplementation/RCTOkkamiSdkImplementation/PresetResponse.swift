@@ -19,30 +19,32 @@ class PresetResponse: Object {
     
     convenience required init(dict : Dictionary<String, Any>){
         self.init()
-        var jsonData: Data = try! JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
+        let jsonData: Data = try! JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
         self.preset = NSString(data: jsonData, encoding: String.Encoding.utf8.rawValue)!
     }
     
     public func saveToRealm(){
-        var newData : PresetResponse = PresetResponse()
+        let newData : PresetResponse = PresetResponse()
         newData.preset = preset
         
         // Insert from NSData containing JSON
-        var realm = try! Realm()
+        let realm = try! Realm()
         
         try! realm.write {
-            var checkPres = realm.objects(PresetResponse).count
+            /*var checkPres = realm.objects(PresetResponse).count
             if checkPres > 0{
                 
             }else{
                 print("*** Saved Preset Response to Database ***")
                 realm.add(newData, update: true)
-            }
+            }*/
+            print("*** Saved Preset Response to Database ***")
+            realm.add(newData, update: true)
         }
     }
     
     public func loadFromRealm() -> PresetResponse{
-        var realm = try! Realm()
+        let realm = try! Realm()
         let pres = realm.object(ofType: PresetResponse.self, forPrimaryKey: 0)
         print("*** Load Preset Response From Database ***")
         return pres!

@@ -54,12 +54,7 @@ class FGAuth: NSObject {
         self.secret = secret
     }
     
-    /*public func loadFromRealm(type : NSString) -> FGAuth{
-        var realm = try! Realm()
-        let auth = realm.objects(FGAuth.self).filter("type == %@", type).first
-        print("*** Load Auth From Database ***")
-        return auth!
-    }*/
+    
 }
 
 

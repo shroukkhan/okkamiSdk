@@ -14,60 +14,86 @@ class FGComponent: FGControllableBase {
     var device : FGDevice?
     var config : Dictionary<String,Any>?
     
+    func removeMessageObservers() {
+        //self.bk_removeAllBlockObservers()
+    }
+ 
     
-    /** Creates a FGDevice object.
-     
-     @param dict NSDictionary object containing device information. `components` key in room data.
-     @returns FGDeviceGroup object.
-     */
+    func isConfigEmpty() -> Bool {
+        return self.config == nil || self.config?.values.count == 0
+    }
     
-    public func componentWithDictionary(dictionary : Dictionary<String, Any>)->FGComponent?{
+    public func componentWithDictionary(dict : Dictionary<String, Any>)->FGComponent?{
+        /*if !dict.toNSDictionary() {
+         return nil
+         }*/
         
         // choose a subclass to init based on device type
-        var type = dictionary["component_type"] as! NSString
-        var k = classForType(type: type)
-        if k == nil {
-            print("no class for type : %@ \tuid: %@",type,dictionary["component_uid"])
+        let type: String = dict["component_type"] as! String
+        let k = classForType(type: type as NSString)
+        if k == nil || !k!.isSubclass(of: FGComponent.self) {
+            print("no class for type: %@ \tuid: %@", type, dict["component_uid"]!)
             return nil
         }
+        print("assigned class: %@ \tfor type: %@ \tuid: %@", k!, type, dict["component_uid"])
         
-        print("assigned class: %@ \tfor type: %@ \tuid: %@",k,type,dictionary["component_uid"])
-        return k!
+        return k as! FGComponent
     }
     
-    override init() {
-        
-    }
     
     init(dictionary : Dictionary<String, Any>){
+        /*if !dict.toNSDictionary() {
+            return nil
+        }*/
+        
         super.init()
-        self.uid = dictionary["component_uid"] as! NSString
-        self.name = dictionary["name"] as! NSString
-        self.type = dictionary["component_type"] as! NSString
+        self.uid = dictionary["component_uid"] as? NSString
+        self.name = dictionary["name"] as? NSString
+        self.type = dictionary["component_type"] as? NSString
         self.config = dictionary["config"] as! Dictionary<String, Any>?
+        self.setupComponent(withConfig: self.config!)
         
     }
     
-    public func classForType(type : NSString)->FGComponent?{
+    public func classForType(type : NSString)->AnyClass? {
         if type is NSString {
-            for k in FGComponent().allSubclasses() {
-                var compare = (k as! FGComponent).getType() as String
+            for k: AnyClass in FGComponent.allSubclasses() {
+                let compare = (k as! FGComponent).type as! String
                 if type.caseInsensitiveCompare(compare) == ComparisonResult.orderedSame {
-                    return k as! FGComponent
+                    return k
                 }
             }
         }
         return nil
     }
     
-    override func getType() -> NSString {
-        return self.getType()
+    override var type: NSString?{
+        get{
+            return self.type
+        }
+        set{
+            if (newValue is NSString!) {
+                self.type = newValue
+            }
+        }
     }
     
-    public func allSubclasses()->NSArray{
+    /*override func getType() -> String {
+        return self.self.getType()
+    }*/
+    
+    func addMessageObservers() {
+        print("name:%@ (uid:%@)", self.name!, self.uid)
+    }
+    
+    func setupComponent(withConfig config: [AnyHashable: Any]) {
+        
+    }
+    
+    /*public func allSubclasses()->NSArray{
         var result : NSArray? = nil
         result = [FGLight.self, FGRadio.self, FGCurtain.self]
         //need FGAirCon and FGTV too
         return result!
-    }
+    }*/
 }

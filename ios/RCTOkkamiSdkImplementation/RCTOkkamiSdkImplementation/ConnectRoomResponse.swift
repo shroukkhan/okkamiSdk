@@ -25,19 +25,19 @@ class Room : Object {
     
     convenience required init (node : Dictionary<String, Any>) {
         self.init()
-        self.company_id = (node["company_id"] as! NSNumber).stringValue as! NSString
-        self.brand_id = (node["brand_id"] as! NSNumber).stringValue as! NSString
-        self.property_id = (node["property_id"] as! NSNumber).stringValue as! NSString
-        self.room_id = (node["room_id"] as! NSNumber).stringValue as! NSString
+        self.company_id = (node["company_id"] as! NSNumber).stringValue as NSString
+        self.brand_id = (node["brand_id"] as! NSNumber).stringValue as NSString
+        self.property_id = (node["property_id"] as! NSNumber).stringValue as NSString
+        self.room_id = (node["room_id"] as! NSNumber).stringValue as NSString
         self.number = node["number"] as! NSString
-        var jsonPresetData: NSData = try! JSONSerialization.data(withJSONObject: node["presets"], options: .prettyPrinted) as NSData
+        let jsonPresetData: NSData = try! JSONSerialization.data(withJSONObject: node["presets"]!, options: .prettyPrinted) as NSData
         self.presetsAsJson = NSString(data: jsonPresetData as Data, encoding: String.Encoding.utf8.rawValue)!
-        var groupString = ((node["groups"] as! NSArray).description) as! NSString
+        let groupString = ((node["groups"] as! NSArray).description) as NSString
         self.groupsAsJson = groupString
-        var jsonCheckData: NSData = try! JSONSerialization.data(withJSONObject: node["checked_in"], options: .prettyPrinted) as NSData
+        let jsonCheckData: NSData = try! JSONSerialization.data(withJSONObject: node["checked_in"]!, options: .prettyPrinted) as NSData
         self.checked_inAsJson = NSString(data: jsonCheckData as Data, encoding: String.Encoding.utf8.rawValue)!
-        var devicesString = ((node["devices"] as! NSArray).description) as! NSString
-        var frcdString = ((node["frcds"] as! NSArray).description) as! NSString
+        let devicesString = ((node["devices"] as! NSArray).description) as NSString
+        let frcdString = ((node["frcds"] as! NSArray).description) as NSString
         self.devicesAsJson = devicesString
         self.frcdsAsJson = frcdString
     }
@@ -57,8 +57,8 @@ class ConnectRoomResponse: Object {
     
     convenience required init(dictionary: Dictionary<String, AnyObject>, name: NSString, token: NSString ) {
         self.init()
-        var auth : Authentication = Authentication(node: dictionary["authentication"] as! Dictionary<String, Any>)
-        var room : Room = Room(node: dictionary["room"] as! Dictionary<String, Any>)
+        let auth : Authentication = Authentication(node: dictionary["authentication"] as! Dictionary<String, Any>)
+        let room : Room = Room(node: dictionary["room"] as! Dictionary<String, Any>)
         self.auth = auth
         self.room = room
         self.roomName = name
@@ -66,28 +66,30 @@ class ConnectRoomResponse: Object {
     }
     
     public func saveToRealm(){
-        var newData : ConnectRoomResponse = ConnectRoomResponse()
+        let newData : ConnectRoomResponse = ConnectRoomResponse()
         newData.id = 0
         newData.auth = auth
         newData.room = room
         newData.roomToken = roomToken
         newData.roomName = roomName
         // Insert from NSData containing JSON
-        var realm = try! Realm()
+        let realm = try! Realm()
         
         try! realm.write {
-            var checkConn = realm.objects(ConnectRoomResponse).count
+            /*var checkConn = realm.objects(ConnectRoomResponse).count
             if checkConn > 0{
                 
             }else{
                 print("*** Saved Room Response to Database ***")
                 realm.add(newData, update: true)
-            }
+            }*/
+            print("*** Saved Room Response to Database ***")
+            realm.add(newData, update: true)
         }
     }
     
     public func loadFromRealm() -> ConnectRoomResponse?{
-        var realm = try! Realm()
+        let realm = try! Realm()
         let preconnect = realm.object(ofType: ConnectRoomResponse.self, forPrimaryKey: 0)
         print("*** Load Room Response From Database ***")
         return preconnect

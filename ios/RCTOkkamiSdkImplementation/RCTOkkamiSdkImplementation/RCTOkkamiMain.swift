@@ -28,13 +28,13 @@ import Realm
     public func preConnect(){
         
         //check preconn save data first
-        var realm = try! Realm()
-        var checkPrec = realm.objects(PreconnectResponse).count
+        let realm = try! Realm()
+        let checkPrec = realm.objects(PreconnectResponse.self).count
         if checkPrec > 0 {
             print("No need to preconn")
         }else{
             //call preconn using device UDID
-            var httpIns = FGHTTP()
+            let httpIns = FGHTTP()
             httpIns.postPreconnectAuthWithUID(uid: FGSession.sharedInstance.UDID) { (callback) in
                 callback.saveToRealm()
                 print("*** Preconnect Successfully Called ***")
@@ -44,9 +44,9 @@ import Realm
     
     public func connectToRoom(room: String, token: String){
         
-        var httpIns = FGHTTP()
-        var preconnResp = PreconnectResponse().loadFromRealm()
-        var preconn = FGPreconnect(preconnResp: preconnResp)
+        let httpIns = FGHTTP()
+        let preconnResp = PreconnectResponse().loadFromRealm()
+        let preconn = FGPreconnect(preconnResp: preconnResp)
         httpIns.postConnectToRoom(name: room, tokenRoom: token, uid: preconnResp.uid as String, preconnect: preconn, property_id: "3") { (callback) in
             callback.saveToRealm()
             print("*** Connected to Room ***")
@@ -54,12 +54,12 @@ import Realm
     }
     
     public func disconnectFromRoom(){
-        var httpIns = FGHTTP()
+        let httpIns = FGHTTP()
             
         //check room from realm
-        var roomResp = ConnectRoomResponse().loadFromRealm()
+        let roomResp = ConnectRoomResponse().loadFromRealm()
         if (roomResp != nil) {
-            var room = FGRoom(connectResp: roomResp!)
+            let room = FGRoom(connectResp: roomResp!)
             
             httpIns.postDisconnectToRoom(room: room) { (callback) in
                 callback.saveToRealm()
@@ -73,10 +73,10 @@ import Realm
     public func downloadPresets(force : Bool){
         
         if force {
-            var httpIns = FGHTTP()
+            let httpIns = FGHTTP()
             
             //take entity from realm
-            var roomResp = ConnectRoomResponse().loadFromRealm()
+            let roomResp = ConnectRoomResponse().loadFromRealm()
             var entity :FGEntity?
             
             //should check from room -> property -> brand -> company
@@ -96,9 +96,9 @@ import Realm
     public func downloadRoomInfo(force : Bool){
         
         if force {
-            var httpIns = FGHTTP()
+            let httpIns = FGHTTP()
             //take entity from realm
-            var roomResp = ConnectRoomResponse().loadFromRealm()
+            let roomResp = ConnectRoomResponse().loadFromRealm()
             var room :FGRoom?
             //check room
             if (roomResp != nil) {
@@ -111,6 +111,24 @@ import Realm
             })
         }else{
             //use realm db preset
+        }
+    }
+    
+    
+    public func getGuestService(){
+        
+        let httpIns = FGHTTP()
+        //take entity from realm
+        let roomResp = ConnectRoomResponse().loadFromRealm()
+        var room :FGRoom?
+        //check room
+        if (roomResp != nil) {
+            room = FGRoom(connectResp: roomResp!)
+        }
+        
+        httpIns.getGuestService(entity: room!) { (callback) in
+            callback.saveToRealm()
+            print("*** Get Guest Service Success ***")
         }
     }
     

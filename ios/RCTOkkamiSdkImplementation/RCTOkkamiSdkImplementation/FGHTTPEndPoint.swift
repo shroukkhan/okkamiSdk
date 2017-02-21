@@ -40,7 +40,7 @@ public enum API {
     case getRoomInfo
     case getDeviceRoomsWithCallback(String)
     case getPresetsOfEntity(String, Dictionary<String, Any>)
-    case getGuestServicesOfEntity(String, String, String, String, String)
+    case getGuestServicesOfEntity(Dictionary<String, Any>, String, String, String, String, String)
     case getParanetGuestOfDeviceWithAuth
     case getFolioOfRoom
     case getPromotionsOfEntity
@@ -112,8 +112,8 @@ extension API: TargetType {
                     return "/v3/companies/\(item["company_id"]!)/presets?unflatten=1"
                 }
             }
-        case .getGuestServicesOfEntity(let lang, let long, let country, let state_province, let city):
-            return "/v3/guest_services?lat=\(lang.urlEscaped)&lng=\(long.urlEscaped)&country=\(country.urlEscaped)&state_province=\(state_province.urlEscaped)&city=\(city.urlEscaped)"
+        case .getGuestServicesOfEntity(let item, let lang, let long, let country, let state_province, let city):
+            return "/v3/companies/\(item["company_id"]!)/brands/\(item["brand_id"]!)/properties/\(item["property_id"]!)/guest_services?lat=\(lang.urlEscaped)&lng=\(long.urlEscaped)&country=\(country.urlEscaped)&state_province=\(state_province.urlEscaped)&city=\(city.urlEscaped)"
         case .getParanetGuestOfDeviceWithAuth:
             return "/v3/guest/credentials"
         case .getFolioOfRoom:

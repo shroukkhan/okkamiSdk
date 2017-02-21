@@ -24,12 +24,13 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
     var provider: RxMoyaProvider<API>!
     var providerNew: RxMoyaProvider<APINew>!
     
-    //Payload
+    //Payload on progress
     public enum Payload{
         case postPreconnect()
         case postConnect()
         case postDisconnect()
     }
+    
     //getPayLoad on Progress
     public func getPayload(param : Payload) -> [String:Any]?{
         switch param {
@@ -93,7 +94,7 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
             print("Error in JSON Serialization")
         }
         
-        var baseURL = totalURL as! NSURL
+        let baseURL = totalURL as NSURL
         let timestamp = NSDate().timeIntervalSince1970
         let timestampStr:String = String(format:"%.0f", timestamp)
         var datastring = String(data: data, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))
@@ -160,7 +161,7 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
             print("Error in JSON Serialization")
         }
         
-        var baseURL = totalURL as! NSURL
+        let baseURL = totalURL as NSURL
         let timestamp = NSDate().timeIntervalSince1970
         let timestampStr:String = String(format:"%.0f", timestamp)
         var datastring = String(data: data, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))
@@ -237,8 +238,8 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
         )
         
         //load precon for take the uid
-        var preconnResp = PreconnectResponse().loadFromRealm()
-        var preconn = FGPreconnect(preconnResp: preconnResp)
+        let preconnResp = PreconnectResponse().loadFromRealm()
+        let preconn = FGPreconnect(preconnResp: preconnResp)
         
         let jsonDict : [String:Any] = ["name": room.connect!.name as String, "token": room.connect!.tokenRoom as String, "uid":preconn.uid as String, "property_id" : room.property!.identifier, "device_type" : "guest_device", "os" : "ios"]
         var data : Data!
@@ -251,7 +252,7 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
             print("Error in JSON Serialization")
         }
         
-        var baseURL = totalURL as! NSURL
+        let baseURL = totalURL as NSURL
         let timestamp = NSDate().timeIntervalSince1970
         let timestampStr:String = String(format:"%.0f", timestamp)
         var datastring = String(data: data, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))
@@ -275,7 +276,7 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
         
         //call the response
         self.provider = RxMoyaProvider<API>(endpointClosure: endpointClosure,manager: manager, plugins: [NetworkLoggerPlugin(verbose: true)])
-        self.provider.request(.postDisconnectToRoom(room.connect!.name as String, room.connect!.tokenRoom as String, FGSession.sharedInstance.UDID as String, room.property!.identifier, "guest_device")).subscribe { event in
+        self.provider.request(.postDisconnectToRoom(room.connect!.name as String, room.connect!.tokenRoom as String, FGSession.sharedInstance.UDID as String, room.property!.identifier!, "guest_device")).subscribe { event in
             switch event {
             case let .next(response):
                 do{
@@ -345,7 +346,7 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
         
         let auth = FGDeviceAuth(token: entity.auth!.token, secret: entity.auth!.secret)
         let token = String("Token token=\"\(auth.token)\", timestamp=\"\(timestampStr)\"")
-        var baseURL = totalURL as! NSURL
+        let baseURL = totalURL as NSURL
         
         //finalString to be hashed later
         let finalStr = String("\(baseURL.absoluteString!)\(timestampStr)")!
@@ -408,7 +409,7 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
         
         let auth = FGDeviceAuth(token: room.auth!.token, secret: room.auth!.secret)
         let token = String("Token token=\"\(auth.token)\", timestamp=\"\(timestampStr)\"")
-        var baseURL = totalURL as! NSURL
+        let baseURL = totalURL as NSURL
         
         //finalString to be hashed later
         let finalStr = String("\(baseURL.absoluteString!)\(timestampStr)")!
@@ -442,6 +443,91 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
         
     }
     
+    
+    //GET Guest Service Entity.
+    public func getGuestService(entity: FGEntity, completion: @escaping (_ guestResponse : GuestServiceResponse) -> Void){
+        
+        let policies: [String: ServerTrustPolicy] = [
+            "api.fingi-staging.com" : .disableEvaluation,
+            "api.fingi.com" : .disableEvaluation,
+            "app.develop.okkami.com" : .disableEvaluation
+        ]
+        let manager = Manager(
+            configuration: URLSessionConfiguration.default,
+            serverTrustPolicyManager: ServerTrustPolicyManager(policies: policies)
+        )
+        
+        //load the location object from database
+        /*let locationRealm = Location().loadFromRealm()
+        let longitude = String(format: "%.7f", locationRealm.longitude)
+        let latitude = String(format: "%.7f", locationRealm.latitude)
+        let cityName = String(locationRealm.cityName)
+        let countryName = String(locationRealm.countryName)
+        let stateName = String(locationRealm.stateName)
+        */
+        //create the dictionary
+        var entityDict : Dictionary<String, String> = [
+            "room_id":entity.room?.identifier as! String,
+            "property_id":entity.property?.identifier as! String,
+            "brand_id":entity.brand?.identifier as! String,
+            "company_id":entity.company?.identifier as! String
+        ]
+        
+        let longitude = "13.7444363"
+        let latitude = "100.5565567"
+        let cityName = "Vadhana"
+        let countryName = "Thailand"
+        let stateName = "Bangkok"
+        var totalURL : URL!
+        do{
+            totalURL = try String("\(API.getBaseURL.baseURL)/v3/companies/\(entity.company!.identifier)/brands/\(entity.brand!.identifier)/properties/\(entity.property!.identifier)/guest_services?lat=\(latitude)&lng=\(longitude)&country=\(countryName)&state_province=\(stateName)&city=\(cityName)")?.asURL()
+            //totalURL = try String("\(newUrl)/v1/disconnect")?.asURL()
+        }catch{
+            print("Error in JSON Serialization")
+        }
+        let timestamp = NSDate().timeIntervalSince1970
+        let timestampStr:String = String(format:"%.0f", timestamp)
+        
+        //for GET, the body data or payload always nil
+        //var datastring = ""
+        
+        let auth = FGCompanyAuth()
+        //let auth = FGDeviceAuth(token: entity.auth!.token, secret: entity.auth!.secret)
+        let token = String("Token token=\"\(auth.token)\", timestamp=\"\(timestampStr)\"")
+        let baseURL = totalURL as NSURL
+        
+        //finalString to be hashed later
+        let finalStr = String("\(baseURL.absoluteString!)\(timestampStr)")!
+        let authSign = authSignatureWithString(data: finalStr, key: auth.secret as String)
+        
+        //setting the header
+        let endpointClosure = { (target: API) -> Endpoint<API> in
+            let url = target.baseURL.appendingPathComponent(target.path).absoluteString.removingPercentEncoding!
+            let defaultEndpoint = Endpoint<API>(URL: url, sampleResponseClosure: {.networkResponse(200, target.sampleData)}, method: target.method, parameters: target.parameters)
+            return defaultEndpoint.adding(httpHeaderFields: ["Accept": "application/json", "Content-Type" : "application/json", "Authorization" : token!, "X-Fingi-Signature":authSign], parameterEncoding: JSONEncoding.default)
+        }
+        
+        //call the response
+        self.provider = RxMoyaProvider<API>(endpointClosure: endpointClosure,manager: manager, plugins: [NetworkLoggerPlugin(verbose: true)])
+        self.provider.request(.getGuestServicesOfEntity(entityDict, latitude, longitude, countryName, stateName, cityName)).subscribe { event in
+            switch event {
+            case let .next(response):
+                do{
+                    let dict = try response.mapJSON()
+                    //print(dict)
+                    let guestRep : GuestServiceResponse = GuestServiceResponse(array: dict as! [Any])
+                    completion(guestRep)
+                }catch {
+                    print("Something wrong");
+                }
+            case let .error(error):
+                print("Error : ",error)
+            default:
+                break
+            }
+        }
+        
+    }
     
     
     

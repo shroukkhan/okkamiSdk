@@ -24,25 +24,27 @@ class DisconnectRoomResponse: Object {
     }
     
     public func saveToRealm(){
-        var newData : DisconnectRoomResponse = DisconnectRoomResponse()
+        let newData : DisconnectRoomResponse = DisconnectRoomResponse()
         newData.success = success
         
         // Insert from NSData containing JSON
-        var realm = try! Realm()
+        let realm = try! Realm()
         
         try! realm.write {
-            var checkPrec = realm.objects(DisconnectRoomResponse).count
+            /*var checkPrec = realm.objects(DisconnectRoomResponse).count
             if checkPrec > 0{
                 
             }else{
                 print("*** Saved Disconnect Response to Database ***")
                 realm.add(newData, update: true)
-            }
+            }*/
+            print("*** Saved Disconnect Response to Database ***")
+            realm.add(newData, update: true)
         }
     }
     
     public func loadFromRealm() -> DisconnectRoomResponse{
-        var realm = try! Realm()
+        let realm = try! Realm()
         let disc = realm.object(ofType: DisconnectRoomResponse.self, forPrimaryKey: 0)
         print("*** Load Disconnect Response From Database ***")
         return disc!

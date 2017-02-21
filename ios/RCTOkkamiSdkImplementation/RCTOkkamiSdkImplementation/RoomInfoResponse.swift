@@ -23,25 +23,27 @@ class RoomInfoResponse: Object {
     }
     
     public func saveToRealm(){
-        var newData : RoomInfoResponse = RoomInfoResponse()
+        let newData : RoomInfoResponse = RoomInfoResponse()
         newData.roominfo = roominfo
         
         // Insert from NSData containing JSON
-        var realm = try! Realm()
+        let realm = try! Realm()
         
         try! realm.write {
-            var checkPres = realm.objects(RoomInfoResponse).count
+            /*var checkPres = realm.objects(RoomInfoResponse).count
             if checkPres > 0{
                 
             }else{
                 print("*** Saved Room Info Response to Database ***")
                 realm.add(newData, update: true)
-            }
+            }*/            
+            print("*** Saved Room Info Response to Database ***")
+            realm.add(newData, update: true)
         }
     }
     
     public func loadFromRealm() -> RoomInfoResponse{
-        var realm = try! Realm()
+        let realm = try! Realm()
         let room = realm.object(ofType: RoomInfoResponse.self, forPrimaryKey: 0)
         print("*** Load Room Info Response From Database ***")
         return room!

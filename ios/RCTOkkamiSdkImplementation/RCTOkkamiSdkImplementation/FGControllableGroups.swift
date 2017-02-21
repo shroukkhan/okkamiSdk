@@ -26,39 +26,141 @@ class FGDeviceGroup : NSObject {
     
     convenience required init(groupName: NSString){
         self.init()
-        self.name = groupName as! NSString
+        self.name = groupName 
         self.deviceMutableArray = []
     }
     
-    private func deviceGroupWithName(name: NSString, devices: NSArray)->FGDeviceGroup{
-        var newDeviceGroup = FGDeviceGroup(groupName: name)
-        newDeviceGroup.addDevices(devices: devices)
-        var arrDev = getDevices() as [FGDevice]
+    convenience required init (deviceGroupWithName name: NSString, devices: NSArray?){
+        self.init()
+        //let newDeviceGroup = FGDeviceGroup(groupName: name)
+        //newDeviceGroup.addDevices(devices: devices)
+        self.name = name
+        self.addDevices(devices: devices)
+        let arrDev = getDevices() as [FGDevice]
         self.devices?.append(contentsOf: arrDev)
-        var arrNonGuestDev = getNonGuestDevices() as [FGDevice]
+        let arrNonGuestDev = getNonGuestDevices() as [FGDevice]
         self.nonGuestDevices?.append(contentsOf: arrNonGuestDev)
-        return newDeviceGroup
     }
     
-    private func addDevices(devices: NSArray){
+    func addDevices(devices: NSArray?){
         deviceMutableArray?.addObjects(from: devices as! [FGDevice])
     }
     
-    private func addDevice(devices: FGDevice){
+    func addDevice(devices: FGDevice){
         self.devices?.append(devices)
         deviceMutableArray?.add(devices)
     }
     
-    private func getDevices()->[FGDevice]{
+    func getDevices()->[FGDevice]{
         return NSArray(array: deviceMutableArray!) as! [FGDevice]
     }
     
-    private func getNonGuestDevices()->[FGDevice]{
-        let resultPredicate = NSPredicate(format: "type != %@", FGDeviceGuest().type())
-        var arr = deviceMutableArray?.filtered(using: resultPredicate)
+    func getNonGuestDevices()->[FGDevice]{
+        let resultPredicate = NSPredicate(format: "type != %@", FGDeviceGuest().type!)
+        let arr = deviceMutableArray?.filtered(using: resultPredicate)
         return arr as! [FGDevice]
     }
     
+    func devices(with aClass: AnyClass) -> [Any]? {
+        return self.devicesCust(with: aClass, identifiers: nil)
+    }
+    
+    func devicesCust(with aClass: AnyClass, identifiers ids: [Any]?) -> [Any]? {
+        var devices = [Any]()
+        for d: FGDevice in self.devices! {
+            if (d.isKind(of: aClass)) {
+                if (ids?.count == 0) {
+                    devices.append(d)
+                }
+                else {
+                    if self.stringArray(ids!, hasString: d.uid as! String) {
+                        devices.append(d)
+                    }
+                    else {
+                        print("device group has no device id: %@", d.uid!)
+                    }
+                }
+            }
+        }
+        return (devices.count > 0) ? devices : nil
+    }
+    
+    func components(with aClass: AnyClass) -> [Any]? {
+        return self.components(with: aClass, identifiers: nil)
+    }
+    
+    func components(with aClass: AnyClass, identifiers ids: [Any]?) -> [Any]? {
+        var components = [Any]()
+        for d: FGDevice in self.devices! {
+            for c: FGComponent in d.components! {
+                if (c.isKind(of: aClass)) {
+                    if ids == nil {
+                        components.append(c)
+                    }
+                    else {
+                        if self.stringArray(ids!, hasString: c.uid as! String) {
+                            components.append(c)
+                        }
+                        else {
+                            //FGLogWarnWithClsAndFuncName("device group has no component id: %@", c.uid)
+                        }
+                    }
+                }
+            }
+        }
+        return (components.count > 0) ? components : nil
+    }
+    func stringArray(_ array: [Any], hasString string: String) -> Bool {
+        if !(array is [Any]) || !(string is String) {
+            return false
+        }
+        if array.count == 0 {
+            return false
+        }
+        
+        for s in array {
+            if (s is String) && (s as! String).lowercased().isEqual(string.lowercased()) {
+                return true
+            }
+        }
+        return false
+    }
+    
+    override var description : String {
+        return "[<\(NSStringFromClass(self.self as! AnyClass))> \(self.name) (\(self.devices))]"
+    }
+    
+    // compare name and all non phone devices uid
+    func isNonGuestDevicesEqual(_ group: FGDeviceGroup) -> Bool {
+        if group == nil {
+            return false
+        }
+        if !(self.name == group.name) {
+            return false
+        }
+        
+        if self.nonGuestDevices!.count != group.nonGuestDevices!.count {
+            return false
+        }
+        for i in 0..<self.nonGuestDevices!.count {
+            let d: FGDevice! = self.nonGuestDevices![i]
+            let ad: FGDevice! = group.nonGuestDevices![i]
+            if !d!.isEqual(ad) {
+                return false
+            }
+        }
+        return true
+    }
+    // MARK: - internal
+    
+    func device(fromUID uid: String) -> FGDevice? {
+        for d: FGDevice in self.devices! {
+            if (d.uid as! String == uid) {
+                return d
+            }
+        }
+        return nil
+    }
 }
 
 class FGComponentGroup : NSObject{
@@ -73,25 +175,31 @@ class FGComponentGroup : NSObject{
     
     convenience required init(groupName: NSString){
         self.init()
-        self.name = groupName as! NSString
+        self.name = groupName
         self.componentsMutableArray = []
     }
     
-    private func componentGroupWithName(name: NSString, devices: NSArray)->FGComponentGroup{
-        var newComponentGroup = FGComponentGroup(groupName: name)
-        newComponentGroup.addComponents(components: devices)
-        var arrCom = getComponents() as [FGComponent]
+    convenience required init(componentGroupWithName name: NSString, devices: NSArray?){
+        self.init()
+        //let newComponentGroup = FGComponentGroup(groupName: name)
+        //newComponentGroup.addComponents(components: devices)
+        self.name = name
+        self.componentsMutableArray = []
+        let arrCom = getComponents() as [FGComponent]
         self.components?.append(contentsOf: arrCom)
-        return newComponentGroup
     }
-    private func addComponents(components: NSArray){
+    
+    func addComponents(components: NSArray){
         componentsMutableArray?.addObjects(from: components as! [FGComponent])
     }
     
-    private func getComponents()->[FGComponent]{
+    func getComponents()->[FGComponent]{
         return NSArray(array: componentsMutableArray!) as! [FGComponent]
     }
-
+    
+    override var description : String {
+        return "[<\(String(describing : self))> \(self.name) (\(self.components))]"
+    }
 }
 
 class FGControllableGroups: NSObject {

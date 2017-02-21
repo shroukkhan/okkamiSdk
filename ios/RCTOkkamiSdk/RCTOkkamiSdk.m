@@ -12,6 +12,180 @@
 RCT_EXPORT_MODULE();
 
 
+/**
+ * The purpose of this method is to provide general purpose way to call any core endpoint.
+ * Internally, the downloadPresets,downloadRoomInfo,connectToRoom all of them should use this method.
+ * <p>
+ * on success : downloadFromCorePromise.resolve(coreResponseJSONString)
+ * on failure:  downloadFromCorePromise.reject(Throwable e)
+ *
+ * @param endPoint                full core url . https://api.fingi.com/devices/v1/register
+ * @param getPost                 "GET" or "POST"
+ * @param payload                 JSON encoded payload if it is POST
+ * @param downloadFromCorePromise
+ */
+
+RCT_EXPORT_METHOD(executeCoreRESTCall
+                  
+                  :(NSString*)endPoint
+                  :(NSString*)getPost
+                  :(NSString*)payLoad
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:@"executeCoreRESTCall" body:nil];
+    //ok
+    resolve(@YES);
+    
+}
+
+/**
+ * Connects to hub using the presets and attempts to login ( send IDENTIFY)
+ * If Hub is already connected, reply with  hubConnectionPromise.resolve(true)
+ * on success: hubConnectionPromise.resolve(true)
+ * on failure:  hubConnectionPromise.reject(Throwable e)
+ * Native module should also take care of the PING PONG and reconnect if PING drops
+ *
+ * @param secrect secrect obtained from core
+ * @param token   token obtained from core
+ * @param hubConnectionPromise
+ */
+RCT_EXPORT_METHOD(connectToHub
+                  
+                  :(NSString*)secret
+                  :(NSString*)token
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:@"connectToHub" body:nil];
+    //ok
+    resolve(@YES);
+    
+}
+
+
+/**
+ * Disconnects and cleans up the existing connection
+ * If Hub is already connected, reply with  hubDisconnectionPromise.resolve(true) immediately
+ * on success: hubDisconnectionPromise.resolve(true)
+ * on failure:  hubDisconnectionPromise.reject(Throwable e)
+ *
+ * @param hubDisconnectionPromise
+ */
+RCT_EXPORT_METHOD(disconnectFromHub
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:@"disconnectFromHub" body:nil];
+    //ok
+    resolve(@YES);
+    
+}
+
+/**
+ * Disconnects and cleans up the existing connection
+ * Then attempt to connect to hub again.
+ * on success ( hub has been successfully reconnected and logged in ) : hubReconnectionPromise.resolve(true)
+ * on failure:  hubReconnectionPromise.reject(Throwable e)
+ *
+ * @param hubReconnectionPromise
+ */
+
+RCT_EXPORT_METHOD(reconnectToHub
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:@"reconnectToHub" body:nil];
+    //ok
+    resolve(@YES);
+    
+}
+
+/**
+ * Send command to hub. a command can look like this:
+ * POWER light-1 ON
+ * 2311 Default | POWER light-1 ON
+ * 1234 2311 Default | POWER light-1 ON
+ * <p>
+ * The native module should fill in the missing info based on the command received
+ * such as filling in room , group , none if not provided and skip those if provied already
+ * on success ( successful write ) : sendMessageToHubPromise.resolve(true)
+ * on failure:  hubDisconnectionPromise.reject(Throwable e)
+ *
+ * @param sendMessageToHubPromise
+ */
+
+RCT_EXPORT_METHOD(sendCommandToHub
+                  
+                  :(NSString*)command
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:@"sendCommandToHub" body:nil];
+    //ok
+    resolve(@YES);
+    
+}
+
+
+
+/**
+ * if hub is currently connected + logged in :
+ * hubLoggedPromise.resolve(true);
+ * else
+ * hubLoggedPromise.resolve(false);
+ *
+ * @param hubLoggedPromise
+ */
+
+RCT_EXPORT_METHOD(isHubLoggedIn
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:@"isHubLoggedIn" body:nil];
+    //ok
+    resolve(@YES);
+    
+}
+
+/**
+ * if hub is currently connected ( regardless of logged in ) :
+ * hubConnectedPromise.resolve(true);
+ * else
+ * hubConnectedPromise.resolve(false);
+ *
+ * @param hubConnectedPromise
+ */
+
+
+RCT_EXPORT_METHOD(isHubConnected
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:@"isHubConnected" body:nil];
+    //ok
+    resolve(@YES);
+    
+}
+
+
+
+
+
 
 /*-------------------------------------- Utility   --------------------------------------------------*/
 
@@ -19,17 +193,19 @@ RCT_EXPORT_MODULE();
 /**
  * Delete stored information of the user
  */
-RCT_EXPORT_METHOD(wipeUserData
+
+/*RCT_EXPORT_METHOD(wipeUserData
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
     
-}
+}*/
 
 /**
  * Entry point of the native sdk
  */
 
+/*
 RCT_EXPORT_METHOD(start
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
@@ -38,19 +214,21 @@ RCT_EXPORT_METHOD(start
     RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
     [main preConnect];
     [self.bridge.eventDispatcher sendAppEventWithName:@"onStart" body:@{@"command": @"On Start"}];
-}
+}*/
 
 /**
  * restart the native sdk,
  * basically stop and call the entry point of the sdk
  */
+
+/*
 RCT_EXPORT_METHOD(restart
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
     
     
-}
+}*/
 
 /*---------------------------------------------------------------------------------------------------*/
 
@@ -64,6 +242,7 @@ RCT_EXPORT_METHOD(restart
  * The native module should take care of persisting the device secret and token obtained from core
  * and making sure it is secure/encrypted
  */
+/*
 RCT_EXPORT_METHOD(connectToRoom
                   :(NSString*)username
                   :(NSString*)password
@@ -75,29 +254,17 @@ RCT_EXPORT_METHOD(connectToRoom
     RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
     [main connectToRoomWithRoom:@"demo3" token:@"1234"];
     [self.bridge.eventDispatcher sendAppEventWithName:@"connectToRoom" body:@{@"command": @"Connect To Room"}];
-/* Example for michael
-    MyOkkamiSDKImplementationLibrary should be a swift library [ framework ? ]
-    @try {
-        NSString * x = [MyOkkamiSDKImplementationLibrary connectToRoom:username :password];
-        resolve(x);
-    }
-    @catch (NSException *exception) {
-        reject(@"xxx", @"xxx", exception);
-    }
-    @finally {
-        
-    }
-  
- */
+
     
 }
-
+*/
 
 /**
  * Disconnects from the current room. Applicable to downloadable apps.
  * on success: resolve(NSString* coreResponseJSONString )
  * on failure: reject(@"xxx", @"xxx", NSError * error)
  */
+/*
 RCT_EXPORT_METHOD(disconnectFromRoom
                   
                   :(RCTPromiseResolveBlock)resolve
@@ -106,7 +273,7 @@ RCT_EXPORT_METHOD(disconnectFromRoom
     RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
     [main disconnectFromRoom];
     [self.bridge.eventDispatcher sendAppEventWithName:@"disconnectFromRoom" body:@{@"command": @"Disconnect From Room"}];
-}
+}*/
 
 /**
  * Registers the device with a room using the given UID .
@@ -116,13 +283,14 @@ RCT_EXPORT_METHOD(disconnectFromRoom
  * The native module should take care of persisting the device secret and token obtained from core
  * and making sure it is secure/encrypted
  */
+/*
 RCT_EXPORT_METHOD(registerToCore
                   
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
     
-}
+}*/
 
 /**
  * Connects to hub using the presets and attempts to login ( send IDENTIFY)
@@ -131,21 +299,16 @@ RCT_EXPORT_METHOD(registerToCore
  * on failure:  reject(@"xxx", @"xxx", NSError * error)
  * Native module should also take care of the PING PONG and reconnect if PING drops
  */
+/*
 RCT_EXPORT_METHOD(connectToHub
                   
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    /*RCTOkkamiMain * helloWorld = [RCTOkkamiMain newInstance];
-    [helloWorld setupRxWithCompletion:^(NSString *test){
-        //NSLog(@"Test Dictionary return : %@", test);
-        NSDictionary *props = test;
-        [self.bridge.eventDispatcher sendAppEventWithName:@"onHubConnected" body:@{
-                                                                                   @"currentData":props
-                                                                                   }];
-    }];*/
+ 
     
     RCTOkkamiMain *helloWorld = [RCTOkkamiMain newInstance];
+    [helloWorld getGuestService];
     //[helloWorld preConnect];
     //[helloWorld connectToRoom];
     //[helloWorld postToken];
@@ -159,7 +322,7 @@ RCT_EXPORT_METHOD(connectToHub
 //    }
     
 }
-
+*/
 
 /**
  * Disconnects and cleans up the existing connection
@@ -168,6 +331,7 @@ RCT_EXPORT_METHOD(connectToHub
  * on failure: reject(@"xxx", @"xxx", NSError * error)
  *
  */
+/*
 RCT_EXPORT_METHOD(disconnectFromHub
                   
                   :(RCTPromiseResolveBlock)resolve
@@ -176,7 +340,7 @@ RCT_EXPORT_METHOD(disconnectFromHub
     [self.bridge.eventDispatcher sendAppEventWithName:@"onHubDisconnected" body:nil];
 }
 
-
+*/
 
 /**
  * Send command to hub. a command can look like this:
@@ -189,6 +353,7 @@ RCT_EXPORT_METHOD(disconnectFromHub
  * on success ( successful write ) : sendMessageToHubPromise.resolve(true)
  * on failure:  hubDisconnectionPromise.reject(@"xxx", @"xxx", NSError * error)
  */
+/*
 RCT_EXPORT_METHOD(sendCommandToHub:(NSString*)command
                   
                   :(RCTPromiseResolveBlock)resolve
@@ -199,7 +364,7 @@ RCT_EXPORT_METHOD(sendCommandToHub:(NSString*)command
                                                  body:@{@"command": @"1234 2311 Default | POWER light-1 ON"}];
     
 }
-
+*/
 
 /**
  * downloads presets from core.
@@ -208,6 +373,7 @@ RCT_EXPORT_METHOD(sendCommandToHub:(NSString*)command
  * on success : resolve(coreResponseJSONString)
  * on failure:  reject(@"xxx", @"xxx", NSError * error)
  */
+/*
 RCT_EXPORT_METHOD(downloadPresets
                   :(BOOL)force
                   
@@ -219,11 +385,12 @@ RCT_EXPORT_METHOD(downloadPresets
     [self.bridge.eventDispatcher sendAppEventWithName:@"downloadPresets"
                                                  body:@{@"command": @"Download Presets"}];
 }
-
+*/
 /**
  * Similar strategy as downloadPresets method
  *
  */
+/*
 RCT_EXPORT_METHOD(downloadRoomInfo
                   :(BOOL)force
                   
@@ -235,7 +402,7 @@ RCT_EXPORT_METHOD(downloadRoomInfo
     [self.bridge.eventDispatcher sendAppEventWithName:@"downloadRoomInfo"
                                                  body:@{@"command": @"Download Room Info"}];
 }
-
+*/
 /**
  * The purpose of this method is to provide general purpose way to call any core endpoint.
  * Internally, the downloadPresets,downloadRoomInfo,connectToRoom all of them should use this method.
@@ -247,6 +414,7 @@ RCT_EXPORT_METHOD(downloadRoomInfo
  * @param getPost                 "GET" or "POST"
  * @param payload                 JSON encoded payload if it is POST
  */
+/*
 RCT_EXPORT_METHOD(downloadFromCore
                   
                   :(NSString*)endPoint
@@ -259,13 +427,14 @@ RCT_EXPORT_METHOD(downloadFromCore
     
 }
 
-
+*/
 /**
  * if hub is currently connected + logged in :
  * resolve(true);
  * else
  * resolve(false);
  */
+/*
 RCT_EXPORT_METHOD(isHubLoggedIn
                   
                   :(RCTPromiseResolveBlock)resolve
@@ -276,7 +445,7 @@ RCT_EXPORT_METHOD(isHubLoggedIn
     //ok
     resolve(@YES);
     
-}
+}*/
 
 /**
  * if hub is currently connected ( regardless of logged in )  :
@@ -285,6 +454,7 @@ RCT_EXPORT_METHOD(isHubLoggedIn
  * resolve(false);
 *
  */
+/*
 RCT_EXPORT_METHOD(isHubConnected
                   
                   :(RCTPromiseResolveBlock)resolve
@@ -296,7 +466,7 @@ RCT_EXPORT_METHOD(isHubConnected
     resolve(@YES);
     
 }
-
+*/
 
 
 //Events emission
@@ -343,6 +513,7 @@ RCT_EXPORT_METHOD(isHubConnected
  * @param calledNumber
  * @param preferSip
  */
+/*
 RCT_EXPORT_METHOD(dial
                   
                   :(NSString*)calledNumber
@@ -353,11 +524,13 @@ RCT_EXPORT_METHOD(dial
 {
     
 }
-
+*/
 
 /**
  * Attempt to accept an incoming voip call
  */
+
+/*
 RCT_EXPORT_METHOD(receive
                   
                   :(RCTPromiseResolveBlock)resolve
@@ -366,11 +539,13 @@ RCT_EXPORT_METHOD(receive
 
     
 }
+ */
 /**
  * Hangup an incoming / ongoing voip Call
  *
  * @param hangupPromise
  */
+/*
 RCT_EXPORT_METHOD(hangup
                   
                   :(RCTPromiseResolveBlock)resolve
@@ -380,6 +555,10 @@ RCT_EXPORT_METHOD(hangup
     resolve(@YES);
     
 }
+*/
+
+
+
 
 
 //Events emission
