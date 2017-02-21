@@ -29,79 +29,28 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      /*-------------------------------------- Utility   --------------------------------------------------*/
 
 
-    /**
-     * Delete stored information
-     *
-     * @param wipeUserDataPromise
-     */
-    public void wipeUserData(Promise wipeUserDataPromise) {
 
-    }
-
-     /*---------------------------------------------------------------------------------------------------*/
-
-
-    /*-------------------------------------- Hub & Core -------------------------------------------------*/
+     /*---------------------------Core------------------------------------------------------------------------*/
 
     /**
-     * Connect to room. Applicable to downloadable apps
-     * on success: connectToRoomPromise.resolve(String coreResponseJSONString )
-     * on failure:  connectToRoomPromise.reject(Throwable e)
-     * The native module should take care of persisting the device secret and token obtained from core
-     * and making sure it is secure/encrypted
+     * The purpose of this method is to provide general purpose way to call any core endpoint.
+     * Internally, the downloadPresets,downloadRoomInfo,connectToRoom all of them should use this method.
+     * <p>
+     * on success : downloadFromCorePromise.resolve(coreResponseJSONString)
+     * on failure:  downloadFromCorePromise.reject(Throwable e)
      *
-     * @param username
-     * @param password
-     * @param connectToRoomPromise
+     * @param endPoint                full core url . https://api.fingi.com/devices/v1/register
+     * @param getPost                 "GET" or "POST"
+     * @param payload                 JSON encoded payload if it is POST
+     * @param downloadFromCorePromise
      */
     @ReactMethod
-    public void connectToRoom(String username, String password, Promise connectToRoomPromise) {
-        /*
-            //example success response
-            connectToRoomPromise.resolve("{}");
-            //example failure response
-            connectToRoomPromise.reject(new Throwable());
-        */
-        /* example  of calling external lib
-        try{
-            String x = com.okkami.MyOkkamiSDKImplementationLibrary.connectToRoom(xxxx,xxxx);
-            connectToRoomPromise.resolve(x);
-        }catch (Exception e)
-        {
-            connectToRoomPromise.reject(e);
-        }
-        */
-
+    public void executeCoreRESTCall(String endPoint, String getPost, String payload, Promise downloadFromCorePromise) {
 
     }
 
+    /*-------------------------------------- Hub -------------------------------------------------*/
 
-    /**
-     * Disconnects from the current room. Applicable to downloadable apps.
-     * on success: disconnectFromRoomPromise.resolve(String coreResponseJSONString )
-     * on failure:  disconnectFromRoomPromise.reject(Throwable e)
-     *
-     * @param disconnectFromRoomPromise
-     */
-    @ReactMethod
-    public void disconnectFromRoom(Promise disconnectFromRoomPromise) {
-
-    }
-
-    /**
-     * Registers the device with a room using the given UID .
-     * Applicable to property locked Apps
-     * on success: registerPromise.resolve(String coreResponseJSONString )
-     * on failure:  registerPromise.reject(Throwable e)
-     * The native module should take care of persisting the device secret and token obtained from core
-     * and making sure it is secure/encrypted
-     *
-     * @param registerPromise
-     */
-    @ReactMethod
-    public void registerToCore(String UID, Promise registerPromise) {
-
-    }
 
     /**
      * Connects to hub using the presets and attempts to login ( send IDENTIFY)
@@ -161,47 +110,8 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
 
     }
 
-    /**
-     * downloads presets from core.
-     * If force == true, force download from core
-     * If force == false, and there is already presets from core, reply with that
-     * on success : downloadPresetsPromise.resolve(coreResponseJSONString)
-     * on failure:  downloadPresetsPromise.reject(Throwable e)
-     *
-     * @param force
-     * @param downloadPresetsPromise
-     */
-    @ReactMethod
-    public void downloadPresets(boolean force, Promise downloadPresetsPromise) {
 
-    }
 
-    /**
-     * Similar strategy as downloadPresets method
-     *
-     * @param downloadRoomInfoPromise
-     */
-    @ReactMethod
-    public void downloadRoomInfo(boolean force , Promise downloadRoomInfoPromise) {
-
-    }
-
-    /**
-     * The purpose of this method is to provide general purpose way to call any core endpoint.
-     * Internally, the downloadPresets,downloadRoomInfo,connectToRoom all of them should use this method.
-     * <p>
-     * on success : downloadFromCorePromise.resolve(coreResponseJSONString)
-     * on failure:  downloadFromCorePromise.reject(Throwable e)
-     *
-     * @param endPoint                full core url . https://api.fingi.com/devices/v1/register
-     * @param getPost                 "GET" or "POST"
-     * @param payload                 JSON encoded payload if it is POST
-     * @param downloadFromCorePromise
-     */
-    @ReactMethod
-    public void downloadFromCore(String endPoint, String getPost, String payload, Promise downloadFromCorePromise) {
-
-    }
 
     /**
      * if hub is currently connected + logged in :
@@ -258,106 +168,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
 
     /*---------------------------------------------------------------------------------------------------*/
 
-    /*-------------------------------------- SIP / PhoneCall --------------------------------------------*/
-
-
-    // SIP should be enabled / disabled autometically by the native sdk based on what is set in the preset
-    // If Downloadable app, registration should not persist when app is in background
-    // If property locked app, registration should persist even in background
-    // Registration should happen as soon as downloadPresets is successful
-
-
-    /**
-     * Dial a number. if voip Not available, dial using native dialer
-     *
-     * @param calledNumber
-     * @param preferSip
-     * @param dialPromise
-     */
-    public void dial(String calledNumber, boolean preferSip, Promise dialPromise) {
-
-    }
-
-    /**
-     * Attempt to accept an incoming voip call
-     *
-     * @param acceptPromise
-     */
-    public void recieve(Promise acceptPromise) {
-
-    }
-
-    /**
-     * Hangup an incoming / ongoing voip Call
-     *
-     * @param hangupPromise
-     */
-    public void hangup(Promise hangupPromise) {
-
-    }
-
-
-    //Events emission
-    /*
-    *  onIncomingCall
-    *            WritableMap map = Arguments.createMap();
-    *            map.putString("caller", "CALLER_NUMBER");
-    *            map.putString("uniqueId", "CALL_UNIQUE_ID");
-    *            map.putString("eventData", "JSON_STRING");
-    *            this.sendEventToJs("onIncomingCall", map);
-    *  onSipEvent
-    *            WritableMap map = Arguments.createMap();
-    *            map.putString("eventNumber", "SIP_EVENT_NUMBER_LIKE_200_400_404_ETC");
-    *            map.putString("eventData", "JSON_STRING");
-    *            this.sendEventToJs("onSipEvent", map);
-    *  onCallHangup
-    *            WritableMap map = Arguments.createMap();
-    *            map.putString("caller", "CALLER_NUMBER");
-    *            map.putString("uniqueId", "CALL_UNIQUE_ID");
-    *            map.putString("eventData", "JSON_STRING");
-    *            this.sendEventToJs("onCallHangup", map);
-    *  onSipRegistrationStatusChanged
-    *            WritableMap map = Arguments.createMap();
-    *            map.putString("status", ""); // status should be one of : REGISTERING, REGISTERED , AUTHENTICATION_FAILURE , UNREGISTERED ,
-    *            map.putString("eventData", "JSON_STRING");
-    *            this.sendEventToJs("onSipRegistrationStatusChanged", map);
-    *
-    *            */
-
-
-
-
-    /*---------------------------------------------------------------------------------------------------*/
-
-
-
-    /*-------------------------------------- WIFI --------------------------------------------------------*/
-
-    //wifi status is to be managed by the native sdk internally.
-    //for property locked app, the sdk should set SSID and password as soon as downloadPresets is successful
-
-
-    //Events emission
-    /*
-    *
-    *  onWifiStatusChanged
-    *            WritableMap map = Arguments.createMap();
-    *            map.putString("status", ""); // status should be one of : CONNECTING,CONNECTED,DISCONNECTED
-    *            map.putString("eventData", "JSON_STRING"); //SSID , encryption etc..
-    *            this.sendEventToJs("onWifiStatusChanged", map);
-    *
-    *            */
-
-
-    /*---------------------------------------------------------------------------------------------------*/
-
-
-    /*-------------------------------------- Keys --------------------------------------------------------*/
-
-    //?? need discussion
-
-
-    /*---------------------------------------------------------------------------------------------------*/
 
 
 }
