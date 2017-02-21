@@ -38,27 +38,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
 
     }
 
-    /**
-     * Entry point of the native sdk
-     *
-     * @param startPromise
-     */
-    public void start(Promise startPromise) {
-
-
-    }
-
-    /**
-     * restart the native sdk,
-     * basically stop and call the entry point of the sdk
-     *
-     * @param restartPromise
-     */
-    public void restart(Promise restartPromise) {
-
-
-    }
-
      /*---------------------------------------------------------------------------------------------------*/
 
 
