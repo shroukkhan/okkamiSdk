@@ -9,7 +9,9 @@ export default () => {
   const rootReducer = combineReducers({
     temperature: require('./TemperatureRedux').reducer,
     login: require('./LoginRedux').reducer,
-    search: require('./SearchRedux').reducer
+    search: require('./SearchRedux').reducer,
+    facebookLogin: require('./FacebookLoginRedux').reducer,
+    userConnect: require('./UserConnectRedux').reducer
   })
 
   return configureStore(rootReducer, rootSaga)

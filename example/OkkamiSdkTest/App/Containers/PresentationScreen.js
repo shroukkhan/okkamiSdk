@@ -44,9 +44,9 @@ export default class PresentationScreen extends React.Component {
   }
 
   componentWillUnmount() {
-    console.log('unsubscribe here')
+    console.log('unsubscribe here ' + this.subscriptions.length)
     for (var i = 0; i < this.subscriptions.length; i++) {
-      subscriptions[i].remove();
+      //subscriptions[i].remove();
     }
   }
 
