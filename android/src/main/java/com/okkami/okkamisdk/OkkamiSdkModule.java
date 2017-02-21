@@ -59,10 +59,12 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      * on failure:  hubConnectionPromise.reject(Throwable e)
      * Native module should also take care of the PING PONG and reconnect if PING drops
      *
+     * @param secrect secrect obtained from core
+     * @param token   token obtained from core
      * @param hubConnectionPromise
      */
     @ReactMethod
-    public void connectToHub(Promise hubConnectionPromise) {
+    public void connectToHub(String secrect,String token , Promise hubConnectionPromise) {
 
     }
 
