@@ -67,6 +67,10 @@ class HubConnectionDemoIOS extends React.Component {
           console.log('Command --> ',e, e.command)
     });
 
+    aSubscription = DeviceEventEmitter.addListener('guestService', function (e) {
+          console.log('Command --> ',e, e.command)
+    });
+
     subscriptions.push(aSubscription)
   }
 
@@ -198,6 +202,15 @@ class HubConnectionDemoIOS extends React.Component {
         console.log("downloadRoomInfo failed . error : " + e.message)
       }
   }
+  guestService(){
+      try {
+        var result = OkkamiSdk.connectToHub();
+        console.log("guestService successful..." + result );
+        
+      } catch (e) {
+        console.log("guestService failed . error : " + e.message)
+      }
+  }
   /*<RoundedButton onPress={this.preconnect}>
             preconnect
           </RoundedButton>
@@ -240,6 +253,10 @@ class HubConnectionDemoIOS extends React.Component {
 
           <RoundedButton onPress={this.downloadRoomInfo}>
             Download Room Info 
+          </RoundedButton>
+
+          <RoundedButton onPress={this.guestService}>
+            Guest Service 
           </RoundedButton>
 
         
