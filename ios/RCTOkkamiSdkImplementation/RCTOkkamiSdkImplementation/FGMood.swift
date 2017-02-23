@@ -119,6 +119,6 @@ class FGMood: FGIconDictObject {
         }, repeats: true)*/
     }
     override var description : String {
-        return "[<\(NSStringFromClass(self.self as! AnyClass))> name:\(self.name)]"
+        return "[<\(self)> name:\(self.name)]"
     }
 }

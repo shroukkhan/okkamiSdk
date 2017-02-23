@@ -7,7 +7,9 @@
 //
 
 import UIKit
-
+import ReachabilitySwift
+import CocoaAsyncSocket
+import Log
 
 /** Default read timeout. 10 seconds. */
 let kFGSocketReadTimeout: TimeInterval = 15.0
@@ -55,15 +57,57 @@ let ENABLE_PING_PONG_LOGGING = false
  interested command arrives.
  */
 
-class FGSocket: NSObject {
+enum HubError: Error{
+    case NoConnection
+    case NoDeviceID
+    case RequestTimeout
+    case HubSyncTimeError
+    case InvalidSignature
+    case DeviceNotConnectedToRoom
+    case InvalidParameter
     
-    /*
+    var description: String {
+        switch self {
+        case .NoConnection:
+            return "No Internet Connection. Check your connection"
+        case .NoDeviceID:
+            return "There is no valid device ID"
+        case .RequestTimeout:
+            return "Took Request Too Long. Timeout"
+        case .HubSyncTimeError:
+            return "Hub Sync Time Error"
+        case .InvalidSignature:
+            return "Invalid Signature"
+        case .DeviceNotConnectedToRoom:
+            return "Device is Not Connected To Room"
+        case .InvalidParameter:
+            return "Invalid Parameter"
+        }
+    }
+}
+
+class FGSocket: NSObject, GCDAsyncSocketDelegate, FGCommandListenerDelegate {
+    let Log = Logger()
+    let reachability = Reachability()!
+
     /** Hub base URL. Default is @"https://hub.fingi.com" */
     var baseURL: String = "https://hub.fingi.com"
     /** Hub port. Default is 20020 */
     var port: Int = 20020
     /** Specifies if socket is connected or not */
-    var isConnected: Bool = false
+    var isConnected: Bool {
+        get{
+            var result: Bool = false
+            #if MOCK_HUB_LOGIN_RESPONSE
+                result = self.mockHubConnected
+            #else
+                result = self.socket!.isConnected
+            #endif
+            return result
+        }set{
+            self.isConnected = newValue
+        }
+    }
     /** The last command sent OR received. */
     var lastCommand: FGCommand?
     /** The last command received. */
@@ -71,13 +115,14 @@ class FGSocket: NSObject {
     var lastCommandRead: FGCommand? {
         get {
             // TODO: add getter implementation
+            return self.lastCommandRead
         }
         set(cmd) {
             if (cmd != nil) {
                 self.lastCommandRead = cmd
                 self.lastCommand = cmd
-                var center = NotificationCenter.default
-                center.post(name: NSNotification.Name(rawValue: FGSocketNotificationNameCommandDidRead), object: self, userInfo: ["socket": self, "cmd": cmd])
+                let center = NotificationCenter.default
+                center.post(name: NSNotification.Name(rawValue: FGSocketNotificationNameCommandDidRead), object: self, userInfo: ["socket": self, "cmd": cmd!])
                 self.respond(toMessageRead: cmd!)
             }
         }
@@ -92,20 +137,38 @@ class FGSocket: NSObject {
     
     
     /** The last command sent. */
-    var lastCommandWrite: FGCommand?
+    var lastCommandWrite: FGCommand?{
+        get{
+            return self.lastCommandWrite
+        }set{
+            if (newValue != nil) {
+                self.lastCommandWrite = newValue
+                self.lastCommand = newValue
+                let center = NotificationCenter.default
+                center.post(name: NSNotification.Name(rawValue: FGSocketNotificationNameCommandDidWrite), object: self, userInfo: ["socket": self, "cmd": newValue!])
+            }
+        }
+    }
     /** The room that socket connection is in */
     var room: FGRoom?
     /** Enables Ping Pong command logging when send/receive. Default is NO. */
     var isEnablePingPongLogging: Bool = false
     
-    //var socket: GCDAsyncSocket?
+    var socket: GCDAsyncSocket?
     
     var connectHubBlock: ((AnyObject, NSError) -> Void)? = nil
     var disconnectHubBlock: ((AnyObject, NSError) -> Void)? = nil
     var identifyDeviceIDBlock: ((AnyObject, NSError) -> Void)? = nil
     
     var completionBlock: ((AnyObject, NSError) -> Void)? = nil
-    var nonce: Int = 0
+    var nonce: Int{
+        get{
+            self.nonce += 1
+            return self.nonce
+        }set{
+            self.nonce = newValue
+        }
+    }
     var mockHubConnected: Bool = false
     var isRetryingHello: Bool = false
     
@@ -113,7 +176,7 @@ class FGSocket: NSObject {
     override init() {
         super.init()
         self.isEnablePingPongLogging = ENABLE_PING_PONG_LOGGING
-        //self.socket = GCDAsyncSocket(delegate: self, delegateQueue: DispatchQueue.main)
+        self.socket = GCDAsyncSocket(delegate: self, delegateQueue: DispatchQueue.main)
         self.mockHubConnected = false
         self.resetNonceCounter()
         
@@ -121,98 +184,117 @@ class FGSocket: NSObject {
     
     func shouldLogCommand(_ command: FGCommand) -> Bool {
         if self.isEnablePingPongLogging == false {
-            /*if command.isActionEqual(FGSocketCmdActionPING) || command.isActionEqual(FGSocketCmdActionPONG) {
+            if command.isActionEqual(FGSocketCmdActionPING) || command.isActionEqual(FGSocketCmdActionPONG) {
                 return false
-            }*/
+            }
         }
         return true
     }
     
- */
-    /*func connectToHub() {
+
+    func connectToHub() {
         // avoid multiple run at the same time
-        //FGLogInfo("*** Connecting to HUB: %@", FGSession.shared().hubURL)
-        var writeErr: Error? = nil
-        self.disconnect(withCallback: nil)
+        Log.info("*** Connecting to HUB: %@", FGSession.sharedInstance.hubURL)
+        
+        //var writeErr: Error? = nil
+        self.disconnect()
         // initialize, and also for safety
         // Remove URL scheme from the original URL.
         // e.g. change @"https://hub.fingi.com" to @"hub.fingi.com"
         // https protocal handling with be checked using `originalURL` again later on.
         // See in `-socket:didConnectToHost:port:` method.
+        
         self.originalURL = FGSession.sharedInstance.hubURL
-        var URLString: String? = self.originalURL?.absoluteString
-        var dividerRange: NSRange = (URLString? as NSString).rangeOf("://")
+        let URLString: String! = self.originalURL!.absoluteString
+        let dividerRange: NSRange = (URLString! as NSString).range(of: "://")
         var divider: Int = NSMaxRange(dividerRange)
         if divider == NSNotFound {
             divider = 0
         }
-        var URLNoScheme: String? = (URLString as? NSString)?.substring(from: divider)
-        var suffixDividerRange: NSRange = (URLNoScheme? as NSString).rangeOf(":", options: .backwards)
+        let URLNoScheme: String! = (URLString as NSString).substring(from: divider)
+        let suffixDividerRange: NSRange = (URLNoScheme! as NSString).range(of: ":", options: .backwards)
         var URLNoSuffix: String? = URLNoScheme
         if suffixDividerRange.location != NSNotFound {
-            URLNoSuffix = (URLNoScheme as? NSString)?.substring(to: suffixDividerRange.location)
+            URLNoSuffix = (URLNoScheme as NSString).substring(to: suffixDividerRange.location)
         }
-        //FGLogInfo("*** Connecting to HUB: %@", URLNoSuffix)
-        var hubConnectOK: Bool? = try! self.socket.connect(toHost: URLNoSuffix, on: FGSession.shared().hubPort, withTimeout: 60)
+        
+        Log.info("*** Connecting to HUB: %@", URLNoSuffix!)
+        do {
+            try self.socket?.connect(toHost: URLNoSuffix!, onPort: UInt16(FGSession.sharedInstance.hubPort), withTimeout: 60)
+        } catch {
+            let err = HubError.NoConnection
+            self.runConnectHubBlockWithError(err)
+            Log.error(err.description, terminator: "😱😱😱\n")
+        }
         // success operation is in -socketDidSecure:
-        if hubConnectOK == nil {
-            var err = Error.fingiError(withCode: FG_ErrorCode_NoInternetConnection, description: "*** Cannot connect to HUB, socket error")
-            try! self.runConnectHubBlock()
-        }
+        /*if hubConnectOK == nil {
+            
+        }*/
     }
-    func identifyDeviceID(_ deviceID: String, callback block: FGErrorBlock) {
-        if self.identifyDeviceIDBlock {
-            return
-        }
+    func identifyDeviceID(_ deviceID: String) {
         // avoid multiple run at the same time
-        self.identifyDeviceIDBlock = block
+        //self.identifyDeviceIDBlock = block
         if deviceID == "" {
-            var err = Error.fingiError(withCode: FG_ErrorCode_InvalidParameter, description: "*** Cannot connect to HUB, no device ID to identify")
-            try! self.runIdentifyDeviceIDBlock()
+            let err = HubError.NoDeviceID
+            self.runIdentifyDeviceIDBlockWithError(err)
+            Log.error(err.description, terminator: "😱😱😱\n")
             return
         }
+        
         // Send IDENTIFY
         // Format IDENTIFY string as follows...
         // `nonce uid mode | IDENTIFY timestamp signature`
         // `1002 gcc-1 device | IDENTIFY 1377241498 239f2a1178421b5c65b3bdacf5783245dd`
-        var mode: String = "device"
-        var pipeHeaders: [Any] = [self.nonce(), deviceID, mode]
-        var m = FGCommand(array: ["IDENTIFY", String.timestampUTC()])
-        m.pipeHeaders = pipeHeaders
-        m.addSignature(withAuthSecret: self.room.auth.secret)
-        self.write(m)
+        let mode: String = "device"
+        let pipeHeaders: [Any] = [self.nonce, deviceID, mode]
+        let timestamp = NSDate().timeIntervalSince1970
+        let timestampStr:String = String(format:"%.0f", timestamp)
+        let m = FGCommand(array: ["IDENTIFY", timestampStr])
+        m!.pipeHeaders = pipeHeaders
+        m!.addSignature(withAuthSecret: self.room!.auth!.secret as String)
+        self.write(m!)
         // Setup listener
-        var cmds: [Any] = [FGCommand(string: "IDENTIFIED"), FGCommand(string: "ERROR")]
-        self.listenIdentified = FGCommandListener(self, commands: cmds, timeout: kFGSocketReadTimeout, exactMatch: false, delegate: self)
+        let cmds: [Any] = [FGCommand(string: "IDENTIFIED")!, FGCommand(string: "ERROR")!]
+        self.listenIdentified = FGCommandListener(socket: self, commands: cmds, timeout: kFGSocketReadTimeout, exactMatch: false, delegate: self)
     }
     
     func retryHello() {
         self.isRetryingHello = true
-        self.disconnect(withCallback: nil)
-        var t: TimeInterval = self.exponentialRetryTime(for: self.helloRetryCount)
-        //FGLogWarnWithClsName("Hub busy, disconnected socket and retrying in %.1f sec (attempt %lu)", t, UInt(self.helloRetryCount))
-        self.performSelector(#selector(self.connectToHubWithCallback), withObject: self.connectHubBlock, afterDelay: t)
+        self.disconnect()
+        let t: TimeInterval = self.exponentialRetryTime(forCount: self.helloRetryCount)
+        Log.warning("Hub busy, disconnected socket and retrying in %.1f sec (attempt %lu)", t, UInt(self.helloRetryCount))
+        //self.performwithSelector(#selector(self.connectToHub), withObject: self.connectHubBlock, afterDelay: t)
+        let deadlineTime = DispatchTime.now() + t
+        DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
+            self.connectToHub()
+        }
     }
     
-    func listener(_ listener: FGCommandListener, foundMatchedIdx idx: Int, receivedCommand cmd: FGCommand, orStoppedWithError err: Error?) {
+    func listenerDidStart(_ lis: FGCommandListener) {
+    }
+    
+    
+    func listener(_ listener: FGCommandListener, foundMatchedIdx idx: Int, receivedCommand cmd: FGCommand?, orStoppedWithError err: Error?) {
         // HELLO
         if listener == self.listenHello {
             if err != nil {
-                try! self.runConnectHubBlock()
+                self.runConnectHubBlockWithError(err)
+                //Log.error(err.description, terminator: "😱😱😱\n")
                 return
             }
             if idx == 0 {
                 // Server is connected as normal. Sweet.
-                try! self.runConnectHubBlock()
+                self.runConnectHubBlockWithError(err)
+                //Log.error(err.description, terminator: "😱😱😱\n")
             }
             else if idx == 1 {
                 // Server detected itself under load so all new connections will be discarded until resources becomes available again.
                 // Clients should retry the connection using exponentially-increasing timeout as to not flood the already-flooded hub.
                 // - When received E_THROTTLE on connect to hub, disconnect and reconnect with exponentially increasing timeout.
                 if listener == self.listenHello {
-                    if (cmd.action == "ERROR") {
+                    if (cmd!.action == "ERROR") {
                         var error: Error? = nil
-                        if (cmd.arguments.first == "E_THROTTLE") {
+                        if ((cmd!.arguments.first as! String) == "E_THROTTLE") {
                             if self.helloRetryCount < 5 {
                                 self.retryHello()
                                 if self.isRetryingHello {
@@ -221,35 +303,37 @@ class FGSocket: NSObject {
                             }
                             else {
                                 self.isRetryingHello = false
-                                error = Error.fingiError(withCode: FG_ErrorCode_RequestTimeout, description: "Hub busy (keep getting E_THROTTLE response)", recovery: "The server is busy right now. Please try again later.")
-                                FGLogErrorWithClsName("Hub busy (keep getting E_THROTTLE response)")
+                                //error = Error.fingiError(withCode: FG_ErrorCode_RequestTimeout, description: "Hub busy (keep getting E_THROTTLE response)", recovery: "The server is busy right now. Please try again later.")
+                                error = HubError.RequestTimeout
+                                Log.error("Hub busy (keep getting E_THROTTLE response)", terminator: "😱😱😱\n")
                             }
                         }
-                        else if (cmd.arguments.first == "E_TIME") {
-                            error = Error.fingiError(withCode: FG_ErrorCode_HubSyncTimeError, description: "Time out of sync (E_TIME)", recovery: "Your device time is too different from server. Please adjust your time and try again.")
-                            FGLogErrorWithClsName("Time out of sync (E_TIME)")
-                        }else if (cmd.arguments.first == "E_INVALID_SIGNATURE") {
-                            error = Error.fingiError(withCode: FG_ErrorCode_InvalidSignature, description: "Invalid Signature (E_INVALID_SIGNATURE)", recovery: "Authentication failed. Please contact support.")
-                            //FGLogErrorWithClsName("Invalid Signature (E_INVALID_SIGNATURE)")
+                        else if ((cmd!.arguments.first as! String) == "E_TIME") {
+                            error = HubError.HubSyncTimeError
+                            Log.error("Time out of sync (E_TIME)", terminator: "😱😱😱\n")
+                        }else if ((cmd!.arguments.first as! String) == "E_INVALID_SIGNATURE") {
+                            error = HubError.InvalidSignature
+                            Log.error("Invalid Signature (E_INVALID_SIGNATURE)", terminator: "😱😱😱\n")
                         }
-                        try! self.runConnectHubBlock()
+                        self.runConnectHubBlockWithError(err)
                     }
                 }else if listener == self.listenIdentified {
                     if err != nil {
-                        self.disconnect(withCallback: nil)
-                        try? self.runIdentifyDeviceIDBlock()
+                        self.disconnect()
+                        self.runIdentifyDeviceIDBlockWithError(err)
                         return
                     }
                     if idx == 0 {
                         // connect to CORE and hub success
                         self.startPingTimer()
-                        try? self.runIdentifyDeviceIDBlock()
+                        self.runIdentifyDeviceIDBlockWithError(err)
                     }
                     else if idx == 1 {
                         // disconnect
-                        self.disconnect(withCallback: nil)
-                        var error = Error.fingiError(withCode: FG_ErrorCode_RequestTimeout, description: cmd.plainStringWithoutPipeHeaders())
-                        try? self.runIdentifyDeviceIDBlock()
+                        self.disconnect()
+                        let error = HubError.RequestTimeout
+                        Log.error(error.description, terminator: "😱😱😱\n")
+                        self.runIdentifyDeviceIDBlockWithError(err)
                     }
                 }else if listener == self.listenPong {
                     // fail
@@ -261,10 +345,11 @@ class FGSocket: NSObject {
                         }
                         else {
                             self.stopPingTimer()
-                            var t: TimeInterval = self.exponentialRetryTime(for: self.pingRetryCount)
-                            self.bk_performBlock({(_ obj: Any) -> Void in
+                            let t: TimeInterval = self.exponentialRetryTime(forCount: self.pingRetryCount)
+                            let deadlineTime = DispatchTime.now() + t
+                            DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
                                 self.pingAndListen()
-                            }, afterDelay: t)
+                            }
                         }
                         return
                     }
@@ -281,12 +366,9 @@ class FGSocket: NSObject {
     // - disconnect confirmed
     // - simulate hub disconnect
     
-    func disconnect(withCallback block: FGErrorBlock) {
-        if self.disconnectHubBlock {
-            return
-        }
-        self.disconnectHubBlock = block
-        self.socket.disconnect()
+    func disconnect() {
+        //self.disconnectHubBlock = block
+        self.socket!.disconnect()
         self.initializeSession()
         self.mockHubConnected = false
         #if MOCK_HUB_LOGIN_RESPONSE
@@ -296,46 +378,48 @@ class FGSocket: NSObject {
     // main write
     
     func write(_ cmd: FGCommand) -> Bool {
-        var center = NotificationCenter.default
-        if !FGReachability.isReachable() {
-            var err = Error.fingiError(withCode: FG_ErrorCode_NoInternetConnection, description: "write command failed, no internet connection", recovery: FG_WarnMsgForDummies_Offline)
-            FGLogWarn(err.localizedDescription)
-            center.post(name: FGSocketNotificationNameCommandDidWrite, object: self, userInfo: ["socket": self, "cmd": cmd, "error": err])
+        let center = NotificationCenter.default
+        
+        if !reachability.isReachable {
+            let err = HubError.NoConnection
+            Log.warning(err.description)
+            center.post(name: NSNotification.Name(rawValue: FGSocketNotificationNameCommandDidWrite), object: self, userInfo: ["socket": self, "cmd": cmd, "error": err])
             return false
         }
         if !self.isConnected {
-            var err = Error.fingiError(withCode: FG_ErrorCode_NotConnectedToRoom, description: "write command failed, device is not connected to room", recovery: FG_WarnMsgForDummies_Offline)
-            FGLogWarn(err.localizedDescription)
-            center.post(name: FGSocketNotificationNameCommandDidWrite, object: self, userInfo: ["socket": self, "cmd": cmd, "error": err])
+            let err = HubError.DeviceNotConnectedToRoom
+            Log.warning(err.description)
+            center.post(name: NSNotification.Name(rawValue: FGSocketNotificationNameCommandDidWrite), object: self, userInfo: ["socket": self, "cmd": cmd, "error": err])
             return false
         }
+        
         // Looks like GCDAsyncSocket write timeout is not working, and will never work.
         // http://stackoverflow.com/questions/15550942/gcdasyncsocket-write-timeout-does-not-work
-        self.socket.writeData(cmd.dataForWrite, with: kFGSocketWriteTimeout, tag: kTagCmd_default)
+        self.socket?.write(cmd.dataForWrite(), withTimeout: kFGSocketWriteTimeout, tag: kTagCmd_default)
         self.lastCommandWrite = cmd
         if self.shouldLogCommand(cmd) {
-            FGLogInfo(">  write to hub: %@", cmd.plainString)
+            Log.info(">  write to hub: %@", cmd.plainString)
         }
         return true
     }
     // simulate hub read
 
     func simulateRead(fromHub cmd: FGCommand) {
-        FGLogInfo("< read from hub: (simulated) %@", cmd.plainString)
+        Log.info("< read from hub: (simulated) %@", cmd.plainString)
         self.lastCommandRead = cmd
     }
     
     func simulateUnexpectedHubDisconnect(withDescription desc: String) {
-        self.socket.delegate = nil
+        self.socket!.delegate = nil
         // temporarily override delegate
         self.disconnectHubBlock = nil
-        self.disconnect(withCallback: nil)
-        self.socket.delegate = self
-        self.socketDidDisconnect(self.socket, withError: Error.fingiError(withCode: FG_ErrorCode_NoInternetConnection, description: desc))
+        self.disconnect()
+        self.socket!.delegate = self
+        self.socketDidDisconnect(self.socket!, withError: HubError.NoConnection)
     }
     // read WITHOUT timeout, all are partial matching
     
-    func onAnyCommand(withCallback block: FGCommandOnlyBlock) -> THObserver {
+    /*func onAnyCommand(withCallback block: FGCommandOnlyBlock) -> THObserver {
         return self.onCommands(withObject: nil, callback: block)
     }
     
@@ -366,12 +450,12 @@ class FGSocket: NSObject {
                 return self.onCommands(withObject: [action, arg], callback: block)
             }
         }
-    }
+    }*/
     var keyNew: String = "new"
     var keyLastCommand: String = "lastCommand"
     var keyLastCommandRead: String = "lastCommandRead"
     
-    func onCommands(withObject object: Any, callback block: FGCommandOnlyBlock) -> THObserver {
+    /*func onCommands(withObject object: Any, callback block: FGCommandOnlyBlock) -> THObserver {
         if !FGReachability.isReachableAndShowAlertIfNo() {
             return nil
         }
@@ -381,9 +465,9 @@ class FGSocket: NSObject {
             self.trigger(onCommand: change[keyNew], checkObj: checkObj, block: b)
         })
         return observer
-    }
+    }*/
     
-    func trigger(on m: FGCommand, checkObj: Any, block b: FGCommandOnlyBlock) {
+    /*func trigger(on m: FGCommand, checkObj: Any, block b: FGCommandOnlyBlock) {
         if (m is FGCommand) {
             if !checkObj {
                 BLOCK_SAFE_RUN(b, m)
@@ -413,53 +497,18 @@ class FGSocket: NSObject {
                 }
             }
         }
-    }
-    // MARK: - internal
+    }*/
     
-    func isConnected() -> Bool {
-        var result: Bool = false
-        #if MOCK_HUB_LOGIN_RESPONSE
-            result = self.mockHubConnected
-        #else
-            result = self.socket.isConnected()
-        #endif
-        return result
-    }
-    // reset variables
     
     func initializeSession() {
-        self.bk_removeAllBlockObservers()
+        //self.bk_removeAllBlockObservers()
         self.lastCommandRead = nil
-    }
-    // Protocol Formatting
-    
-    func nonce() -> String {
-        return "\(UInt(self.nonce += 1))"
-        // increment after use
     }
     
     func resetNonceCounter() {
         self.nonce = 1000
     }
-    
-    func setLastCommandWrite(_ cmd: FGCommand) {
-        if cmd {
-            self.lastCommandWrite = cmd
-            self.lastCommand = cmd
-            var center = NotificationCenter.default
-            center.post(name: FGSocketNotificationNameCommandDidWrite, object: self, userInfo: ["socket": self, "cmd": cmd])
-        }
-    }
-    
-    func setLastCommandRead(_ cmd: FGCommand) {
-        if cmd {
-            self.lastCommandRead = cmd
-            self.lastCommand = cmd
-            var center = NotificationCenter.default
-            center.post(name: FGSocketNotificationNameCommandDidRead, object: self, userInfo: ["socket": self, "cmd": cmd])
-            self.respond(toMessageRead: cmd)
-        }
-    }
+
     // MARK: - GCDAsyncSocketDelegate
     
     func socket(_ sock: GCDAsyncSocket, didConnectToHost host: String, port: UInt16) {
@@ -474,86 +523,87 @@ class FGSocket: NSObject {
         var settings = [AnyHashable: Any]()
         settings[GCDAsyncSocketManuallyEvaluateTrust] = true
         // see GCDAsyncSocket.h
-        sock.startTLS(settings)
+        sock.startTLS(settings as? [String: NSObject])
     }
     
-    func socket(_ sock: GCDAsyncSocket, didReceiveTrust trust: SecTrustRef, completionHandler: @escaping (_ shouldTrustPeer: Bool) -> Void) {
+    func socket(_ sock: GCDAsyncSocket, didReceive trust: SecTrust, completionHandler: @escaping (_ shouldTrustPeer: Bool) -> Void) {
         // always trust
-        if completionHandler {
-            completionHandler(true)
-        }
+        completionHandler(true)
     }
     
     func socketDidSecure(_ sock: GCDAsyncSocket) {
         // start receiving messages
-        self.socket.readData(withTimeout: -1, tag: kTagCmd_default)
+        self.socket?.readData(withTimeout: -1, tag: kTagCmd_default)
         if !self.isRetryingHello {
             self.helloRetryCount = 0
         }
         // Setup listener
-        var cmds: [Any] = [FGCommand(string: "HELLO"), FGCommand(string: "E_THROTTLE")]
+        let cmds: [Any] = [FGCommand(string: "HELLO")!, FGCommand(string: "E_THROTTLE")!]
         self.listenHello = FGCommandListener(socket: self, commands: cmds, timeout: kFGSocketReadTimeout, exactMatch: false, delegate: self)
     }
     
     func exponentialRetryTime(forCount count: Int) -> TimeInterval {
         // count : 0,1,2,3,...
         // return: 1,2,4,8,...
-        return pow(2, count)
+        return pow(2, Double(count))
     }
     
     func runConnectHubBlockWithError(_ err: Error?) {
         if err != nil {
-            self.disconnect(withCallback: nil)
+            self.disconnect()
         }
-        BLOCK_SAFE_RUN(self.connectHubBlock, err)
+        //BLOCK_SAFE_RUN(self.connectHubBlock, err)
         self.connectHubBlock = nil
     }
     
     func runIdentifyDeviceIDBlockWithError(_ err: Error?) {
         if err != nil {
-            self.disconnect(withCallback: nil)
+            self.disconnect()
         }
-        BLOCK_SAFE_RUN(self.identifyDeviceIDBlock, err)
+        //BLOCK_SAFE_RUN(self.identifyDeviceIDBlock, err)
         self.identifyDeviceIDBlock = nil
     }
     // also called on write fails
     
     
     func socketDidDisconnect(_ sock: GCDAsyncSocket, withError err: Error?) {
-        if self.connectHubBlock {
+        if (self.connectHubBlock != nil) {
             // if connect fail on check-in
-            try? self.runConnectHubBlock()
-            FGLogWarn("*** HUB disconnected")
+            self.runConnectHubBlockWithError(err)
+            Log.warning("*** HUB disconnected")
         }
         else {
             // unexpected disconnect, reconnect automatically
             // assuming there is no change with room device/component
-            if err && self.room.isInConnectedStates {
+            if (err != nil) && self.room!.isInConnectedStates() {
                 //if (err && FG_ISSESSION_OPENED([FGSession shared].state)) {
-                FGLogWarn("*** HUB disconnected with error: %@", err)
-                FGLogWarn("*** HUB reconnecting...")
-                self.room.state = FGRoomStateHubReconnecting
+                Log.warning("*** HUB disconnected with error: %@", err!)
+                Log.warning("*** HUB reconnecting...")
+                self.room!.state = FGRoomState.hubReconnecting
                 // It happens when room is moved while phone is in sleep/lock screen.
                 // Check if device is still in the same room before reconnect.
-                self.room.isDeviceStillInRoom(withCallback: {(_ success: Bool, _ err: Error) -> Void in
-                    if success || err {
+                self.room!.isDeviceStillInRoom(completion: { (success, err) in
+                    //success != nil || err != nil
+                    if err != nil {
                         // just reconnect if request failed
-                        self.room.reconnectToHubOnly()
+                        self.room!.reconnectToHubOnly()
                     }
                     else {
-                        FGSession.shared().selectedEntity.room.disconnect(withEndState: FGRoomStateDisconnectedByRoomMove, callback: nil)
+                        FGSession.sharedInstance.selectedEntity!.room!.disconnect(withEnd: FGRoomState.disconnectedByRoomMove, completion: { (callback) in
+                            
+                        })
                     }
-                    err = nil
+                    //err = nil
                     // shouldn't display any error
-                    BLOCK_SAFE_RUN(self.disconnectHubBlock, err)
+                    //BLOCK_SAFE_RUN(self.disconnectHubBlock, err)
                     // err always exists
                     self.disconnectHubBlock = nil
                 })
             }
             else {
                 // user disconnect
-                FGLogInfo("*** HUB disconnected")
-                BLOCK_SAFE_RUN(self.disconnectHubBlock, err)
+                Log.info("*** HUB disconnected")
+                //BLOCK_SAFE_RUN(self.disconnectHubBlock, err)
                 // err always exists
                 self.disconnectHubBlock = nil
             }
@@ -563,19 +613,19 @@ class FGSocket: NSObject {
     
     
     func socket(_ sock: GCDAsyncSocket, didRead data: Data, withTag tag: Int) {
-        var string = String(data, encoding: String.Encoding.utf8)
+        let string = String(data: data, encoding: String.Encoding.utf8)
         // multiple FGCommand may come in the same read, need to separate them first
-        var allLines: [Any] = string.components(separatedBy: "\r\n")
+        let allLines: [String] = string!.components(separatedBy: "\r\n")
         for s: String in allLines {
-            var cmd = FGCommand(string: s)
-            if cmd {
-                if self.shouldLogCommand(cmd) {
-                    FGLogInfo("< read from hub: %@", cmd.plainString)
+            let cmd = FGCommand(string: s)
+            if (cmd != nil) {
+                if self.shouldLogCommand(cmd!) {
+                    Log.info("< read from hub: %@", cmd!.plainString)
                 }
                 self.lastCommandRead = cmd
             }
         }
-        self.socket.readData(withTimeout: -1, tag: kTagCmd_default)
+        self.socket!.readData(withTimeout: -1, tag: kTagCmd_default)
         // always read
     }
     // Keep this comment for future refernce
@@ -588,14 +638,15 @@ class FGSocket: NSObject {
     
     func stopPingTimerAndReconnect() {
         self.stopPingTimer()
-        FGLogError("PING timed out, reconnecting to HUB...")
+        Log.error("PING timed out, reconnecting to HUB...", terminator: "😱😱😱\n")
         self.simulateUnexpectedHubDisconnect(withDescription: "ping timed out")
     }
+    
     // MARK: - Ping Pong
     let SIMULATE_PING_TIMEOUT = 0
     
     func startPingTimer() {
-        if self.pingTimer {
+        if (self.pingTimer != nil) {
             self.stopPingTimer()
         }
         #if SIMULATE_PING_TIMEOUT
@@ -603,7 +654,7 @@ class FGSocket: NSObject {
                 self.stopPingTimerAndReconnect()
             }, repeats: false)
         #else
-            self.pingTimer = Timer.bk_scheduledTimer(withTime: kFGSocketPingInterval, block: {(_ timer: Timer) -> Void in
+            self.pingTimer = Timer.bk_scheduledTimer(with: kFGSocketPingInterval, block: {(_ timer: Timer) -> Void in
                 self.pingAndListen()
             }, repeats: false)
         #endif
@@ -618,38 +669,15 @@ class FGSocket: NSObject {
     //    FGLogInfo(@"> didWrite: OK");
     //}
     
-    func stopPingTimerAndReconnect() {
-        self.stopPingTimer()
-        FGLogError("PING timed out, reconnecting to HUB...")
-        self.simulateUnexpectedHubDisconnect(withDescription: "ping timed out")
-    }
-    // MARK: - Ping Pong
-    let SIMULATE_PING_TIMEOUT = 0
-    
-    func startPingTimer() {
-        if self.pingTimer {
-            self.stopPingTimer()
-        }
-        #if SIMULATE_PING_TIMEOUT
-            self.pingTimer = Timer.scheduledTimer(withTimeInterval: 6, block: {(_ time: TimeInterval) -> Void in
-                self.stopPingTimerAndReconnect()
-            }, repeats: false)
-        #else
-            self.pingTimer = Timer.bk_scheduledTimer(withTime: kFGSocketPingInterval, block: {(_ timer: Timer) -> Void in
-                self.pingAndListen()
-            }, repeats: false)
-        #endif
-    }
-    
     func pingAndListen() {
-        var timestamp = String(format: "%.0f", Date().timeIntervalSince1970)
-        self.listenPong = FGCommandListener(socket: self, commands: [FGCommand(string: FGSocketCmdActionPONG)], timeout: kFGSocketPongWaitTimeout, exactMatch: false, delegate: self)
-        self.writeCommand(FGCommand(action: FGSocketCmdActionPING, argument: timestamp))
+        let timestamp = String(format: "%.0f", Date().timeIntervalSince1970)
+        self.listenPong = FGCommandListener(socket: self, commands: [FGCommand(string: FGSocketCmdActionPONG)!], timeout: kFGSocketPongWaitTimeout, exactMatch: false, delegate: self)
+        self.write(FGCommand(action: FGSocketCmdActionPING, argument: timestamp)!)
     }
     
     func stopPingTimer() {
-        self.listenPong.stop()
-        self.pingTimer.invalidate()
+        self.listenPong!.stop()
+        self.pingTimer!.invalidate()
         self.pingTimer = nil
     }
     // Monitor all socket-lifetime incoming messages
@@ -658,20 +686,24 @@ class FGSocket: NSObject {
     func respond(toMessageRead cmd: FGCommand) {
         // handle ping, format is "PING [time]"
         if cmd.isActionEqual(FGSocketCmdActionPING) {
-            var timestamp: String = cmd.argument(atIndex: 0)
-            self.writeCommand(FGCommand(action: FGSocketCmdActionPONG, argument: timestamp))
+            let timestamp: String = cmd.argument(at: 0)!
+            self.write(FGCommand(action: FGSocketCmdActionPONG, argument: timestamp)!)
         }
         else if cmd.isActionEqual(FGSocketCmdActionReload) {
-            self.room.respondToHubReloadCommand()
+            self.room!.respondToHubReloadCommand()
         }
         else if cmd.isActionEqual(FGSocketCmdActionCheckMove) {
-            self.room.disconnect(withEndState: FGRoomStateDisconnectedByRoomMove, callback: nil)
+            self.room!.disconnect(withEnd: FGRoomState.disconnectedByRoomMove, completion: { (callback) in
+                
+            })
         }
         else if cmd.isActionEqual(FGSocketCmdActionCheckOut) {
-            self.room.disconnect(withEndState: FGRoomStateDisconnectedByCheckOut, callback: nil)
+            self.room!.disconnect(withEnd: FGRoomState.disconnectedByCheckOut, completion: { (callback) in
+                
+            })
         }
         
-    }*/
+    }
     
     
 }

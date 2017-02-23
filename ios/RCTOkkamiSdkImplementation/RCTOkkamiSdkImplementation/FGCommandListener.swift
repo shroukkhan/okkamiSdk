@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import Log
+import ReachabilitySwift
 
 @objc protocol FGCommandListenerDelegate: NSObjectProtocol {
     /** Calls when listener did start successfully.
@@ -30,7 +32,9 @@ class FGCommandListener: NSObject {
     var isExactMatch: Bool = false
     var observerIds = [Any]()
     var timeout = TimeInterval()
-    
+    let Log = Logger()
+    let reachability = Reachability()!
+
     convenience init(socket: FGSocket, commands: [Any], timeout: TimeInterval, exactMatch isExactMatch: Bool, delegate: FGCommandListenerDelegate) {
         self.init()
         self.delegate = delegate
@@ -49,13 +53,15 @@ class FGCommandListener: NSObject {
     
     
     func start() {
-        var err: Error?
-        /*if !FGReachability.isReachableAndShowAlertIfNo() {
-            err = Error.fingiError(withCode: FG_ErrorCode_NoInternetConnection, description: nil)
+        var err: HubError?
+        if !reachability.isReachable {
+            err = HubError.NoConnection
+            Log.error(err!.description)
         }
         if self.socket == nil {
-            err = Error.fingiError(withCode: FG_ErrorCode_InvalidParameter, description: "Socket is nil")
-        }*/
+            err = HubError.InvalidParameter
+            Log.error(err!.description)
+        }
         if err == nil {
             self.setupFailTimer()
             self.observerIds.removeAll()
@@ -81,8 +87,8 @@ class FGCommandListener: NSObject {
     
     func stop() {
         self.internalStop()
-        var desc: String = "wait manually stopped: \(self.commands)"
-        //FGLogInfoWithClsName("%@", desc)
+        let desc: String = "wait manually stopped: \(self.commands)"
+        Log.info("%@", desc)
         //    if ([self.delegate respondsToSelector:@selector(listener:foundMatchedIdx:receivedCommand:orStoppedWithError:)]) {
         //        NSError *err = [NSError FingiErrorWithCode:FG_ErrorCode_Cancelled
         //                                       description:desc];
@@ -107,12 +113,13 @@ class FGCommandListener: NSObject {
             self.timeout = kFGSocketReadTimeout
         }
         // timeout cannot be 0 or less
-        /*self.failTimer = Timer.bk_timer(with: self.timeout, block: {(_ timer: Timer) -> Void in
-            var desc: String = "wait timed out: \(self.commands)"
-            FGLogWarnWithClsName("%@", desc)
-            var err = Error.fingiError(withCode: FG_ErrorCode_RequestTimeout, description: desc)
-            try? self.stop()
-        }, repeats: false)*/
+        self.failTimer = Timer.bk_timer(with: self.timeout, block: {(_ timer: Timer) -> Void in
+            let desc: String = "wait timed out: \(self.commands)"
+            self.Log.warning("%@", desc)
+            let err = HubError.RequestTimeout
+            self.Log.error(err.description)
+            self.stop()
+        }, repeats: false)
         RunLoop.current.add(self.failTimer!, forMode: RunLoopMode.commonModes)
     }
     
@@ -129,10 +136,10 @@ class FGCommandListener: NSObject {
     var keyLastCommandRead: String = "lastCommandRead"
     
     func setupObserver(for c: FGCommand, index idx: Int) -> String {
-        //var shouldLog: Bool = self.socket.shouldLogCommand(c)
-        //if shouldLog {
-          //  FGLogVerboseWithClsName("waiting: %@", c.plainString)
-        //}
+        let shouldLog: Bool = self.socket!.shouldLogCommand(c)
+        if shouldLog {
+            Log.debug("waiting: %@", c.plainString)
+        }
         weak var weakSelf = self
         let obsvId: String = ProcessInfo.processInfo.globallyUniqueString
         /*self.socket.bk_addObserver(forKeyPath: keyLastCommandRead, identifier: obsvId, options: NSKeyValueObservingOptionNew, task: {(_ obj: Any, _ change: [AnyHashable: Any]) -> Void in
@@ -164,10 +171,10 @@ class FGCommandListener: NSObject {
     }
     
     func logWarn(_ string: String) {
-        //FGLogWarnWithClsName("%@", string)
+        Log.warning("%@", string)
     }
     
     func logVerbose(_ string: String) {
-        //FGLogVerboseWithClsName("%@", string)
+        Log.debug("%@", string)
     }
 }

@@ -35,12 +35,12 @@ class FGTVGenre: NSObject {
             var g = FGTVGenre(name: genreName, andCheckExistingFromArray: genres as! [FGTVGenre])
             if g == nil {
                 g = FGTVGenre(name: genreName)
-                genres.append(g)
+                genres.append(g!)
             }
-            g.property = property
+            g?.property = property
             ch?.genre = g
             // insert at sorted index
-            g.addChannel(inSortedOrder: ch!)
+            g?.addChannel(inSortedOrder: ch!)
             // insert at the end
             //[g.channels addObject:ch];
             // also add to "All" genre
@@ -51,9 +51,7 @@ class FGTVGenre: NSObject {
     // The result will look like [a3,a4,1,1a,1b,2,2a,3,4].
     func addChannel(inSortedOrder ch: FGTVChannel) {
         // avoid inserting nil
-        if (ch is FGTVChannel) == false {
-            return
-        }
+        
         var array: [Any] = self.channels
         var newObject: Any? = ch
         /*var comparator: Comparator = {(_ obj1: FGTVChannel, _ obj2: FGTVChannel) -> Void in
@@ -74,14 +72,18 @@ class FGTVGenre: NSObject {
         array.insert(newObject!, at: newIndex)*/
     }
     
-    convenience init(name: String, andCheckExistingFromArray genres: [FGTVGenre]) {
+    convenience init?(name: String, andCheckExistingFromArray genres: [FGTVGenre]) {
         var x : String?
         for g: FGTVGenre in genres {
             if (g.name == name) {
                 x = g.name
             }
         }
-        self.init(name: x!)
+        if x == nil {
+            return nil
+        }else{
+            self.init(name: x!)
+        }
     }
     
     func firstChannelNo() -> String? {
@@ -93,6 +95,6 @@ class FGTVGenre: NSObject {
     }
     
     override var description : String {
-        return "[<\(NSStringFromClass(self.self as! AnyClass))> name:\(self.name)"
+        return "[<\(self)> name:\(self.name)"
     }
 }

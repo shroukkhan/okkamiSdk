@@ -45,7 +45,7 @@ class FGTVChannel: NSObject {
     }
     
     override var description: String {
-        return "[<\(NSStringFromClass(self.self as! AnyClass))> epg_id:\(self.chNo) name:\(self.name)"
+        return "[<\(self)> epg_id:\(self.chNo) name:\(self.name)"
     }
     
     func channelArray(_ chArray: [FGTVChannel], mergeEPGFromArray epgArray: [Any]) {
@@ -76,7 +76,7 @@ class FGTVChannel: NSObject {
         }
     }
     func currentProgram(forTime date: Date) -> FGTVProgram? {
-        if !(date is Date) || self.programs.count == 0 {
+        if self.programs.count == 0 {
             return nil
         }
         var result: FGTVProgram?
@@ -112,7 +112,7 @@ class FGTVChannel: NSObject {
     }
     
     func nextProgramOfTime(_ date: Date) -> FGTVProgram? {
-        if !(date is Date) || self.programs.count == 0 {
+        if self.programs.count == 0 {
             return nil
         }
         var result: FGTVProgram?

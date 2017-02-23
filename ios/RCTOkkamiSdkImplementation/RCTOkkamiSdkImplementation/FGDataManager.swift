@@ -110,7 +110,7 @@ class FGDataManager: NSObject {
         if duration > 0 {
             self.autoRefreshTimer = Timer.bk_scheduledTimer(with: TimeInterval(duration), block: { (Timer) in
                 weakSelf?.startLoading()
-            }, repeats: true) as? Timer
+            }, repeats: true)
             self.autoRefreshTimer?.tolerance = 10
         }
     }

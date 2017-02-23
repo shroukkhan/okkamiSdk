@@ -44,7 +44,7 @@ class Location: Object {
         
         try! realm.write {
             print("*** Saved Location to Database ***")
-            realm.add(newData, update: true)
+            realm.add(newData)
         }
     }
     

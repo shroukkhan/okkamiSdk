@@ -22,9 +22,11 @@ class FGBrand: FGEntity {
 
     
     /** parent entity. */
-    var parent : FGEntity?{
+    override var parent : FGEntity?{
         get{
             return self.company
+        }set{
+            self.parent = newValue
         }
     }
     
@@ -42,7 +44,7 @@ class FGBrand: FGEntity {
     convenience required init(dictionary: Dictionary<String, AnyObject>) {
         self.init()
         self.name = dictionary["name"] as! NSString
-        self.identifier = dictionary["id"] as! NSString
+        self.identifier = dictionary["id"] as? NSString
     }
     
     override var description: String {
@@ -68,8 +70,12 @@ class FGBrand: FGEntity {
         self.properties.append(property)
     }
     
-    var children: [Any]?{
-        return self.properties
+    override var children: [Any]?{
+        get{
+            return self.properties
+        }set{
+            self.children = newValue
+        }
     }
     // MARK: - connect
     

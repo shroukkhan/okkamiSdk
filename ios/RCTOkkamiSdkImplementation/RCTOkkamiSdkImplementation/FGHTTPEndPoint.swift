@@ -52,6 +52,8 @@ public enum API {
     case getConversation(String, String)
     case deleteConversation(String, String)
     case getBaseURL
+    case executeCoreRESTCallPOST(Dictionary<String, Any>)
+    case executeCoreRESTCallGET
 }
 
 struct JsonArrayEncoding: Moya.ParameterEncoding {
@@ -136,12 +138,16 @@ extension API: TargetType {
             return "/v2/properties/\(properties.urlEscaped)/messaging/\(message_id.urlEscaped)"
         case .getBaseURL:
             return baseURL as! String
+        case .executeCoreRESTCallPOST(let dict):
+            return ""
+        case .executeCoreRESTCallGET:
+            return ""
         }
         
     }
     public var method: Moya.Method {
         switch self {
-        case .postPreconnectWithUID, .postAPNSToken, .postConnectToRoomWithEntity, .postDisconnectToRoom, .postUsingAuth:
+        case .postPreconnectWithUID, .postAPNSToken, .postConnectToRoomWithEntity, .postDisconnectToRoom, .postUsingAuth, .executeCoreRESTCallPOST:
             return .post
         case .deleteConversation:
             return .delete
@@ -164,6 +170,8 @@ extension API: TargetType {
             return ["guest" : guest, "email":email, "password":password]
         case .postMarkMessageAsRead(let properties, let message_id):
             return ["message_id":message_id,"mark":"read"]
+        case .executeCoreRESTCallPOST(let item):
+            return item
         default:
             return nil
         }

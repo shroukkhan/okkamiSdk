@@ -27,6 +27,12 @@ class FGEntity : NSObject/*, FGDataManagerDelegate*/{
     /** Entity auth. **/
     var auth : FGAuth? = nil
     
+    /** Entity auth. **/
+    var children : [Any]? = nil
+    
+    /** Entity auth. **/
+    var parent : FGEntity? = nil
+    
     /** Entity room. **/
     var room : FGRoom? = nil
     

@@ -46,9 +46,7 @@ class FGIconDictObject: FGObject {
         }set{
             let lockQueue = DispatchQueue(label: "self")
             lockQueue.sync {
-                if (newValue! is [AnyHashable: Any]) {
-                    self.iconDictExtra = newValue
-                }
+                self.iconDictExtra = newValue
             }
         }
     }

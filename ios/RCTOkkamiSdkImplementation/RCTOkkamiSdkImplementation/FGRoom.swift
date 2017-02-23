@@ -87,9 +87,11 @@ class FGRoom: FGEntity {
     var coreDisconnected: Bool = false
     
     /** parent entity. */
-    var parent : FGEntity?{
+    override var parent : FGEntity?{
         get{
             return self.property
+        }set{
+            self.parent = newValue
         }
     }
     
@@ -204,7 +206,7 @@ class FGRoom: FGEntity {
         return 20 <= self.state!.rawValue && self.state!.rawValue <= 29
     }
     
-    func isDeviceStillInRoom(withCallback block: FGBoolBlock) {
+    func isDeviceStillInRoom(completion: @escaping (_ : Any, _:Error?)-> Void) {
         /*FGHTTP.sharedInstance.getDeviceRooms(withCallback: {(_ arr: [Any], _ err: Error) -> Void in
             if err {
                 BLOCK_SAFE_RUN(block, false, err)
@@ -294,11 +296,13 @@ class FGRoom: FGEntity {
         }*/
     }
     
-    func disconnect(withCallback block: FGVoidBlock) {
-        self.disconnect(withEnd: .disconnected, callback: block)
+    func disconnect(withCallback completion: @escaping (_ : Any) -> Void)  {
+        self.disconnect(withEnd: .disconnected) { (callback) in
+            completion(callback)
+        }
     }
     
-    func disconnect(withEnd endState: FGRoomState, callback block: FGVoidBlock) {
+    func disconnect(withEnd endState: FGRoomState, completion: @escaping (_ : Any) -> Void) {
         //didDisconnectBlock = block
         self.state = FGRoomState.disconnecting
         
@@ -431,7 +435,7 @@ extension FGRoom {
      */
     
     public func mergeWithDictionary(dict : Dictionary<String, Any>){
-        self.identifier = dict["room_id"] as! NSString
+        self.identifier = dict["room_id"] as? NSString
         self.number = dict["number"] as? String
         var checkedIn = convertToDictionary(text: dict["checked_in"] as! String)
         self.reservationName = checkedIn!["reservation_name"] as? String
@@ -460,7 +464,7 @@ extension FGRoom {
             $0 is [String:AnyObject]
         }
         for deviceDict in filteredArray2 {
-            var d = FGDevice(dictionary: deviceDict as! Dictionary<String, Any>)
+            let d = FGDevice(dictionary: deviceDict as! Dictionary<String, Any>)
             d.room = self
             for c: FGComponent in d.components! {
                 c.device = d
@@ -476,9 +480,9 @@ extension FGRoom {
         filteredArray = filteredArray3
         for groupDict in filteredArray {
             var dicti = groupDict as! Dictionary<String,Any>
-            var group = FGDeviceGroup(deviceGroupWithName: dicti["name"] as! NSString, devices: nil)
+            let group = FGDeviceGroup(deviceGroupWithName: dicti["name"] as! NSString, devices: nil)
             for deviceUID in (dicti["devices"] as! [Any]) {
-                var d: FGDevice? = self.device(fromUID: deviceUID as! String)
+                let d: FGDevice? = self.device(fromUID: deviceUID as! String)
                 if d != nil {
                     d?.group = group
                     group.addDevice(devices: d!)
@@ -648,7 +652,7 @@ extension FGRoom {
         }
         var newGroups = [Any]()
         for g: FGDeviceGroup in self.guestDeviceGroups {
-            var newGroup = FGComponentGroup(componentGroupWithName: g.name, devices: nil)
+            let newGroup = FGComponentGroup(componentGroupWithName: g.name, devices: nil)
             for d: FGDevice in g.devices! {
                 let filteredComps: [Any] = (d.components! as NSArray).filtered(using: NSPredicate(format: "type == %@", String(describing: aClass.type)))
                 if filteredComps.count > 0{

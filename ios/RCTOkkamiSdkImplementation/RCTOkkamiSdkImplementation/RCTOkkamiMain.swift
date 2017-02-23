@@ -132,6 +132,16 @@ import Realm
         }
     }
     
+    public func executeCoreRESTCall(apicore: String, apifunc: String, payload : String, secret: String, token: String, completion: @escaping (_ : Any) -> Void){
+        
+        let httpIns = FGHTTP()
+        httpIns.executeCoreRESTCall(apicore: apicore, apifunc: apifunc, payload: payload, secret: secret, token: token) { (callback) in
+            print("*** Execute Core REST Call Successfully Called ***")
+            completion(callback)
+        }
+        
+    }
+    
     /**------------------------------------------------------------ NEW CORE -------------------------------------------------------------**/
     
     public func postToken(){

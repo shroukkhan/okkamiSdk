@@ -84,7 +84,8 @@ extension String {
         if (object is NSNull) {
             return nil
         }
-        self.appending("\(object)")
+        //self.appending("\(object)")
+        self.append("\(object)")
     }
     
     func parenthesized() -> String {
@@ -367,12 +368,12 @@ extension Timer {
 }
 extension Timer {
     
-    class func bk_scheduledTimer(with inTimeInterval: TimeInterval, block: @escaping (_ timer: Timer) -> Void, repeats inRepeats: Bool) -> Any {
+    class func bk_scheduledTimer(with inTimeInterval: TimeInterval, block: @escaping (_ timer: Timer) -> Void, repeats inRepeats: Bool) -> Timer {
         assert(block != nil, "Invalid parameter not satisfying: block != nil")
         return self.scheduledTimer(timeInterval: inTimeInterval, target: self, selector: #selector(self.bk_executeBlockFromTimer), userInfo: block, repeats: inRepeats)
     }
     
-    class func bk_timer(with inTimeInterval: TimeInterval, block: @escaping (_ timer: Timer) -> Void, repeats inRepeats: Bool) -> Any {
+    class func bk_timer(with inTimeInterval: TimeInterval, block: @escaping (_ timer: Timer) -> Void, repeats inRepeats: Bool) -> Timer {
         assert(block != nil, "Invalid parameter not satisfying: block != nil")
         return self.init(timeInterval: inTimeInterval, target: self, selector: #selector(self.bk_executeBlockFromTimer), userInfo: block, repeats: inRepeats)
     }
@@ -423,6 +424,14 @@ extension Array {
         return [Any](arrayLiteral: m)
     }*/
 }
+
+extension Error {
+    /*var domain: String { return (self as NSError).domain }
+    func errorWithDescription(description : String){
+        return description
+    }*/
+}
+
 
 class FGHelper: NSObject {
     

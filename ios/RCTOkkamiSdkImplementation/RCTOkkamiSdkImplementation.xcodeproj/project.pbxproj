@@ -25,6 +25,7 @@
 		FA0224B11E5C334100BD25A9 /* FGFolioSuccessVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0224B01E5C334100BD25A9 /* FGFolioSuccessVC.swift */; };
 		FA0224B31E5C335000BD25A9 /* FGFolioVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0224B21E5C335000BD25A9 /* FGFolioVC.swift */; };
 		FA0224B51E5C335F00BD25A9 /* FGFolioVCDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0224B41E5C335F00BD25A9 /* FGFolioVCDelegate.swift */; };
+		FA02E7521E5C80D900830526 /* APIResponseCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA02E7511E5C80D900830526 /* APIResponseCall.swift */; };
 		FA17335D1E2C70DD00B257DB /* GithubEndPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA17335C1E2C70DD00B257DB /* GithubEndPoint.swift */; };
 		FA1C0D791E488B0D00304CEB /* FGHTTPNewEndPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1C0D781E488B0D00304CEB /* FGHTTPNewEndPoint.swift */; };
 		FA1EEC891E4C208F00DDD118 /* FGRoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1EEC881E4C208F00DDD118 /* FGRoom.swift */; };
@@ -135,6 +136,7 @@
 		FA0224B01E5C334100BD25A9 /* FGFolioSuccessVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FGFolioSuccessVC.swift; sourceTree = "<group>"; };
 		FA0224B21E5C335000BD25A9 /* FGFolioVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FGFolioVC.swift; sourceTree = "<group>"; };
 		FA0224B41E5C335F00BD25A9 /* FGFolioVCDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FGFolioVCDelegate.swift; sourceTree = "<group>"; };
+		FA02E7511E5C80D900830526 /* APIResponseCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIResponseCall.swift; sourceTree = "<group>"; };
 		FA17335C1E2C70DD00B257DB /* GithubEndPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GithubEndPoint.swift; sourceTree = "<group>"; };
 		FA1C0D781E488B0D00304CEB /* FGHTTPNewEndPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FGHTTPNewEndPoint.swift; sourceTree = "<group>"; };
 		FA1EEC881E4C208F00DDD118 /* FGRoom.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FGRoom.swift; sourceTree = "<group>"; };
@@ -269,6 +271,7 @@
 				FA8EDF5C1E559E97002B8202 /* RoomInfoResponse.swift */,
 				FA994AEE1E56E103008C017B /* GuestServiceResponse.swift */,
 				FA3B0EE21E59902900A8C1FB /* Location.swift */,
+				FA02E7511E5C80D900830526 /* APIResponseCall.swift */,
 			);
 			name = Realm;
 			sourceTree = "<group>";
@@ -774,6 +777,7 @@
 				FAB9C1561E499A6D00A8DCBC /* OkkamiMain.swift in Sources */,
 				FA0224B51E5C335F00BD25A9 /* FGFolioVCDelegate.swift in Sources */,
 				FA994B1B1E56F566008C017B /* FGNodeSelection.swift in Sources */,
+				FA02E7521E5C80D900830526 /* APIResponseCall.swift in Sources */,
 				FA994B431E56F7C2008C017B /* FGMessage.swift in Sources */,
 				FAC9F8E91E14EC9800EEFC1B /* RCTOkkamiMain.swift in Sources */,
 				FA17335D1E2C70DD00B257DB /* GithubEndPoint.swift in Sources */,

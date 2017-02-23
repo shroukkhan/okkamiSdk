@@ -31,13 +31,13 @@ class FGComponent: FGControllableBase {
         // choose a subclass to init based on device type
         let type: String = dict["component_type"] as! String
         let k = classForType(type: type as NSString)
-        if k == nil || !k!.isSubclass(of: FGComponent.self) {
+        if k == nil || !k!.isKind(of: FGComponent.self) {
             print("no class for type: %@ \tuid: %@", type, dict["component_uid"]!)
             return nil
         }
-        print("assigned class: %@ \tfor type: %@ \tuid: %@", k!, type, dict["component_uid"])
+        print("assigned class: %@ \tfor type: %@ \tuid: %@", k!, type, dict["component_uid"]!)
         
-        return k as! FGComponent
+        return k as? FGComponent
     }
     
     
@@ -55,13 +55,11 @@ class FGComponent: FGControllableBase {
         
     }
     
-    public func classForType(type : NSString)->AnyClass? {
-        if type is NSString {
-            for k: AnyClass in FGComponent.allSubclasses() {
-                let compare = (k as! FGComponent).type as! String
-                if type.caseInsensitiveCompare(compare) == ComparisonResult.orderedSame {
-                    return k
-                }
+    public func classForType(type : NSString)->AnyObject? {
+        for k in FGComponent.allSubclasses() {
+            let compare = String(describing: k)
+            if type.caseInsensitiveCompare(compare) == ComparisonResult.orderedSame {
+                return k
             }
         }
         return nil
@@ -72,9 +70,7 @@ class FGComponent: FGControllableBase {
             return self.type
         }
         set{
-            if (newValue is NSString!) {
-                self.type = newValue
-            }
+            self.type = newValue
         }
     }
     
@@ -83,7 +79,7 @@ class FGComponent: FGControllableBase {
     }*/
     
     func addMessageObservers() {
-        print("name:%@ (uid:%@)", self.name!, self.uid)
+        print("name:%@ (uid:%@)", self.name!, self.uid!)
     }
     
     func setupComponent(withConfig config: [AnyHashable: Any]) {

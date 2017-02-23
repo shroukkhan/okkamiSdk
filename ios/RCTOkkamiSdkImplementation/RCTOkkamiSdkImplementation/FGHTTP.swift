@@ -21,6 +21,7 @@ import CryptoSwift
 class FGHTTP: NSObject, NSURLConnectionDelegate {
     
     static let sharedInstance: FGHTTP = { newInstance() }()
+    var disposebag : DisposeBag?
     var provider: RxMoyaProvider<API>!
     var providerNew: RxMoyaProvider<APINew>!
     
@@ -47,6 +48,9 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
         return FGHTTP()
     }
     
+    deinit {
+        self.disposebag = nil
+    }
     /**------------------------------------------------------------ OPEN FUNCTION -------------------------------------------------------------**/
 
     //HMAC hash signature
@@ -62,6 +66,16 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
         return hmac
     }
     
+    public func convertToDictionary(text: String) -> [String: Any]? {
+        if let data = text.data(using: .utf8) {
+            do {
+                return try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        return nil
+    }
     /**------------------------------------------------------------ OLD CORE -------------------------------------------------------------**/
     
     //POST device UID to get guest device auth token using Preconnect
@@ -116,7 +130,7 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
         
         //call the response
         self.provider = RxMoyaProvider<API>(endpointClosure: endpointClosure,manager: manager, plugins: [NetworkLoggerPlugin(verbose: true)])
-        self.provider.request(.postPreconnectWithUID(uid as String)).subscribe { event in
+        let dispose = self.provider.request(.postPreconnectWithUID(uid as String)).subscribe { event in
             switch event {
             case let .next(response):
                 do{
@@ -133,6 +147,7 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
                 break
             }
         }
+        self.disposebag?.insert(dispose)
         
     }
     
@@ -184,7 +199,7 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
         
         //call the response
         self.provider = RxMoyaProvider<API>(endpointClosure: endpointClosure,manager: manager, plugins: [NetworkLoggerPlugin(verbose: true)])
-        self.provider.request(.postConnectToRoomWithEntity(name, tokenRoom, uid, property_id, "guest_device")).subscribe { event in
+        let dispose = self.provider.request(.postConnectToRoomWithEntity(name, tokenRoom, uid, property_id, "guest_device")).subscribe { event in
             switch event {
             case let .next(response):
                 do{
@@ -221,6 +236,7 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
                 break
             }
         }
+        self.disposebag?.insert(dispose)
         
     }
     
@@ -241,7 +257,7 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
         let preconnResp = PreconnectResponse().loadFromRealm()
         let preconn = FGPreconnect(preconnResp: preconnResp)
         
-        let jsonDict : [String:Any] = ["name": room.connect!.name as String, "token": room.connect!.tokenRoom as String, "uid":preconn.uid as String, "property_id" : room.property!.identifier, "device_type" : "guest_device", "os" : "ios"]
+        let jsonDict : [String:Any] = ["name": room.connect!.name as String, "token": room.connect!.tokenRoom as String, "uid":preconn.uid as String, "property_id" : room.property!.identifier!, "device_type" : "guest_device", "os" : "ios"]
         var data : Data!
         var totalURL : URL!
         do{
@@ -276,7 +292,7 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
         
         //call the response
         self.provider = RxMoyaProvider<API>(endpointClosure: endpointClosure,manager: manager, plugins: [NetworkLoggerPlugin(verbose: true)])
-        self.provider.request(.postDisconnectToRoom(room.connect!.name as String, room.connect!.tokenRoom as String, FGSession.sharedInstance.UDID as String, room.property!.identifier!, "guest_device")).subscribe { event in
+        let dispose = self.provider.request(.postDisconnectToRoom(room.connect!.name as String, room.connect!.tokenRoom as String, FGSession.sharedInstance.UDID as String, room.property!.identifier!, "guest_device")).subscribe { event in
             switch event {
             case let .next(response):
                 do{
@@ -292,6 +308,7 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
                 break
             }
         }
+        self.disposebag?.insert(dispose)
         
     }
     
@@ -361,7 +378,7 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
         
         //call the response
         self.provider = RxMoyaProvider<API>(endpointClosure: endpointClosure,manager: manager, plugins: [NetworkLoggerPlugin(verbose: true)])
-        self.provider.request(.getPresetsOfEntity(preconn.uid as String, entityDict)).subscribe { event in
+        let dispose = self.provider.request(.getPresetsOfEntity(preconn.uid as String, entityDict)).subscribe { event in
             switch event {
             case let .next(response):
                 do{
@@ -378,6 +395,7 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
                 break
             }
         }
+        self.disposebag?.insert(dispose)
     }
     
     //GET Room Info to download room info.
@@ -423,7 +441,7 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
         
         //call the response
         self.provider = RxMoyaProvider<API>(endpointClosure: endpointClosure,manager: manager, plugins: [NetworkLoggerPlugin(verbose: true)])
-        self.provider.request(.getRoomInfo).subscribe { event in
+        let dispose = self.provider.request(.getRoomInfo).subscribe { event in
             switch event {
             case let .next(response):
                 do{
@@ -440,6 +458,7 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
                 break
             }
         }
+        self.disposebag?.insert(dispose)
         
     }
     
@@ -466,7 +485,7 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
         let stateName = String(locationRealm.stateName)
         */
         //create the dictionary
-        var entityDict : Dictionary<String, String> = [
+        let entityDict : Dictionary<String, String> = [
             "room_id":entity.room?.identifier as! String,
             "property_id":entity.property?.identifier as! String,
             "brand_id":entity.brand?.identifier as! String,
@@ -509,7 +528,7 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
         
         //call the response
         self.provider = RxMoyaProvider<API>(endpointClosure: endpointClosure,manager: manager, plugins: [NetworkLoggerPlugin(verbose: true)])
-        self.provider.request(.getGuestServicesOfEntity(entityDict, latitude, longitude, countryName, stateName, cityName)).subscribe { event in
+        let dispose = self.provider.request(.getGuestServicesOfEntity(entityDict, latitude, longitude, countryName, stateName, cityName)).subscribe { event in
             switch event {
             case let .next(response):
                 do{
@@ -526,10 +545,123 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
                 break
             }
         }
+        self.disposebag?.insert(dispose)
         
     }
     
-    
+    //GET/POST executeCoreRESTCall.
+    public func executeCoreRESTCall(apicore: String, apifunc: String, payload : String, secret: String, token: String, completion: @escaping (_ : Any) -> Void){
+        let policies: [String: ServerTrustPolicy] = [
+            "api.fingi-staging.com" : .disableEvaluation,
+            "api.fingi.com" : .disableEvaluation,
+            "app.develop.okkami.com" : .disableEvaluation
+        ]
+        let manager = Manager(
+            configuration: URLSessionConfiguration.default,
+            serverTrustPolicyManager: ServerTrustPolicyManager(policies: policies)
+        )
+        
+        //create the dictionary for payload
+        var jsonDict : [String: Any]?
+        
+        if apifunc == "POST" {
+            jsonDict = convertToDictionary(text: payload)
+        }
+        var data : Data!
+        var totalURL : URL!
+        
+        do{
+            if apifunc == "POST" {
+                data = try JSONSerialization.data(withJSONObject: jsonDict!, options: .prettyPrinted)
+            }
+            totalURL = try String("\(apicore)")?.asURL()
+        }catch{
+            print("Error in JSON Serialization")
+        }
+        let timestamp = NSDate().timeIntervalSince1970
+        let timestampStr:String = String(format:"%.0f", timestamp)
+        
+        //for GET, the body data or payload always nil
+        //var datastring = ""
+        var datastring : String?
+        if apifunc == "POST" {
+            datastring = String(data: data, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))!
+            datastring = datastring!.replacingOccurrences(of: "\n", with: "")
+            datastring = datastring!.replacingOccurrences(of: " ", with: "")
+        }
+        //let auth = FGCompanyAuth()
+        //let auth = FGDeviceAuth(token: entity.auth!.token, secret: entity.auth!.secret)
+        let token = String("Token token=\"\(token)\", timestamp=\"\(timestampStr)\"")
+        let baseURL = totalURL as NSURL
+        
+        //finalString to be hashed later
+        var finalStr : String = ""
+        if apifunc == "GET" {
+            finalStr = String("\(baseURL.absoluteString!)\(timestampStr)")!
+        }else{
+            finalStr = String("\(baseURL.absoluteString!)\(timestampStr)\(datastring!)")!
+        }
+        
+        let authSign = authSignatureWithString(data: finalStr, key: secret as String)
+        
+        //setting the header
+        let endpointClosure = { (target: API) -> Endpoint<API> in
+            let url = totalURL.absoluteString.removingPercentEncoding!
+            let defaultEndpoint = Endpoint<API>(URL: url, sampleResponseClosure: {.networkResponse(200, target.sampleData)}, method: target.method, parameters: target.parameters)
+            return defaultEndpoint.adding(httpHeaderFields: ["Accept": "application/json", "Content-Type" : "application/json", "Authorization" : token!, "X-Fingi-Signature":authSign], parameterEncoding: JSONEncoding.default)
+        }
+        
+        //call the response
+        if apifunc == "GET" {
+            
+            self.provider = RxMoyaProvider<API>(endpointClosure: endpointClosure,manager: manager, plugins: [NetworkLoggerPlugin(verbose: true)])
+            let dispose = self.provider.request(.executeCoreRESTCallGET).subscribe { event in
+                switch event {
+                case let .next(response):
+                    do{
+                        let dict = try response.mapJSON()
+                        print(dict)
+                        let apiRep : APIResponseCall = APIResponseCall()
+                        completion(dict)
+                    }catch {
+                        print("Something wrong");
+                    }
+                case let .error(error):
+                    print("Error : ",error)
+                default:
+                    break
+                }
+            }
+            
+            self.disposebag?.insert(dispose)
+        }else{
+            
+            self.provider = RxMoyaProvider<API>(endpointClosure: endpointClosure,manager: manager, plugins: [NetworkLoggerPlugin(verbose: true)])
+            let dispose = self.provider.request(.executeCoreRESTCallPOST(jsonDict!)).subscribe { event in
+                switch event {
+                case let .next(response):
+                    do{
+                        let dict = try response.mapJSON()
+                         print(dict)
+                        let apiRep : APIResponseCall = APIResponseCall()
+                        let outputString: String = try response.mapString()
+                        completion(outputString)
+                    }catch {
+                        print("Something wrong");
+                    }
+                case let .error(error):
+                    print("Error : ",error)
+                default:
+                    break
+                }
+            }
+            
+            
+            self.disposebag?.insert(dispose)
+        }
+        
+        
+    }
     
     
     
@@ -555,7 +687,7 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
         )
         
         self.providerNew = RxMoyaProvider<APINew>(manager: manager)
-        self.providerNew.request(.postTokenWithClientID(client_id as String, client_secret as String)).subscribe { event in
+        let dispose = self.providerNew.request(.postTokenWithClientID(client_id as String, client_secret as String)).subscribe { event in
             switch event {
             case let .next(response):
                 do{
@@ -571,6 +703,8 @@ class FGHTTP: NSObject, NSURLConnectionDelegate {
                 break
             }
         }
+        
+        self.disposebag?.insert(dispose)
         
     }
 }

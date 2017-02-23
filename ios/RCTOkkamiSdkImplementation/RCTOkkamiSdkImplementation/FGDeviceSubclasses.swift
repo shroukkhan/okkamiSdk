@@ -50,9 +50,7 @@ class FGDeviceGCC: FGDevice{
             return self.type
         }
         set{
-            if (newValue is NSString!) {
-                self.type = newValue
-            }
+            self.type = newValue
         }
     }
 
@@ -77,9 +75,7 @@ class FGDeviceGuest: FGDevice{
             return "guest_device"
         }
         set{
-            if (newValue is NSString!) {
-                self.type = newValue
-            }
+            self.type = newValue
         }
     }
 
@@ -91,9 +87,7 @@ class FGDeviceFRCD: FGDevice{
             return "frcd"
         }
         set{
-            if (newValue is NSString!) {
-                self.type = newValue
-            }
+            self.type = newValue
         }
     }
 }
@@ -104,9 +98,7 @@ class FGDeviceFGCTV: FGDevice{
             return "fgc_tv"
         }
         set{
-            if (newValue is NSString!) {
-                self.type = newValue
-            }
+            self.type = newValue
         }
     }
 }
@@ -117,9 +109,7 @@ class FGDeviceVirtualFRCD: FGDevice{
             return "virtual_frcd"
         }
         set{
-            if (newValue is NSString!) {
-                self.type = newValue
-            }
+            self.type = newValue
         }
     }
 }

@@ -111,9 +111,6 @@ class FGDeviceGroup : NSObject {
         return (components.count > 0) ? components : nil
     }
     func stringArray(_ array: [Any], hasString string: String) -> Bool {
-        if !(array is [Any]) || !(string is String) {
-            return false
-        }
         if array.count == 0 {
             return false
         }

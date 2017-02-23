@@ -82,6 +82,7 @@ class FGTV: FGComponent {
         }
         return nil
     }*/
+    
     // MARK: - override
     
     override var type: NSString?{
@@ -89,9 +90,7 @@ class FGTV: FGComponent {
             return "TV"
         }
         set{
-            if (newValue is NSString!) {
-                self.type = newValue
-            }
+            self.type = newValue
         }
     }
     

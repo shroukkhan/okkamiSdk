@@ -88,8 +88,13 @@ class FGCompany: FGEntity {
         self.brands?.append(brand)
     }
     
-    var children: [Any]? {
-        return self.brands
+    override var children: [Any]? {
+        get{
+            return self.brands
+        }
+        set{
+            self.children = newValue
+        }
     }
     
     /*func getEndingEntityOf(_ line: FGEntityLine) -> FGEntity {
@@ -114,35 +119,5 @@ class FGCompany: FGEntity {
         
     }
     
-    
-    /*public override func loadFromRealm() -> FGCompany{
-        var realm = try! Realm()
-        var company = realm.object(ofType: FGCompany.self, forPrimaryKey: 0)!
-        return company
-    }
-    
-    public override func saveToRealm(){
-        
-        // Insert from NSData containing JSON
-        var realm = try! Realm()
-        try! realm.write {
-            var check = realm.objects(FGCompany.self).count
-            if check > 0{
-                
-            }else{
-                realm.add(self, update: true)
-            }
-        }
-        print("*** Saved Company to Database ***")
-    }
-    
-    public override func clearFromRealm(){
-        var realm = try! Realm()
-        try! realm.write {
-            let deletedObject = realm.objects(FGCompany.self).first
-            realm.delete(deletedObject!)
-        }
-        print("*** Clear Company from Database ***")
-    }*/
     
 }

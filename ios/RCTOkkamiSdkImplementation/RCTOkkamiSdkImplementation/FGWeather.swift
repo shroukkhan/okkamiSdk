@@ -29,13 +29,13 @@ class FGWeatherTempRange : NSObject {
         
         super.init()
         var tempErr: Error?
-        let high = try! FGWeatherTemp(dictionary: dict["high"] as! [AnyHashable : Any])
+        let high = FGWeatherTemp(dictionary: dict["high"] as! [AnyHashable : Any])
         
         if tempErr == nil {
             self.high = high
         }
         
-        let low = try! FGWeatherTemp(dictionary: dict["low"] as! [AnyHashable : Any])
+        let low = FGWeatherTemp(dictionary: dict["low"] as! [AnyHashable : Any])
         if tempErr == nil {
             self.low = low
         }
@@ -55,10 +55,10 @@ class FGWeatherForecast : NSObject {
          return nil
          }*/
         super.init()
-        self.date = try! FGWeatherDate(dictionary: dict["date"] as! [AnyHashable : Any])
+        self.date = FGWeatherDate(dictionary: dict["date"] as! [AnyHashable : Any])
         self.iconURL = URL(string: dict["icon"] as! String)
         self.condition = dict["condition"] as! String
-        self.tempRange = try! FGWeatherTempRange(dictionary: dict["temp"] as! [AnyHashable : Any])
+        self.tempRange = FGWeatherTempRange(dictionary: dict["temp"] as! [AnyHashable : Any])
         
     }
 }
@@ -97,14 +97,15 @@ class FGWeather : NSObject {
         var dict_current: [AnyHashable: Any] = dict["current"] as! [AnyHashable : Any]
         self.currentCondition = dict_current["condition"] as! String
         self.currentIconURL = URL(string: dict_current["icon"] as! String)
-        self.currentTemp = try! FGWeatherTemp(dictionary: dict_current["temp"] as! [AnyHashable : Any])
+        self.currentTemp = FGWeatherTemp(dictionary: dict_current["temp"] as! [AnyHashable : Any])
         var m = [Any]()
         let arr_forecast: [Any] = dict["forecast"] as! [Any]
         for d_forecast in arr_forecast {
-            let wf = try! FGWeatherForecast(dictionary: d_forecast as! [AnyHashable : Any])
-            if wf != nil {
-                m.append(wf)
-            }
+            let wf = FGWeatherForecast(dictionary: d_forecast as! [AnyHashable : Any])
+            /*if wf != nil {
+                
+            }*/
+            m.append(wf)
         }
         self.forecasts = [Any](arrayLiteral: m)
         

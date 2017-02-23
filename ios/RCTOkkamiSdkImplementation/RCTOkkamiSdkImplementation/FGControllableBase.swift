@@ -17,9 +17,7 @@ class FGControllableBase: NSObject {
             return self.uid
         }
         set{
-            if (newValue is NSString!) {
-                self.uid = newValue
-            }
+            self.uid = newValue
         }
     }
     
@@ -29,9 +27,7 @@ class FGControllableBase: NSObject {
             return self.name
         }
         set{
-            if (newValue is NSString!) {
-                self.name = newValue
-            }
+            self.name = newValue
         }
     }
     
@@ -41,9 +37,7 @@ class FGControllableBase: NSObject {
             return self.type
         }
         set{
-            if (newValue is NSString!) {
-                self.type = newValue
-            }
+            self.type = newValue
         }
     }
     
@@ -67,7 +61,7 @@ class FGControllableBase: NSObject {
     }*/
     
     override var description : String {
-        return "[<\(NSStringFromClass(self.self as! AnyClass))> type:\(self.type) uid:\(self.uid) name:\(self.name)]"
+        return "[<\(self)> type:\(self.type) uid:\(self.uid) name:\(self.name)]"
     }
     
     

@@ -7,10 +7,25 @@
 //
 
 import UIKit
+import Log
+import CryptoSwift
 
-class FGCommand: NSObject/*, NSCopying*/ {
+public func authSignatureWithString(data : String, key : String) -> String{
+    let bytes: Array<UInt8> = Array(data.utf8)
+    let secKey: Array<UInt8> = Array(key.utf8)
+    var hmac = ""
+    do {
+        hmac = try HMAC(key: secKey, variant: .sha1).authenticate(bytes).toHexString()
+    }catch{
+        
+    }
+    return hmac
+}
+
+class FGCommand: NSObject {
     
-    /*
+    let Log = Logger()
+    
     var kArgSeperator: String = " "
     // e.g. space
     var kPipeCharacter: String = "|"
@@ -40,8 +55,8 @@ class FGCommand: NSObject/*, NSCopying*/ {
             }
         }
         if pipeLocation >= 0 {
-            var newStart: Int = pipeLocation + 1
-            var newPipeHeaders: [Any] = [action] + arguments[NSRange(location: 0, length: pipeLocation).location..<NSRange(location: 0, length: pipeLocation).location + NSRange(location: 0, length: pipeLocation).length]
+            let newStart: Int = pipeLocation + 1
+            let newPipeHeaders: [Any] = [action] + arguments[NSRange(location: 0, length: pipeLocation).location..<NSRange(location: 0, length: pipeLocation).location + NSRange(location: 0, length: pipeLocation).length]
             if newPipeHeaders.count > 0 {
                 self.pipeHeaders = newPipeHeaders
             }
@@ -55,22 +70,19 @@ class FGCommand: NSObject/*, NSCopying*/ {
                 if newParts.count > 1 {
                     newArgs = newParts[NSRange(location: 1, length: newParts.count - 1).location..<NSRange(location: 1, length: newParts.count - 1).location + NSRange(location: 1, length: newParts.count - 1).length]
                 }
-                _action = newParts[0] as! String
+                _action = newParts[0] as! String 
                 _arguments = newArgs as! [Any]
             }
         }
         
         // -----------------
         // Validate action
-        if !(_action is String) {
-            return nil
-        }
         _action = _action.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         if (_action.characters.count ) == 0 {
             return nil
         }
         // Validate arguments
-        var mArgs = [Any]()
+        var mArgs = [String]()
         var dummy: String? = nil
         for a in _arguments {
             // trim whitespace
@@ -87,11 +99,11 @@ class FGCommand: NSObject/*, NSCopying*/ {
                 if trimmed.ends(with: "\"") && !trimmed.ends(with: "\\\"") {
                     // end quoted string
                     // remove end quote
-                    trimmed = (trimmed as NSString).replacingOccurrences(of: "\"", with: "", options: [], range: NSRange(location: (trimmed.characters.count ?? 0) - 1, length: 1))
+                    trimmed = (trimmed as NSString).replacingOccurrences(of: "\"", with: "", options: [], range: NSRange(location: (trimmed.characters.count ) - 1, length: 1))
                     dummy! += "\(kArgSeperator)\(trimmed)"
                     // exit
-                    if (dummy?.characters.count ?? 0) > 0 {
-                        mArgs.append(dummy)
+                    if dummy!.characters.count > 0 {
+                        mArgs.append(dummy!)
                     }
                     dummy = nil
                 }
@@ -99,12 +111,12 @@ class FGCommand: NSObject/*, NSCopying*/ {
                     dummy! += "\(kArgSeperator)\(trimmed)"
                 }
             }else{
-                if trimmed.length > 0 {
+                if trimmed.characters.count > 0 {
                     mArgs.append(trimmed)
                 }
             }
         }
-        var noEscapedCharArgs = [Any]()
+        var noEscapedCharArgs = [String]()
         for arg: String in mArgs {
             var new: String = arg.replacingOccurrences(of: "\\\"", with: "\"")
             new = new.replacingOccurrences(of: "\\\\", with: "\\")
@@ -117,62 +129,69 @@ class FGCommand: NSObject/*, NSCopying*/ {
         self.arguments = [Any](arrayLiteral: mArgs)
     }
     
-    convenience init(array parts: [Any]) {
+    convenience init?(array parts: [String]) {
         if parts.count == 0 {
             return nil
         }
-        var arguments: [Any]
+        var arguments: [Any] = []
         if parts.count > 1 {
-            arguments = parts[NSRange(location: 1, length: parts.count - 1).location..<NSRange(location: 1, length: parts.count - 1).location + NSRange(location: 1, length: parts.count - 1).length]
+            let indeks = NSRange(location: 1, length: parts.count - 1).location..<NSRange(location: 1, length: parts.count - 1).location + NSRange(location: 1, length: parts.count - 1).length
+            arguments = Array(parts[indeks])
         }
-        return FGCommand(action: parts[0], arguments: arguments)
+        
+        self.init(action: parts[0], arguments: arguments)
+    }
+    override init(){
+        super.init()
     }
     
-    convenience init(action: String, argument: String) {
-        var args: [Any] = self.array(fromArg: argument, arg: nil)
-        return FGCommand(action: action, arguments: args)
+    convenience init?(action: String, argument: String) {
+        let args: [String] = FGCommand().array(fromArg: argument, arg: nil)
+        self.init(action: action, arguments: args)
     }
     
-    convenience init(action: String, argument: String, argument argument2: String) {
-        var args: [Any] = self.array(fromArg: argument, arg: argument2)
-        return FGCommand(action: action, arguments: args)
+    convenience init?(action: String, argument: String, argument argument2: String) {
+        let args: [String] = FGCommand().array(fromArg: argument, arg: argument2)
+        self.init(action: action, arguments: args)
     }
     
-    convenience init(string: String) {
+    convenience init?(string: String) {
         // validate string
-        var action: String
-        var arguments: [Any]
-        string = string.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        var comps: [Any] = string.components(separatedBy: kArgSeperator)
+        var _string = string
+        var action: String = ""
+        var arguments: [String] = []
+        _string = _string.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        var comps: [String] = string.components(separatedBy: FGCommand().kArgSeperator)
         if comps.count > 0 {
             action = comps[0]
         }
         if comps.count > 1 {
-            var range = NSRange(location: 1, length: comps.count - 1)
-            arguments = comps[range.location..<range.location + range.length]
+            let range = NSRange(location: 1, length: comps.count - 1)
+            arguments = Array(comps[range.location..<range.location + range.length])
         }
-        return FGCommand(action: action, arguments: arguments)
+        self.init(action: action, arguments: arguments)
     }
-    convenience init(data: Data) {
-        var line = String(data, encoding: String.Encoding.utf8)
-        return FGCommand(line)
+    
+    convenience init?(data: Data) {
+        let line = String(data: data, encoding: String.Encoding.utf8)
+        self.init(string: line!)
     }
     // MARK: - private
     
-    class func array(fromArg a1: String, arg a2: String) -> [Any] {
-        var m = [Any]()
+    func array(fromArg a1: String, arg a2: String?) -> [String] {
+        var m = [String]()
         if a1 != "" {
             m.append(a1)
         }
         if a2 != "" {
-            m.append(a2)
+            m.append(a2!)
         }
-        return [Any](arrayLiteral: m)
+        return m
     }
     // MARK: - Interfaces
     func plainString() -> String {
-        var pipeHeaders: String = (self.pipeHeaders as NSArray).componentsJoined(byString: kArgSeperator)
-        if (pipeHeaders.characters.count ?? 0) > 0 {
+        var pipeHeaders: String = (self.pipeHeaders as NSArray).componentsJoined(by: kArgSeperator)
+        if pipeHeaders.characters.count > 0 {
             pipeHeaders = pipeHeaders.appendingFormat("%@%@%@", kArgSeperator, kPipeCharacter, kArgSeperator)
         }
         else {
@@ -182,8 +201,8 @@ class FGCommand: NSObject/*, NSCopying*/ {
     }
     
     func plainStringWithoutPipeHeaders() -> String {
-        var args: String = (self.arguments as NSArray).componentsJoined(byString: kArgSeperator)
-        if (args.characters.count ?? 0) > 0 {
+        var args: String = (self.arguments as NSArray).componentsJoined(by: kArgSeperator)
+        if args.characters.count > 0 {
             return "\(self.action)\(kArgSeperator)\(args)"
         }
         return self.action
@@ -193,65 +212,68 @@ class FGCommand: NSObject/*, NSCopying*/ {
     func dataForWrite() -> Data {
         // self.plainString will never have terminator at the end, so no need to check
         let terminator: String = "\r\n"
-        var stringForWrite = self.plainString() + terminator
-        return stringForWrite.data(using: String.Encoding.utf8)
+        let stringForWrite = self.plainString() + terminator
+        return stringForWrite.data(using: String.Encoding.utf8)!
     }
-    override func description() -> String {
-        return "[<\(NSStringFromClass(self.self))> \(self.plainString())]"
+    override var description: String {
+        return "[<\(self)> \(self.plainString())]"
     }
     
     func firstArgument() -> String {
-        return self.argument(atIndex: 0)
+        return self.argument(at: 0)!
     }
     
     func secondArgument() -> String {
-        return self.argument(atIndex: 1)
+        return self.argument(at: 1)!
     }
     
-    func argument(at index: Int) -> String {
-        return (self.arguments.count > index) ? self.arguments[index] : nil
+    func argument(at index: Int) -> String? {
+        return (self.arguments.count > index) ? self.arguments[index] as? String : nil
     }
     
-    class func multipleCommands(from stringDividedBy_bsR_bsN: String) -> [Any] {
-        var comps: [Any] = stringDividedBy_bsR_bsN.components(separatedBy: "\r\n")
+    func multipleCommands(from stringDividedBy_bsR_bsN: String) -> [Any] {
+        let comps: [String] = stringDividedBy_bsR_bsN.components(separatedBy: "\r\n")
         var messages = [Any]() /* capacity: comps.count */
         for str: String in comps {
-            var command: Any? = FGCommand(string: str)
+            let command = FGCommand(string: str)
             if command != nil {
-                messages.append(command)
+                messages.append(command!)
             }
         }
         return [Any](arrayLiteral: messages)
     }
     
     func addArgument(_ arg: String) {
-        if NSString_hasString(arg) {
+        /*if NSString_hasString(arg) {
             self.arguments = self.arguments + [arg]
-        }
+        }*/
+        self.arguments = self.arguments + [arg]
     }
     
     func addSignature(withAuthSecret secret: String) {
-        var sig = String.authSignature(with: self.plainString, key: secret)
+        let sig = authSignatureWithString(data: self.plainString(), key: secret)
         var m: String = "FGCommand adding signature:"
         m += "\n string: \(self.plainString)"
         m += "\n secret: \(secret)"
         m += "\n result: \(sig)"
-        FGLogVerbose(m)
+        Log.debug(m)
         self.addArgument(sig)
     }
     
-    override func isEqual(_ message: FGCommand) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         // Can't compare self.plainString anymore since there's nonce and pipeHeaders mess.
         // We have to explicitly compare action and arguments.
+        let message = object as! FGCommand
         return self.isActionEqual(message.action) && self.argumentsEqual(message.arguments)
     }
+    
     
     func isContaining(_ message: FGCommand) -> Bool {
         if message.isActionEqual(self.action) {
             // check that all parameter message.arguments is also in self.arguments
             if message.arguments.count <= self.arguments.count {
                 for i in 0..<message.arguments.count {
-                    if !message.arguments[i].isEqual(toStringCaseInsensitive: self.arguments[i]) {
+                    if !(message.arguments[i] as! FGCommand).isEqual(self.arguments[i]) {
                         return false
                     }
                 }
@@ -262,17 +284,17 @@ class FGCommand: NSObject/*, NSCopying*/ {
     }
     
     func isActionEqual(_ action: String) -> Bool {
-        return NSString_isString(action) && self.action.isEqual(toStringCaseInsensitive: action.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines))
+        return self.action.lowercased().isEqual(action.lowercased().trimmingCharacters(in: CharacterSet.whitespacesAndNewlines))
     }
     
-    func pipeHeadersContain(_ headers: [Any]) -> Bool {
-        if NSArray_isNotEmpty(headers) && self.pipeHeaders.count >= headers.count {
+    func pipeHeadersContain(_ headers: [Any]?) -> Bool {
+        if headers != nil && self.pipeHeaders.count >= headers!.count {
             // loop receiver headers
-            for i in 0...self.pipeHeaders.count - headers.count {
+            for i in 0...self.pipeHeaders.count - headers!.count {
                 // loop matcher headers
                 var isAllMatched: Bool = true
-                for j in 0..<headers.count {
-                    if !self.pipeHeaders[i + j].isEqual(toStringCaseInsensitive: headers[j]) {
+                for j in 0..<headers!.count {
+                    if !(self.pipeHeaders[i + j] as! FGCommand).isEqual(headers![j]) {
                         isAllMatched = false
                         break
                     }
@@ -287,20 +309,19 @@ class FGCommand: NSObject/*, NSCopying*/ {
     // internal
     
     func argumentsEqual(_ args: [Any]) -> Bool {
-        if NSArray_isArray(args) {
-            if self.arguments.count == args.count {
-                for i in 0..<self.arguments.count {
-                    if !self.arguments[i].isEqual(toStringCaseInsensitive: args[i]) {
-                        return false
-                    }
+        if self.arguments.count == args.count {
+            for i in 0..<self.arguments.count {
+                if !(self.arguments[i] as! FGCommand).isEqual(args[i]) {
+                    return false
                 }
-                return true
             }
+            return true
         }
         return false
     }
+    
     // MARK: - NSCopying
-    override func copy(with zone: NSZone? = nil) -> Any {
+    /*override func copy(with zone: NSZone? = nil) -> Any {
         var m = FGCommand(action: self.action.copy(with zone: zone), arguments: self.arguments.copy(with zone: zone))
         return m
     }*/

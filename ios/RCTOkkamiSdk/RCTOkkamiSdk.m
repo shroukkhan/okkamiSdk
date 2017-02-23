@@ -30,6 +30,8 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
                   :(NSString*)endPoint
                   :(NSString*)getPost
                   :(NSString*)payLoad
+                  :(NSString*)secret
+                  :(NSString*)token
                   
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
@@ -205,16 +207,25 @@ RCT_EXPORT_METHOD(isHubConnected
  * Entry point of the native sdk
  */
 
-/*
+
 RCT_EXPORT_METHOD(start
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
     
     RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
-    [main preConnect];
-    [self.bridge.eventDispatcher sendAppEventWithName:@"onStart" body:@{@"command": @"On Start"}];
-}*/
+    NSString* udid = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+    NSString* payload = [NSString stringWithFormat:@"{\"uid\":\"%@\"}", udid];
+    [main executeCoreRESTCallWithApicore:@"https://api.fingi-staging.com/v1/preconnect" apifunc:@"POST" payload:payload secret:@"" token:@"" completion:^(id callback) {
+//        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:callback options:NSJSONWritingPrettyPrinted error:nil];
+//        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        resolve(callback);
+        [self.bridge.eventDispatcher sendAppEventWithName:@"onStart" body:@{@"command": @"On Start"}];
+        
+    }];
+    //[main executeCoreRESTCallWithApicore:@"https://api.fingi-staging.com/v1/preconnect" apifunc:@"POST" payload:payload];
+    
+}
 
 /**
  * restart the native sdk,

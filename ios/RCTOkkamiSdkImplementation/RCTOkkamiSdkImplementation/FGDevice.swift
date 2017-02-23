@@ -22,9 +22,8 @@ class FGDevice: FGControllableBase {
             return self.type
         }
         set{
-            if (newValue is NSString!) {
-                self.type = newValue
-            }
+            self.type = newValue
+            
         }
     }
     
@@ -43,12 +42,12 @@ class FGDevice: FGControllableBase {
         // choose a subclass to init based on device type
         let type = dictionary["device_type"] as! NSString
         let k = classForType(type: type)
-        if k == nil || !k!.isSubclass(of: FGDevice.self) {
+        if k == nil || !k!.isKind(of: FGDevice.self) {
             print("no class for type: %@ \tuid: %@", type, dictionary["component_uid"]!)
             return nil
         }
         
-        print("assigned class: %@ \tfor type: %@ \tuid: %@", k, type, dictionary["component_uid"]!)
+        print("assigned class: %@ \tfor type: %@ \tuid: %@", k!, type, dictionary["component_uid"]!)
         return k as? FGDevice
         
     }
@@ -68,20 +67,16 @@ class FGDevice: FGControllableBase {
         if compArray.count > 0 {
             for compDict in compArray {
                 let comp = FGComponent(dictionary: compDict as! Dictionary<String, Any>)
-                if (comp != nil){
-                    mComps.append(comp as FGComponent)
-                }
+                mComps.append(comp as FGComponent)
             }
         }
     }
     
-    public func classForType(type : NSString)->AnyClass?{
-        if type is NSString {
-            for k: AnyClass in FGDevice.allSubclasses() {
-                let compare = (k as! FGDevice).type as! String
-                if type.caseInsensitiveCompare(compare) == ComparisonResult.orderedSame {
-                    return k
-                }
+    public func classForType(type : NSString)->AnyObject?{
+        for k in FGDevice.allSubclasses() {
+            let compare = String(describing: k)
+            if type.caseInsensitiveCompare(compare) == ComparisonResult.orderedSame {
+                return k
             }
         }
         return nil

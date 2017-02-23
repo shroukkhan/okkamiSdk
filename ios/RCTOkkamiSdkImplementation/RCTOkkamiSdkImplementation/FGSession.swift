@@ -26,10 +26,10 @@ class FGSession: NSObject {
         }
         set{
             //FGLogInfoWithClsName("selectedEntity change -> %@", selectedEntity)
-            //_selectedEntity.cancelAllDataManagers()
-            //_selectedEntity.suspendAllDataManagers(true)
+            _selectedEntity?.cancelAllDataManagers()
+            _selectedEntity?.suspendAllDataManagers(true)
             _selectedEntity = newValue
-            //_selectedEntity.suspendAllDataManagers(false)
+            _selectedEntity?.suspendAllDataManagers(false)
         }
     }
     
@@ -91,11 +91,11 @@ class FGSession: NSObject {
     func recursivelyResetAllDataManagersOf(_ entity: FGEntity) {
         if self.selectedEntity?.isEqual(entity) == false {
             // don't clear self.selectedEntity
-            //entity.resetAllDataManagers()
+            entity.resetAllDataManagers()
         }
-        /*for e: FGEntity in entity.children {
+        for e: FGEntity in (entity.children)! as! [FGEntity] {
             self.recursivelyResetAllDataManagersOf(e)
-        }*/
+        }
     }
     
     class func customFontNames() -> [Any] {

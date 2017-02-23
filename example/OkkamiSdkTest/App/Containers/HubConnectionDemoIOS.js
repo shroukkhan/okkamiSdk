@@ -27,15 +27,17 @@ class HubConnectionDemoIOS extends React.Component {
 
   constructor(props) {
     super(props);
+    this.preconnect();
+  }
+  async preconnect(){
     try {
-        var result = OkkamiSdk.start();
-        console.log("onStart successful..." + result );
+        var result = await OkkamiSdk.start();
+        console.log("preconnect successful..." + result );
         
     } catch (e) {
-        console.log("onStart failed . error : " + e.message)
+        console.log("preconnect failed . error : " + e.message)
     }
   }
-
   componentWillMount() {
     console.log('subscribe here')
         
@@ -173,7 +175,7 @@ class HubConnectionDemoIOS extends React.Component {
       }
 
   }
-  preconnect(){
+  /*preconnect(){
     try {
         var result = OkkamiSdk.start();
         console.log("preconnect successful..." + result );
@@ -181,7 +183,7 @@ class HubConnectionDemoIOS extends React.Component {
       } catch (e) {
         console.log("preconnect failed . error : " + e.message)
     }    
-  }
+  }*/
 
   downloadPresets(){
     try {

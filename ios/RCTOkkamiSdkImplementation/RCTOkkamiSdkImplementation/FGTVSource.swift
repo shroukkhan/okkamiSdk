@@ -61,6 +61,6 @@ class FGTVSource: FGIconDictObject {
     
     // MARK: -
     override var description: String{
-        return "[<\(NSStringFromClass(self.self as! AnyClass))> source:\(self.source) title:\(self.title) subtitle:\(self.subtitle) remote:\(self.remoteName) icon:\(self.iconName)]"
+        return "[<\(self)> source:\(self.source) title:\(self.title) subtitle:\(self.subtitle) remote:\(self.remoteName) icon:\(self.iconName)]"
     }
 }

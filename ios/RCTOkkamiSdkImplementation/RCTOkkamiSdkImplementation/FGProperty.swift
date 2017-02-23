@@ -19,9 +19,11 @@ class FGProperty: FGMailboxEntity {
     var weatherDM: FGDataManager!
     
     /** parent entity. */
-    var parent : FGEntity?{
+    override var parent : FGEntity?{
         get{
             return self.brand
+        }set{
+            self.parent = newValue
         }
     }
     public func getParent() -> FGEntity?{

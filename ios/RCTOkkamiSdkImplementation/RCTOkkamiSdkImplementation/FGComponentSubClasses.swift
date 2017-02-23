@@ -113,9 +113,7 @@ class FGLight : FGComponent{
             return "Light"
         }
         set{
-            if (newValue is NSString!) {
-                self.type = newValue
-            }
+            self.type = newValue
         }
     }
     
@@ -179,9 +177,7 @@ class FGRadio : FGComponent{
             return "Radio"
         }
         set{
-            if (newValue is NSString!) {
-                self.type = newValue
-            }
+            self.type = newValue
         }
     }
     /*public override func getType()->NSString{
@@ -216,9 +212,7 @@ class FGCurtain : FGComponent{
             return "Curtain"
         }
         set{
-            if (newValue is NSString!) {
-                self.type = newValue
-            }
+            self.type = newValue
         }
     }
 }

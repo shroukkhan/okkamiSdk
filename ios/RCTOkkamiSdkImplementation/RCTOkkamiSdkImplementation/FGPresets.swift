@@ -226,7 +226,7 @@ class FGPresets: NSObject {
         self.openwaysBaseURL = openwaysSettings["base_url"] as! String
         self.openwaysCompanyID = openwaysSettings["company_id"] as! String
         // Messaging
-        self.messagePollTime = dict["app_message_poll_time"] as! NSNumber
+        self.messagePollTime = dict["app_message_poll_time"] as? NSNumber
         // Other
         self.gccMaximumVolume = Int(dict["gcc_maximum_volume"] as! NSNumber)
         self.temperatureUnit = self.tempUnit(from: dict["general_temperature_format"] as! String)
@@ -271,25 +271,23 @@ class FGPresets: NSObject {
     
     class func parseTimeZone(from string: String) -> NSTimeZone {
         var tz: NSTimeZone?
-        if (string is String) {
-            // try to find time zone string
-            var comp: [Any] = string.components(separatedBy: " | ")
-            if comp.count > 1 {
-                let tzNumber: String = comp[0] as! String
-                let tzString: String = comp[1] as! String
-                tz = NSTimeZone(name: tzString)
-                if tz == nil {
-                    NSTimeZone(abbreviation: tzString)
-                }
-                // try to find time zone offset number
-                if tz == nil {
-                    NSTimeZone(forSecondsFromGMT: Int(tzNumber)! * 3600)
-                }
-            }
-            // parse the whole string as offset number
+        // try to find time zone string
+        var comp: [Any] = string.components(separatedBy: " | ")
+        if comp.count > 1 {
+            let tzNumber: String = comp[0] as! String
+            let tzString: String = comp[1] as! String
+            tz = NSTimeZone(name: tzString)
             if tz == nil {
-                NSTimeZone(forSecondsFromGMT: Int(string)! * 3600)
+                tz = NSTimeZone(abbreviation: tzString)
             }
+            // try to find time zone offset number
+            if tz == nil {
+                tz = NSTimeZone(forSecondsFromGMT: Int(tzNumber)! * 3600)
+            }
+        }
+        // parse the whole string as offset number
+        if tz == nil {
+            tz = NSTimeZone(forSecondsFromGMT: Int(string)! * 3600)
         }
         return tz!
     }
