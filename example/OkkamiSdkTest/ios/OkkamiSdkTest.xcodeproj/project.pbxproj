@@ -121,6 +121,20 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
+		FA8BB5821E657FDD008C1CB2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA8BB57D1E657FDD008C1CB2 /* RCTokkamiiossdk.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FA8BB4CD1E656F83008C1CB2;
+			remoteInfo = RCTokkamiiossdk;
+		};
+		FA8BB5841E657FDD008C1CB2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA8BB57D1E657FDD008C1CB2 /* RCTokkamiiossdk.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FA8BB4D61E656F83008C1CB2;
+			remoteInfo = RCTokkamiiossdkTests;
+		};
 		FA900D971E1CA64100473B24 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FA900D8E1E1CA64100473B24 /* RCTAnimation.xcodeproj */;
@@ -134,104 +148,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = 2D2A28201D9B03D100D4039D;
 			remoteInfo = "RCTAnimation-tvOS";
-		};
-		FAF1090E1E48E30C000B1E84 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAF109091E48E30C000B1E84 /* RCTOkkamiSdkImplementation.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = FAC9F8CE1E14EC5700EEFC1B;
-			remoteInfo = RCTOkkamiSdkImplementation;
-		};
-		FAF109101E48E30C000B1E84 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAF109091E48E30C000B1E84 /* RCTOkkamiSdkImplementation.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = FAC9F8D71E14EC5800EEFC1B;
-			remoteInfo = RCTOkkamiSdkImplementationTests;
-		};
-		FAF109231E48E635000B1E84 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 44A356FE0D5CAD2847AACF56B1C10EFE;
-			remoteInfo = Alamofire;
-		};
-		FAF109251E48E635000B1E84 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8CEE9DA3275A7B474849D05B3411B35D;
-			remoteInfo = ModelMapper;
-		};
-		FAF109271E48E635000B1E84 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 7FABC4FD0475EFBDC07B86FE18378599;
-			remoteInfo = Moya;
-		};
-		FAF109291E48E635000B1E84 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 864FD5BF7DAB5D07C85F3AB8D5E681B2;
-			remoteInfo = "Moya-ModelMapper";
-		};
-		FAF1092B1E48E635000B1E84 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = EEA6CEF60210A242DE885EC8A14352B2;
-			remoteInfo = "Pods-RCTOkkamiSdkImplementation";
-		};
-		FAF1092D1E48E635000B1E84 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 1CF591AD6F607B7AC8D2D84CFF4EB798;
-			remoteInfo = "Pods-RCTOkkamiSdkImplementationTests";
-		};
-		FAF1092F1E48E635000B1E84 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 1337AB67C3FAF45458E64847153E7534;
-			remoteInfo = Realm;
-		};
-		FAF109311E48E635000B1E84 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = C8289E6FEA4FDCEF6D0D6B4254B88CA7;
-			remoteInfo = RealmSwift;
-		};
-		FAF109331E48E635000B1E84 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8C8699D177BBB4D459C77836069D2BA0;
-			remoteInfo = Result;
-		};
-		FAF109351E48E635000B1E84 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 7087C00FAC4B1FA11DDED146A8337A09;
-			remoteInfo = RxCocoa;
-		};
-		FAF109371E48E635000B1E84 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 55DB305362358913B60430A0F1157280;
-			remoteInfo = RxOptional;
-		};
-		FAF109391E48E635000B1E84 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = BC7E7BA0316E3CE9CED5F79EBBFCC7D2;
-			remoteInfo = RxSwift;
 		};
 		FAF229831E14161900F3C9C1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -394,12 +310,11 @@
 		DECD567D9C524CAB965E8E48 /* RNVectorIcons.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNVectorIcons.xcodeproj; path = "../node_modules/react-native-vector-icons/RNVectorIcons.xcodeproj"; sourceTree = "<group>"; };
 		F13D9FA9D894492BB18AB0C4 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
 		F64BF761745B285FB74EE4A3 /* Pods_OkkamiSdkTest.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_OkkamiSdkTest.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA8BB57D1E657FDD008C1CB2 /* RCTokkamiiossdk.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTokkamiiossdk.xcodeproj; path = "../../../../../okkami-ios-sdk/RCTokkamiiossdk/RCTokkamiiossdk.xcodeproj"; sourceTree = "<group>"; };
 		FA900D8E1E1CA64100473B24 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
 		FAF1086C1E48D757000B1E84 /* Pods_OkkamiSdkTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_OkkamiSdkTest.framework; path = "Pods/../build/Debug-iphoneos/Pods_OkkamiSdkTest.framework"; sourceTree = "<group>"; };
 		FAF1088E1E48DE34000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_RCTOkkamiSdkImplementation.framework; path = ../../../../../../../Desktop/Pods_RCTOkkamiSdkImplementation.framework; sourceTree = "<group>"; };
 		FAF1088F1E48DE34000B1E84 /* RCTOkkamiSdkImplementation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RCTOkkamiSdkImplementation.framework; path = ../../../../../../../Desktop/RCTOkkamiSdkImplementation.framework; sourceTree = "<group>"; };
-		FAF109091E48E30C000B1E84 /* RCTOkkamiSdkImplementation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTOkkamiSdkImplementation.xcodeproj; path = ../../../ios/RCTOkkamiSdkImplementation/RCTOkkamiSdkImplementation.xcodeproj; sourceTree = "<group>"; };
-		FAF109141E48E634000B1E84 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = ../../../ios/RCTOkkamiSdkImplementation/Pods/Pods.xcodeproj; sourceTree = "<group>"; };
 		FAF2297D1E14161800F3C9C1 /* OkkamiSdkImplementation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OkkamiSdkImplementation.xcodeproj; path = OkkamiSdkImplementation/OkkamiSdkImplementation.xcodeproj; sourceTree = "<group>"; };
 		FFC323171E077DC80097EF66 /* RCTOkkamiSdk.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTOkkamiSdk.xcodeproj; path = ../../../ios/RCTOkkamiSdk.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -581,8 +496,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				FAF109141E48E634000B1E84 /* Pods.xcodeproj */,
-				FAF109091E48E30C000B1E84 /* RCTOkkamiSdkImplementation.xcodeproj */,
+				FA8BB57D1E657FDD008C1CB2 /* RCTokkamiiossdk.xcodeproj */,
 				FA900D8E1E1CA64100473B24 /* RCTAnimation.xcodeproj */,
 				FAF2297D1E14161800F3C9C1 /* OkkamiSdkImplementation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
@@ -650,39 +564,20 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		FA8BB57E1E657FDD008C1CB2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FA8BB5831E657FDD008C1CB2 /* RCTokkamiiossdk.framework */,
+				FA8BB5851E657FDD008C1CB2 /* RCTokkamiiossdkTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		FA900D8F1E1CA64100473B24 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				FA900D981E1CA64100473B24 /* libRCTAnimation.a */,
 				FA900D9A1E1CA64100473B24 /* libRCTAnimation-tvOS.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		FAF1090A1E48E30C000B1E84 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				FAF1090F1E48E30C000B1E84 /* RCTOkkamiSdkImplementation.framework */,
-				FAF109111E48E30C000B1E84 /* RCTOkkamiSdkImplementationTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		FAF109151E48E634000B1E84 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				FAF109241E48E635000B1E84 /* Alamofire.framework */,
-				FAF109261E48E635000B1E84 /* Mapper.framework */,
-				FAF109281E48E635000B1E84 /* Moya.framework */,
-				FAF1092A1E48E635000B1E84 /* Moya_ModelMapper.framework */,
-				FAF1092C1E48E635000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework */,
-				FAF1092E1E48E635000B1E84 /* Pods_RCTOkkamiSdkImplementationTests.framework */,
-				FAF109301E48E635000B1E84 /* Realm.framework */,
-				FAF109321E48E635000B1E84 /* RealmSwift.framework */,
-				FAF109341E48E635000B1E84 /* Result.framework */,
-				FAF109361E48E635000B1E84 /* RxCocoa.framework */,
-				FAF109381E48E635000B1E84 /* RxOptional.framework */,
-				FAF1093A1E48E635000B1E84 /* RxSwift.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -830,10 +725,6 @@
 					ProjectRef = FAF2297D1E14161800F3C9C1 /* OkkamiSdkImplementation.xcodeproj */;
 				},
 				{
-					ProductGroup = FAF109151E48E634000B1E84 /* Products */;
-					ProjectRef = FAF109141E48E634000B1E84 /* Pods.xcodeproj */;
-				},
-				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
 					ProjectRef = 00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */;
 				},
@@ -858,12 +749,12 @@
 					ProjectRef = 00C302D31ABCB9D200DB3ED1 /* RCTNetwork.xcodeproj */;
 				},
 				{
-					ProductGroup = FFC323181E077DC80097EF66 /* Products */;
-					ProjectRef = FFC323171E077DC80097EF66 /* RCTOkkamiSdk.xcodeproj */;
+					ProductGroup = FA8BB57E1E657FDD008C1CB2 /* Products */;
+					ProjectRef = FA8BB57D1E657FDD008C1CB2 /* RCTokkamiiossdk.xcodeproj */;
 				},
 				{
-					ProductGroup = FAF1090A1E48E30C000B1E84 /* Products */;
-					ProjectRef = FAF109091E48E30C000B1E84 /* RCTOkkamiSdkImplementation.xcodeproj */;
+					ProductGroup = FFC323181E077DC80097EF66 /* Products */;
+					ProjectRef = FFC323171E077DC80097EF66 /* RCTOkkamiSdk.xcodeproj */;
 				},
 				{
 					ProductGroup = 139105B71AF99BAD00B5F7CC /* Products */;
@@ -981,6 +872,20 @@
 			remoteRef = 832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		FA8BB5831E657FDD008C1CB2 /* RCTokkamiiossdk.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RCTokkamiiossdk.framework;
+			remoteRef = FA8BB5821E657FDD008C1CB2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		FA8BB5851E657FDD008C1CB2 /* RCTokkamiiossdkTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RCTokkamiiossdkTests.xctest;
+			remoteRef = FA8BB5841E657FDD008C1CB2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		FA900D981E1CA64100473B24 /* libRCTAnimation.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -993,104 +898,6 @@
 			fileType = archive.ar;
 			path = "libRCTAnimation-tvOS.a";
 			remoteRef = FA900D991E1CA64100473B24 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FAF1090F1E48E30C000B1E84 /* RCTOkkamiSdkImplementation.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = RCTOkkamiSdkImplementation.framework;
-			remoteRef = FAF1090E1E48E30C000B1E84 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FAF109111E48E30C000B1E84 /* RCTOkkamiSdkImplementationTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = RCTOkkamiSdkImplementationTests.xctest;
-			remoteRef = FAF109101E48E30C000B1E84 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FAF109241E48E635000B1E84 /* Alamofire.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = Alamofire.framework;
-			remoteRef = FAF109231E48E635000B1E84 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FAF109261E48E635000B1E84 /* Mapper.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = Mapper.framework;
-			remoteRef = FAF109251E48E635000B1E84 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FAF109281E48E635000B1E84 /* Moya.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = Moya.framework;
-			remoteRef = FAF109271E48E635000B1E84 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FAF1092A1E48E635000B1E84 /* Moya_ModelMapper.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = Moya_ModelMapper.framework;
-			remoteRef = FAF109291E48E635000B1E84 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FAF1092C1E48E635000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = Pods_RCTOkkamiSdkImplementation.framework;
-			remoteRef = FAF1092B1E48E635000B1E84 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FAF1092E1E48E635000B1E84 /* Pods_RCTOkkamiSdkImplementationTests.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = Pods_RCTOkkamiSdkImplementationTests.framework;
-			remoteRef = FAF1092D1E48E635000B1E84 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FAF109301E48E635000B1E84 /* Realm.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = Realm.framework;
-			remoteRef = FAF1092F1E48E635000B1E84 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FAF109321E48E635000B1E84 /* RealmSwift.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = RealmSwift.framework;
-			remoteRef = FAF109311E48E635000B1E84 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FAF109341E48E635000B1E84 /* Result.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = Result.framework;
-			remoteRef = FAF109331E48E635000B1E84 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FAF109361E48E635000B1E84 /* RxCocoa.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = RxCocoa.framework;
-			remoteRef = FAF109351E48E635000B1E84 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FAF109381E48E635000B1E84 /* RxOptional.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = RxOptional.framework;
-			remoteRef = FAF109371E48E635000B1E84 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		FAF1093A1E48E635000B1E84 /* RxSwift.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = RxSwift.framework;
-			remoteRef = FAF109391E48E635000B1E84 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		FAF229841E14161900F3C9C1 /* OkkamiSdkImplementation.framework */ = {
@@ -1292,7 +1099,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-OkkamiSdkTest/Pods-OkkamiSdkTest-resources.sh\"\n\"/Users/macbook/Documents/ios/react/okkamiSdk/ios/RCTOkkamiSdkImplementation/Pods/Target Support Files/Pods-RCTOkkamiSdkImplementation/Pods-RCTOkkamiSdkImplementation-resources.sh\"";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-OkkamiSdkTest/Pods-OkkamiSdkTest-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		B5932B170498D9F3A86EB8DB /* [CP] Embed Pods Frameworks */ = {
@@ -1322,7 +1129,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-OkkamiSdkTest/Pods-OkkamiSdkTest-frameworks.sh\"\n\"/Users/macbook/Documents/ios/react/okkamiSdk/ios/RCTOkkamiSdkImplementation/Pods/Target Support Files/Pods-RCTOkkamiSdkImplementationTests/Pods-RCTOkkamiSdkImplementationTests-frameworks.sh\"\n\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-OkkamiSdkTest/Pods-OkkamiSdkTest-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		CC8EB117ABF4B258E7DE32FD /* [CP] Check Pods Manifest.lock */ = {

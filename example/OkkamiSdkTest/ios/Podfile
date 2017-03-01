@@ -6,13 +6,20 @@ target 'OkkamiSdkTest' do
   use_frameworks!
 
   # Pods for OkkamiSdkTest
+  
   #pod 'Moya/RxSwift'
   #pod 'ModelMapper'
   #pod 'Moya-ModelMapper/RxSwift', '4.0.0-beta.3'
-  #pod 'RxCocoa'
-  #pod 'RxOptional'  
-  #pod 'RealmSwift'
-  # Add this if you are targeting iOS 8+ or using Swift
+  pod 'RxCocoa'
+  pod 'RxSwift'
+  #pod 'RxOptional'
+  pod 'RealmSwift'
+  #pod 'SwiftyJSON'
+  #pod 'IDZSwiftCommonCrypto', '~> 0.9.0'
+  pod 'CryptoSwift'
+  pod 'ReachabilitySwift', '~> 3'
+  pod 'CocoaAsyncSocket'
+  pod 'Log'
   
   target 'OkkamiSdkTestTests' do
     inherit! :search_paths

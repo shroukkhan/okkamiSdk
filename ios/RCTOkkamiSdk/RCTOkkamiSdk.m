@@ -212,8 +212,14 @@ RCT_EXPORT_METHOD(start
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    
     RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
+    NSString* udid = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+    NSString* payload = [NSString stringWithFormat:@"{\"uid\":\"%@\"}", udid];
+    [main executeCoreRESTCallWithApicore:@"https://api.fingi-staging.com/v1/preconnect" apifunc:@"POST" payload:payload secret:@"92865cbcd9be8a19d0563006f8b81c73" token:@"32361e1a5a496e0c" force:1 completion:^(id callback) {
+        resolve(callback);
+        [self.bridge.eventDispatcher sendAppEventWithName:@"onStart" body:@{@"command": @"On Start"}];
+    }];
+    /*RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
     NSString* udid = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
     NSString* payload = [NSString stringWithFormat:@"{\"uid\":\"%@\"}", udid];
     [main executeCoreRESTCallWithApicore:@"https://api.fingi-staging.com/v1/preconnect" apifunc:@"POST" payload:payload secret:@"" token:@"" completion:^(id callback) {
@@ -222,7 +228,7 @@ RCT_EXPORT_METHOD(start
         resolve(callback);
         [self.bridge.eventDispatcher sendAppEventWithName:@"onStart" body:@{@"command": @"On Start"}];
         
-    }];
+    }];*/
     //[main executeCoreRESTCallWithApicore:@"https://api.fingi-staging.com/v1/preconnect" apifunc:@"POST" payload:payload];
     
 }

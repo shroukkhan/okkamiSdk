@@ -1,6 +1,6 @@
 #import "RCTBridge.h"
 
-@import RCTOkkamiSdkImplementation;
+@import RCTokkamiiossdk;
 
 
 @interface OkkamiSdk : NSObject <RCTBridgeModule>
