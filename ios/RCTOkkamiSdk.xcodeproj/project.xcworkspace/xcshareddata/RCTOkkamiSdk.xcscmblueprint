@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "454AFC296B6E4AA22ADB65926D23D8D354734BEF",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "6556201BEC77DFBD52582E38E13673E4A4E19CAE" : 9223372036854775807,
+    "454AFC296B6E4AA22ADB65926D23D8D354734BEF" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "42CE5C07-B15A-47CA-ADA7-CCF7AFC4E630",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "6556201BEC77DFBD52582E38E13673E4A4E19CAE" : "..",
+    "454AFC296B6E4AA22ADB65926D23D8D354734BEF" : "okkamiSdk\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "RCTOkkamiSdk",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "ios\/RCTOkkamiSdk.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/fingi\/okkamiSdk",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "454AFC296B6E4AA22ADB65926D23D8D354734BEF"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/bitbucket.org\/abadi_kaka\/ios-project.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "6556201BEC77DFBD52582E38E13673E4A4E19CAE"
+    }
+  ]
+}

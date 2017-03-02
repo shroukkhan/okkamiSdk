@@ -13,6 +13,11 @@ class OkkamiSdk {
         return OkkamiSdkManager.start();
     }
 
+    getSdkManager()
+    {
+        return OkkamiSdkManager;
+    }
+
     restart() {
         return OkkamiSdkManager.restart();
     }
@@ -23,6 +28,7 @@ class OkkamiSdk {
 
     /*---------------------------------------------------------------------------------------------------*/
     /*-------------------------------------- Hub & Core -------------------------------------------------*/
+
 
     connectToRoom(loginName, password) {
         return OkkamiSdkManager.connectToRoom(loginName, password);
