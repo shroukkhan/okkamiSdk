@@ -9,41 +9,18 @@ class OkkamiSdk {
 
     /*-------------------------------------- Utility   --------------------------------------------------*/
 
-    start() {
-        return OkkamiSdkManager.start();
-    }
 
-    getSdkManager()
-    {
-        return OkkamiSdkManager;
-    }
-
-    restart() {
-        return OkkamiSdkManager.restart();
-    }
-
-    wipeUserData() {
-        return OkkamiSdkManager.wipeUserData();
-    }
 
     /*---------------------------------------------------------------------------------------------------*/
     /*-------------------------------------- Hub & Core -------------------------------------------------*/
 
 
-    connectToRoom(loginName, password) {
-        return OkkamiSdkManager.connectToRoom(loginName, password);
+    executeCoreRESTCall (endPoint,getPost,payLoad,secret,token) {
+        return OkkamiSdkManager.executeCoreRESTCall(endPoint,getPost,payLoad,secret,token);
     }
 
-    disconnectFromRoom() {
-        return OkkamiSdkManager.disconnectFromRoom();
-    }
-
-    registerToCore() {
-        return OkkamiSdkManager.registerToCore();
-    }
-
-    connectToHub() {
-        return OkkamiSdkManager.connectToHub();
+    connectToHub(secret,token) {
+        return OkkamiSdkManager.connectToHub(secret,token);
     }
 
     disconnectFromHub() {
@@ -58,18 +35,6 @@ class OkkamiSdk {
         return OkkamiSdkManager.sendCommandToHub(command);
     }
 
-    downloadPresets(force) {
-        return OkkamiSdkManager.downloadPresets(force);
-    }
-
-    downloadRoomInfo(force) {
-        return OkkamiSdkManager.downloadRoomInfo(force);
-    }
-
-    downloadFromCore(endPoint, getPost, payLoad) {
-        return OkkamiSdkManager.reconnectToHub(endPoint, getPost, payLoad);
-    }
-
     async isHubLoggedIn() {
         return await OkkamiSdkManager.isHubLoggedIn();
     }
@@ -81,17 +46,7 @@ class OkkamiSdk {
     /*---------------------------------------------------------------------------------------------------*/
 
     /*-------------------------------------- SIP / PhoneCall --------------------------------------------*/
-    dial(calledNumber, preferSip) {
-        return OkkamiSdkManager.dial(calledNumber, preferSip);
-    }
 
-    receive() {
-        return OkkamiSdkManager.receive();
-    }
-
-    hangup() {
-
-    }
 
 
 }
