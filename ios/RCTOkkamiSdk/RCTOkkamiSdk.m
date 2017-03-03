@@ -32,6 +32,7 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
                   :(NSString*)payLoad
                   :(NSString*)secret
                   :(NSString*)token
+                  :(BOOL) force
                   
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
