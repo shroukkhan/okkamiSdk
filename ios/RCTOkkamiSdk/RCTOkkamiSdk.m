@@ -39,7 +39,7 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
 {
     
     [self.bridge.eventDispatcher sendAppEventWithName:@"executeCoreRESTCall" body:nil];
-    //ok
+    //ok xxx
     resolve(@YES);
     
 }
