@@ -7,13 +7,18 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
 
+import com.okkami.android.sdk.SDK;
+
 class OkkamiSdkModule extends ReactContextBaseJavaModule {
     private Context context;
     private static final String TAG = "OKKAMISDK";
+    private SDK okkamiSdk;
 
     public OkkamiSdkModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.context = reactContext;
+
+        okkamiSdk = new SDK().init(context,"https://app.fingi.com"); // TODO : how do we pass the URL dynamically from react??
     }
 
     /**
@@ -45,8 +50,11 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      * @param downloadFromCorePromise
      */
     @ReactMethod
-    public void executeCoreRESTCall(String endPoint, String getPost, String payload, Promise downloadFromCorePromise) {
+    public void executeCoreRESTCall(String endPoint, String getPost, String payload, String secret,String token,Boolean force,Promise downloadFromCorePromise) {
 
+       // okkamiSdk.
+
+        SDK s = okkamiSdk;
     }
 
     /*-------------------------------------- Hub -------------------------------------------------*/
