@@ -14,6 +14,9 @@ class OkkamiSdk {
     /*---------------------------------------------------------------------------------------------------*/
     /*-------------------------------------- Hub & Core -------------------------------------------------*/
 
+    lineLogin() {
+        return OkkamiSdkManager.lineLogin();
+    }
 
     executeCoreRESTCall (endPoint,getPost,payLoad,secret,token,force) {
         return OkkamiSdkManager.executeCoreRESTCall(endPoint,getPost,payLoad,secret,token,force);
