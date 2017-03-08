@@ -13,4 +13,5 @@
 @property (copy, nonatomic) NSDictionary * lineData;
 @property (strong, nonatomic) RCTPromiseResolveBlock loginResolver;
 @property (strong, nonatomic) RCTPromiseRejectBlock loginRejecter;
+@property (strong, nonatomic) RCTOkkamiMain* main;
 @end

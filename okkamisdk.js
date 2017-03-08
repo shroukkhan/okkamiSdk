@@ -21,9 +21,9 @@ class OkkamiSdk {
     executeCoreRESTCall (endPoint,getPost,payLoad,secret,token,force) {
         return OkkamiSdkManager.executeCoreRESTCall(endPoint,getPost,payLoad,secret,token,force);
     }
-
-    connectToHub(secret,token) {
-        return OkkamiSdkManager.connectToHub(secret,token);
+    
+    connectToHub(uid,secret,token,hubUrl,hubPort) {
+        return OkkamiSdkManager.connectToHub(uid, secret, token, hubUrl, hubPort);
     }
 
     disconnectFromHub() {

@@ -138,17 +138,27 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
  * @param hubConnectionPromise
  */
 RCT_EXPORT_METHOD(connectToHub
-                  
+                  :(NSString*)uid
                   :(NSString*)secret
                   :(NSString*)token
+                  :(NSString*)hubUrl
+                  :(NSString*)hubPort
                   
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
     
-    [self.bridge.eventDispatcher sendAppEventWithName:@"connectToHub" body:nil];
-    //ok
-    resolve(@YES);
+    
+    RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
+    self.main = main;
+    NSNumberFormatter* formatter = [[NSNumberFormatter alloc] init];
+    UInt16 portNumber = [[formatter numberFromString:hubPort] unsignedShortValue];
+    [main connectToHubWithUid:uid secret:secret token:token hubUrl:hubUrl hubPort:portNumber completion:^(NSError * error) {
+        
+        [self.bridge.eventDispatcher sendAppEventWithName:@"connectToHub" body:@""];
+        //ok
+        resolve(@YES);
+    }];
     
 }
 
@@ -216,9 +226,13 @@ RCT_EXPORT_METHOD(sendCommandToHub
                   :(RCTPromiseRejectBlock)reject)
 {
     
-    [self.bridge.eventDispatcher sendAppEventWithName:@"sendCommandToHub" body:nil];
-    //ok
-    resolve(@YES);
+    
+    [self.main sendCommandToHubWithCommand:command completion:^(NSError * error) {
+        [self.bridge.eventDispatcher sendAppEventWithName:@"sendCommandToHub" body:command];
+        //ok
+        resolve(@YES);
+    }];
+
     
 }
 
