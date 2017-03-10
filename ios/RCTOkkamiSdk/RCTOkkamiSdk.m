@@ -155,9 +155,31 @@ RCT_EXPORT_METHOD(connectToHub
     UInt16 portNumber = [[formatter numberFromString:hubPort] unsignedShortValue];
     [main connectToHubWithUid:uid secret:secret token:token hubUrl:hubUrl hubPort:portNumber completion:^(NSError * error) {
         
-        [self.bridge.eventDispatcher sendAppEventWithName:@"connectToHub" body:@""];
-        //ok
-        resolve(@YES);
+        if (error == nil) {
+            resolve(@YES);
+        }else{
+            [main disconnectFromHubWithCompletion:^(NSError * errorDisc) {
+                if (errorDisc == nil) {
+                    reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+                }
+            }];
+        }
+        /*if (error == nil) {
+            [self.bridge.eventDispatcher sendAppEventWithName:@"onHubConnected" body:nil];
+            [main identifyDeviceIdWithCompletion:^(NSError * error) {
+                if (error==nil) {
+                    
+                    
+                    //[self.bridge.eventDispatcher sendAppEventWithName:@"onHubLoggedIn" body:nil];
+                    //ok
+                    //resolve(@YES);
+                }else{
+                    reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+                }
+            }];
+        }else{
+            reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+        }*/
     }];
     
 }
@@ -176,10 +198,22 @@ RCT_EXPORT_METHOD(disconnectFromHub
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    
-    [self.bridge.eventDispatcher sendAppEventWithName:@"disconnectFromHub" body:nil];
-    //ok
-    resolve(@YES);
+    if (self.main == nil) {
+        NSMutableDictionary* details = [NSMutableDictionary dictionary];
+        [details setValue:@"Not connected To Hub" forKey:NSLocalizedDescriptionKey];
+        // populate the error object with the details
+        NSError *error = [NSError errorWithDomain:@"OkkamiNotConnectedToHub" code:200 userInfo:details];
+        reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+    }
+    [self.main disconnectFromHubWithCompletion:^(NSError * error) {
+        if (error == nil) {
+            [self.bridge.eventDispatcher sendAppEventWithName:@"disconnectFromHub" body:nil];
+            //ok
+            resolve(@YES);
+        }else{
+            reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+        }
+    }];
     
 }
 
@@ -197,10 +231,22 @@ RCT_EXPORT_METHOD(reconnectToHub
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    
-    [self.bridge.eventDispatcher sendAppEventWithName:@"reconnectToHub" body:nil];
-    //ok
-    resolve(@YES);
+    if (self.main == nil) {
+        NSMutableDictionary* details = [NSMutableDictionary dictionary];
+        [details setValue:@"Not connected To Hub" forKey:NSLocalizedDescriptionKey];
+        // populate the error object with the details
+        NSError *error = [NSError errorWithDomain:@"OkkamiNotConnectedToHub" code:200 userInfo:details];
+        reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+    }
+    [self.main reconnectToHubWithCompletion:^(NSError * error) {
+        if (error == nil) {
+            [self.bridge.eventDispatcher sendAppEventWithName:@"reconnectToHub" body:nil];
+            //ok
+            resolve(@YES);
+        }else{
+            reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+        }
+    }];
     
 }
 
@@ -226,11 +272,21 @@ RCT_EXPORT_METHOD(sendCommandToHub
                   :(RCTPromiseRejectBlock)reject)
 {
     
-    
+    if (self.main == nil) {
+        NSMutableDictionary* details = [NSMutableDictionary dictionary];
+        [details setValue:@"Not connected To Hub" forKey:NSLocalizedDescriptionKey];
+        // populate the error object with the details
+        NSError *error = [NSError errorWithDomain:@"OkkamiNotConnectedToHub" code:200 userInfo:details];
+        reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+    }
     [self.main sendCommandToHubWithCommand:command completion:^(NSError * error) {
-        [self.bridge.eventDispatcher sendAppEventWithName:@"sendCommandToHub" body:command];
-        //ok
-        resolve(@YES);
+        if (error == nil) {
+            [self.bridge.eventDispatcher sendAppEventWithName:@"onHubCommand" body:@{@"command": command}];
+            //ok
+            resolve(@YES);
+        }else{
+            reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+        }
     }];
 
     
@@ -252,10 +308,22 @@ RCT_EXPORT_METHOD(isHubLoggedIn
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    
-    [self.bridge.eventDispatcher sendAppEventWithName:@"isHubLoggedIn" body:nil];
-    //ok
-    resolve(@YES);
+    if (self.main == nil) {
+        NSMutableDictionary* details = [NSMutableDictionary dictionary];
+        [details setValue:@"Not connected To Hub" forKey:NSLocalizedDescriptionKey];
+        // populate the error object with the details
+        NSError *error = [NSError errorWithDomain:@"OkkamiNotConnectedToHub" code:200 userInfo:details];
+        reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+    }
+    [self.main isHubLoggedInCompletion:^(NSError * error) {
+        if(error == nil){
+            [self.bridge.eventDispatcher sendAppEventWithName:@"onHubLoggedIn" body:nil];
+            //ok
+            resolve(@YES);
+        }else{
+            reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+        }
+    }];
     
 }
 
@@ -274,10 +342,22 @@ RCT_EXPORT_METHOD(isHubConnected
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    
-    [self.bridge.eventDispatcher sendAppEventWithName:@"isHubConnected" body:nil];
-    //ok
-    resolve(@YES);
+    if (self.main == nil) {
+        NSMutableDictionary* details = [NSMutableDictionary dictionary];
+        [details setValue:@"Not connected To Hub" forKey:NSLocalizedDescriptionKey];
+        // populate the error object with the details
+        NSError *error = [NSError errorWithDomain:@"OkkamiNotConnectedToHub" code:200 userInfo:details];
+        reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+    }
+    [self.main isHubConnectedWithCompletion:^(NSError * error) {
+        if(error == nil){
+            [self.bridge.eventDispatcher sendAppEventWithName:@"onHubConnected" body:nil];
+            //ok
+            resolve(@YES);
+        }else{
+            reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+        }
+    }];
     
 }
 
