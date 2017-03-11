@@ -12,6 +12,61 @@
 RCT_EXPORT_MODULE();
 
 
+#pragma mark LineSDKLoginDelegate
+
+- (void)didLogin:(LineSDKLogin *)login
+      credential:(LineSDKCredential *)credential
+         profile:(LineSDKProfile *)profile
+           error:(NSError *)error
+{
+    NSLog(@"come here ? %@", error);
+    if (error) {
+        NSLog(@"Error data : %@", error);
+        self.loginRejecter([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+        // Login failed with an error. You can use the error parameter to help determine what the problem was.
+    }
+    else {
+        
+        // Login has succeeded. You can get the user's access token and profile information.
+        self.accessToken = credential.accessToken.accessToken;
+        self.userId = profile.userID;
+        self.displayName = profile.displayName;
+        self.statusMessage = profile.statusMessage;
+        // If the user does not have a profile picture set, pictureURL will be nil
+        if (profile.pictureURL) {
+            self.pictureURL = profile.pictureURL.absoluteString;
+        }else{
+            self.pictureURL = @"";
+        }
+        NSError *error;
+        self.lineData = [NSDictionary dictionaryWithObjectsAndKeys:self.accessToken,@"accessToken",self.userId,@"user_id",self.displayName, @"display_name", self.pictureURL,@"picture", nil];
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:self.lineData
+                                                           options:NSJSONWritingPrettyPrinted
+                                                             error:&error];
+        
+        NSString* line;
+        line = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        self.loginResolver(line);
+        [self.bridge.eventDispatcher sendAppEventWithName:@"executeFromLine" body:line];
+        
+    }
+}
+
+
+
+RCT_EXPORT_METHOD(lineLogin
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    
+    [LineSDKLogin sharedInstance].delegate = self;
+    NSLog(@"equal to line");
+    [[LineSDKLogin sharedInstance] startLogin];
+    self.loginResolver = resolve;
+    self.loginRejecter = reject;
+    
+}
+
 /**
  * The purpose of this method is to provide general purpose way to call any core endpoint.
  * Internally, the downloadPresets,downloadRoomInfo,connectToRoom all of them should use this method.
@@ -38,10 +93,36 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
                   :(RCTPromiseRejectBlock)reject)
 {
     
-    [self.bridge.eventDispatcher sendAppEventWithName:@"executeCoreRESTCall" body:nil];
-    //ok
-    resolve(@YES);
     
+    RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
+    //NSString* udid = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+    //NSString* payload = [NSString stringWithFormat:@"{\"uid\":\"%@\"}", udid];
+    [main executeCoreRESTCallWithApicore:endPoint apifunc:getPost payload:payLoad secret:secret token:token force:force completion:^(NSString* callback, NSError* error) {
+        
+        NSLog(@"callback %@", callback);
+        NSLog(@"error %@", error);
+        
+        if (error == NULL) {
+            resolve(callback);
+            [self.bridge.eventDispatcher sendAppEventWithName:@"executeCoreRESTCall" body:callback];
+        }else{
+            reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+        }
+        
+    }];
+    /*if([getPost isEqualToString:@"LINE"]){
+        [LineSDKLogin sharedInstance].delegate = self;
+        NSLog(@"equal to line");
+        [[LineSDKLogin sharedInstance] startLogin];
+        self.loginResolver = resolve;
+        self.loginRejecter = reject;
+    }else{
+        
+    }*/
+    /*[self.bridge.eventDispatcher sendAppEventWithName:@"executeCoreRESTCall" body:nil];
+    //ok xxx
+    resolve(@YES);
+    */
 }
 
 /**
@@ -55,18 +136,73 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
  * @param token   token obtained from core
  * @param hubConnectionPromise
  */
+
+
+- (void)listenerOkkami:(NSNotification *)note {
+    NSDictionary *theData = [note userInfo];
+    if (theData != nil) {
+        NSString *event = [theData objectForKey:@"event"];
+        NSString *command = [theData objectForKey:@"command"];
+        if (command != nil) {
+            [self.bridge.eventDispatcher sendAppEventWithName:event body:@{@"command": command}];
+        }else{
+            [self.bridge.eventDispatcher sendAppEventWithName:event body:nil];
+        }
+    }
+    
+}
+
 RCT_EXPORT_METHOD(connectToHub
-                  
+                  :(NSString*)uid
                   :(NSString*)secret
                   :(NSString*)token
+                  :(NSString*)hubUrl
+                  :(NSString*)hubPort
                   
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
     
-    [self.bridge.eventDispatcher sendAppEventWithName:@"connectToHub" body:nil];
-    //ok
-    resolve(@YES);
+    RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
+    self.main = main;
+    NSNotificationCenter *defaultNotif = [NSNotificationCenter defaultCenter];
+    [defaultNotif addObserver:self selector:@selector(listenerOkkami:) name:self.main.notificationName object:nil];
+    
+    NSNumberFormatter* formatter = [[NSNumberFormatter alloc] init];
+    UInt16 portNumber = [[formatter numberFromString:hubPort] unsignedShortValue];
+    [self.main connectToHubWithNotif:defaultNotif uid:uid secret:secret token:token hubUrl:hubUrl hubPort:portNumber completion:^(NSError * error) {
+        
+    }];
+    /*[self.main connectToHubWithUid:uid secret:secret token:token hubUrl:hubUrl hubPort:portNumber completion:^(NSError * error) {
+        
+        if (error == nil) {
+            resolve(@YES);
+        }else{
+            reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+            
+            /*[main disconnectFromHubWithCompletion:^(NSError * errorDisc) {
+                if (errorDisc == nil) {
+                    reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+                }
+            }];
+        }*/
+        /*if (error == nil) {
+            [self.bridge.eventDispatcher sendAppEventWithName:@"onHubConnected" body:nil];
+            [main identifyDeviceIdWithCompletion:^(NSError * error) {
+                if (error==nil) {
+                    
+                    
+                    //[self.bridge.eventDispatcher sendAppEventWithName:@"onHubLoggedIn" body:nil];
+                    //ok
+                    //resolve(@YES);
+                }else{
+                    reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+                }
+            }];
+        }else{
+            reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+        }
+    }];*/
     
 }
 
@@ -84,11 +220,24 @@ RCT_EXPORT_METHOD(disconnectFromHub
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    
-    [self.bridge.eventDispatcher sendAppEventWithName:@"disconnectFromHub" body:nil];
-    //ok
-    resolve(@YES);
-    
+    if (self.main == nil) {
+        NSMutableDictionary* details = [NSMutableDictionary dictionary];
+        [details setValue:@"Not connected To Hub" forKey:NSLocalizedDescriptionKey];
+        // populate the error object with the details
+        NSError *error = [NSError errorWithDomain:@"E_HUB_NOT_CONNECTED" code:200 userInfo:details];
+        reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+    }else{
+        [[NSNotificationCenter defaultCenter] removeObserver:self];
+        [self.main disconnectFromHubWithCompletion:^(NSError * error) {
+            if (error == nil) {
+                [self.bridge.eventDispatcher sendAppEventWithName:@"disconnectFromHub" body:nil];
+                //ok
+                resolve(@YES);
+            }else{
+                reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+            }
+        }];
+    }
 }
 
 /**
@@ -105,10 +254,25 @@ RCT_EXPORT_METHOD(reconnectToHub
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    
-    [self.bridge.eventDispatcher sendAppEventWithName:@"reconnectToHub" body:nil];
-    //ok
-    resolve(@YES);
+    if (self.main == nil) {
+        NSMutableDictionary* details = [NSMutableDictionary dictionary];
+        [details setValue:@"Not connected To Hub" forKey:NSLocalizedDescriptionKey];
+        // populate the error object with the details
+        NSError *error = [NSError errorWithDomain:@"E_HUB_NOT_CONNECTED" code:200 userInfo:details];
+        reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+    }else{
+        NSNotificationCenter *defaultNotif = [NSNotificationCenter defaultCenter];
+        [defaultNotif addObserver:self selector:@selector(listenerOkkami:) name:self.main.notificationName object:nil];    
+        [self.main reconnectToHubWithNotif: defaultNotif completion:^(NSError * error) {
+            if (error == nil) {
+                [self.bridge.eventDispatcher sendAppEventWithName:@"reconnectToHub" body:nil];
+                //ok
+                resolve(@YES);
+            }else{
+                reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+            }
+        }];
+    }
     
 }
 
@@ -134,9 +298,24 @@ RCT_EXPORT_METHOD(sendCommandToHub
                   :(RCTPromiseRejectBlock)reject)
 {
     
-    [self.bridge.eventDispatcher sendAppEventWithName:@"sendCommandToHub" body:nil];
-    //ok
-    resolve(@YES);
+    if (self.main == nil) {
+        NSMutableDictionary* details = [NSMutableDictionary dictionary];
+        [details setValue:@"Not connected To Hub" forKey:NSLocalizedDescriptionKey];
+        // populate the error object with the details
+        NSError *error = [NSError errorWithDomain:@"E_HUB_NOT_CONNECTED" code:200 userInfo:details];
+        reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+    }else{
+        [self.main sendCommandToHubWithCommand:command completion:^(NSError * error) {
+            if (error == nil) {
+                //[self.bridge.eventDispatcher sendAppEventWithName:@"onHubCommand" body:@{@"command": command}];
+                //ok
+                resolve(@YES);
+            }else{
+                reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+            }
+        }];
+    }
+
     
 }
 
@@ -156,11 +335,24 @@ RCT_EXPORT_METHOD(isHubLoggedIn
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    
-    [self.bridge.eventDispatcher sendAppEventWithName:@"isHubLoggedIn" body:nil];
-    //ok
-    resolve(@YES);
-    
+    if (self.main == nil) {
+        NSMutableDictionary* details = [NSMutableDictionary dictionary];
+        [details setValue:@"Not connected To Hub" forKey:NSLocalizedDescriptionKey];
+        // populate the error object with the details
+        NSError *error = [NSError errorWithDomain:@"OkkamiNotConnectedToHub" code:200 userInfo:details];
+        reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+    }else{
+        [self.main isHubLoggedInCompletion:^(NSNumber * number) {
+            [self.bridge.eventDispatcher sendAppEventWithName:@"onHubLoggedIn" body:nil];
+            //ok
+            BOOL boolValue = [number boolValue];
+            if (boolValue) {
+                resolve(@YES);
+            }else{
+                resolve(@NO);
+            }
+        }];
+    }
 }
 
 /**
@@ -178,10 +370,25 @@ RCT_EXPORT_METHOD(isHubConnected
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    
-    [self.bridge.eventDispatcher sendAppEventWithName:@"isHubConnected" body:nil];
-    //ok
-    resolve(@YES);
+    if (self.main == nil) {
+        NSMutableDictionary* details = [NSMutableDictionary dictionary];
+        [details setValue:@"Not connected To Hub" forKey:NSLocalizedDescriptionKey];
+        // populate the error object with the details
+        NSError *error = [NSError errorWithDomain:@"OkkamiNotConnectedToHub" code:200 userInfo:details];
+        reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+    }else{
+        [self.main isHubConnectedWithCompletion:^(NSNumber * number) {
+            [self.bridge.eventDispatcher sendAppEventWithName:@"onHubConnected" body:nil];
+            //ok
+            BOOL boolValue = [number boolValue];
+            
+            if (boolValue) {
+                resolve(@YES);
+            }else{
+                resolve(@NO);
+            }
+        }];
+    }
     
 }
 
@@ -216,10 +423,11 @@ RCT_EXPORT_METHOD(start
     RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
     NSString* udid = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
     NSString* payload = [NSString stringWithFormat:@"{\"uid\":\"%@\"}", udid];
-    [main executeCoreRESTCallWithApicore:@"https://api.fingi-staging.com/v1/preconnect" apifunc:@"POST" payload:payload secret:@"92865cbcd9be8a19d0563006f8b81c73" token:@"32361e1a5a496e0c" force:1 completion:^(id callback) {
+    
+    /*[main executeCoreRESTCallWithApicore:@"https://api.fingi-staging.com/v1/preconnect" apifunc:@"POST" payload:payload secret:@"92865cbcd9be8a19d0563006f8b81c73" token:@"32361e1a5a496e0c" force:1 completion:^(id callback) {
         resolve(callback);
         [self.bridge.eventDispatcher sendAppEventWithName:@"onStart" body:@{@"command": @"On Start"}];
-    }];
+    }];*/
     /*RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
     NSString* udid = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
     NSString* payload = [NSString stringWithFormat:@"{\"uid\":\"%@\"}", udid];
