@@ -1,8 +1,8 @@
 #import "RCTBridge.h"
 #import <LineSDK/LineSDK.h>
+#import "RCTBridgeModule.h"
 
 @import RCTokkamiiossdk;
-
 
 @interface OkkamiSdk : NSObject <RCTBridgeModule, LineSDKLoginDelegate>
 @property (nonatomic, copy)NSString * accessToken;
