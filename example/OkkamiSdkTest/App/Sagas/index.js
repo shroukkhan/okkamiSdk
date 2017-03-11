@@ -8,12 +8,16 @@ import DebugSettings from '../Config/DebugSettings'
 import { StartupTypes } from '../Redux/StartupRedux'
 import { TemperatureTypes } from '../Redux/TemperatureRedux'
 import { LoginTypes } from '../Redux/LoginRedux'
+import { FacebookLoginTypes } from '../Redux/FacebookLoginRedux'
+import { UserConnectTypes } from '../Redux/UserConnectRedux'
 
 /* ------------- Sagas ------------- */
 
 import { startup } from './StartupSagas'
 import { login } from './LoginSagas'
 import { getTemperature } from './TemperatureSagas'
+import { facebookLogin } from './FacebookLoginSagas'
+import { userConnect } from './UserConnectSagas'
 
 /* ------------- API ------------- */
 
@@ -28,6 +32,8 @@ export default function * root () {
     // some sagas only receive an action
     takeLatest(StartupTypes.STARTUP, startup),
     takeLatest(LoginTypes.LOGIN_REQUEST, login),
+    takeLatest(FacebookLoginTypes.FACEBOOK_LOGIN_REQUEST, facebookLogin),
+    takeLatest(UserConnectTypes.USER_CONNECT_REQUEST, userConnect),
 
     // some sagas receive extra parameters in addition to an action
     takeLatest(TemperatureTypes.TEMPERATURE_REQUEST, getTemperature, api)

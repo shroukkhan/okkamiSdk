@@ -1,30 +1,31 @@
 // @flow
 
 import React from 'react'
-import { ScrollView, Text, Image, View } from 'react-native'
-import { Images } from '../Themes'
+import {ScrollView, Text, Image, View} from 'react-native'
+import {Images} from '../Themes'
 import RoundedButton from '../Components/RoundedButton'
-import { Actions as NavigationActions } from 'react-native-router-flux'
+import {Actions as NavigationActions} from 'react-native-router-flux'
 import OkkamiSdk from 'okkami-sdk';
+
+import {DeviceEventEmitter} from 'react-native'
 
 // Styles
 import styles from './Styles/PresentationScreenStyle'
 
 export default class PresentationScreen extends React.Component {
 
-  constructor(props){
+  subscriptions = [];
+
+  constructor(props) {
     super(props);
 
-    /*----test---*/
+
+    /*----a sample for how to use the sdk calls :) ---*/
     (async function () {
       try {
 
-
-
-        var result = await OkkamiSdk.connectToRoom("xxx","yyy");
-        var hubLoggedIn  =await OkkamiSdk.isHubLoggedIn();
-
-        console.log("connectToRoom successful..." + result + " / login : "+ hubLoggedIn);
+        console.log('calling : connectToHub')
+        var result = await OkkamiSdk.connectToHub();
 
       } catch (e) {
         console.log("connectToRoom failed . error : " + e.message)
@@ -33,18 +34,34 @@ export default class PresentationScreen extends React.Component {
 
   }
 
+  componentWillMount() {
+    console.log('subscribe here')
+    aSubscription = DeviceEventEmitter.addListener('onHubCommand', function (e) {
+      console.log('onHubCommand --> ',e, e.command)
+    });
 
-  render () {
+    this.subscriptions.push(aSubscription)
+  }
+
+  componentWillUnmount() {
+    console.log('unsubscribe here ' + this.subscriptions.length)
+    for (var i = 0; i < this.subscriptions.length; i++) {
+      //subscriptions[i].remove();
+    }
+  }
+
+
+  render() {
     return (
       <View style={styles.mainContainer}>
-        <Image source={Images.background} style={styles.backgroundImage} resizeMode='stretch' />
+        <Image source={Images.background} style={styles.backgroundImage} resizeMode='stretch'/>
         <ScrollView style={styles.container}>
           <View style={styles.centered}>
-            <Image source={Images.clearLogo} style={styles.logo} />
+            <Image source={Images.clearLogo} style={styles.logo}/>
           </View>
 
-          <View style={styles.section} >
-            <Text style={styles.sectionText} >
+          <View style={styles.section}>
+            <Text style={styles.sectionText}>
               Default screens for development, debugging, and alpha testing
               are available below.
             </Text>

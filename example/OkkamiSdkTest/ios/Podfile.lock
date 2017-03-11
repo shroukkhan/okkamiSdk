@@ -1,0 +1,38 @@
+PODS:
+  - CocoaAsyncSocket (7.5.1):
+    - CocoaAsyncSocket/GCD (= 7.5.1)
+  - CocoaAsyncSocket/GCD (7.5.1)
+  - CryptoSwift (0.6.7)
+  - Log (1.0)
+  - ReachabilitySwift (3)
+  - Realm (2.4.2):
+    - Realm/Headers (= 2.4.2)
+  - Realm/Headers (2.4.2)
+  - RealmSwift (2.4.2):
+    - Realm (= 2.4.2)
+  - RxCocoa (3.2.0):
+    - RxSwift (~> 3.1)
+  - RxSwift (3.2.0)
+
+DEPENDENCIES:
+  - CocoaAsyncSocket
+  - CryptoSwift
+  - Log
+  - ReachabilitySwift (~> 3)
+  - RealmSwift
+  - RxCocoa
+  - RxSwift
+
+SPEC CHECKSUMS:
+  CocoaAsyncSocket: e0a7e93b2ffa411592ff87e58524fbbc9b95b4fa
+  CryptoSwift: 685ae257941e5447474348a2b545583e1a16b573
+  Log: 5e368c9528db07517d18d2d04ff5fe2b6f5a1e21
+  ReachabilitySwift: f5b9bb30a0777fac8f09ce8b067e32faeb29bb64
+  Realm: d27b758e12d62a3371879a065d4c40aa212c5a54
+  RealmSwift: 9556c0fe0f0cfecacfb755ae9e68ff379fc6bead
+  RxCocoa: ccdf43101a70407097a29082f648ba1676075b30
+  RxSwift: 46574f70d416b7923c237195939cc488a7fbf3a0
+
+PODFILE CHECKSUM: ebcd3260e4a679c8f3496f221ddba0f5759ad451
+
+COCOAPODS: 1.1.1
