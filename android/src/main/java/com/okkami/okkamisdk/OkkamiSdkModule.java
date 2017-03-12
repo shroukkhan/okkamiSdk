@@ -7,7 +7,24 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.okkami.android.sdk.SDK;
+import com.okkami.android.sdk.enums.AUTH_TYPE;
+import com.okkami.android.sdk.model.BaseAuthentication;
+import com.okkami.android.sdk.model.CompanyAuth;
+
+import org.json.JSONException;
+
+import java.io.IOException;
+import java.net.URL;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import okhttp3.ResponseBody;
+import retrofit2.Response;
 
 class OkkamiSdkModule extends ReactContextBaseJavaModule {
     private Context context;
@@ -18,7 +35,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
         super(reactContext);
         this.context = reactContext;
 
-        okkamiSdk = new SDK().init(context,"https://app.fingi.com"); // TODO : how do we pass the URL dynamically from react??
+        okkamiSdk = new SDK().init(context, "https://api.fingi.com"); // TODO : how do we pass the URL dynamically from react??
     }
 
     /**
@@ -44,17 +61,58 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      * on success : downloadFromCorePromise.resolve(coreResponseJSONString)
      * on failure:  downloadFromCorePromise.reject(Throwable e)
      *
-     * @param endPoint                full core url . https://api.fingi.com/devices/v1/register
-     * @param getPost                 "GET" or "POST"
-     * @param payload                 JSON encoded payload if it is POST
-     * @param downloadFromCorePromise
+     * @param endPoint full core url . https://api.fingi.com/devices/v1/register
+     * @param getPost  "GET" or "POST"
+     * @param payload  JSON encoded payload if it is POST
      */
     @ReactMethod
-    public void executeCoreRESTCall(String endPoint, String getPost, String payload, String secret,String token,Boolean force,Promise downloadFromCorePromise) {
+    public void executeCoreRESTCall(String endPoint, String getPost, String payload, String secret, String token, Boolean force, final Promise downloadFromCorePromise) {
+        try {
+            URL u = new URL(endPoint);
+            String path = u.getPath();
+            BaseAuthentication b = new CompanyAuth(token, secret);
+            if (getPost.compareTo("POST") == 0) {
 
-       // okkamiSdk.
+                okkamiSdk.getBACKEND_SERVICE_MODULE().doCorePostCall(path, "POST", payload, b)
+                        .subscribeOn(io.reactivex.schedulers.Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<Response<ResponseBody>>() {
+                            @Override
+                            public void onSubscribe(Disposable d) {
+                                System.out.println("Disposable method.");
+                            }
 
-        SDK s = okkamiSdk;
+                            @Override
+                            public void onNext(Response<ResponseBody> value) {
+                                try {
+                                    String x = value.body().string();
+                                    downloadFromCorePromise.resolve(x);
+                                } catch (Exception e) {
+                                    downloadFromCorePromise.reject(e);
+                                    // e.printStackTrace();
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                downloadFromCorePromise.reject(e);
+                            }
+
+                            @Override
+                            public void onComplete() {
+
+
+
+                                // Nothing for now.
+                            }
+                        });
+            }
+        } catch (Exception e) {
+            downloadFromCorePromise.reject(e);
+
+
+        }
+
     }
 
     /*-------------------------------------- Hub -------------------------------------------------*/
@@ -67,12 +125,12 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      * on failure:  hubConnectionPromise.reject(Throwable e)
      * Native module should also take care of the PING PONG and reconnect if PING drops
      *
-     * @param secrect secrect obtained from core
-     * @param token   token obtained from core
+     * @param secrect              secrect obtained from core
+     * @param token                token obtained from core
      * @param hubConnectionPromise
      */
     @ReactMethod
-    public void connectToHub(String secrect,String token , Promise hubConnectionPromise) {
+    public void connectToHub(String secrect, String token, Promise hubConnectionPromise) {
 
     }
 
@@ -119,8 +177,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
     public void sendCommandToHub(String command, Promise sendMessageToHubPromise) {
 
     }
-
-
 
 
     /**
@@ -177,7 +233,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
     * */
 
     /*---------------------------------------------------------------------------------------------------*/
-
 
 
 }
