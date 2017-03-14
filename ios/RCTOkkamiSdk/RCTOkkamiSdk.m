@@ -3,6 +3,7 @@
 
 #import "RCTBundleURLProvider.h"
 #import "RCTRootView.h"
+#import <CoreLocation/CoreLocation.h>
 //#import <RCTOkkamiSdkImplementation/RCTOkkamiSdkImplementation-Swift.h>
 
 @implementation OkkamiSdk
@@ -11,7 +12,40 @@
 
 RCT_EXPORT_MODULE();
 
-
+-(id)init {
+    if ( self = [super init] ) {
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            
+//        });
+        self.locationManager = [[CLLocationManager alloc] init];
+        self.locationManager.delegate = self;
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+        self.locationManager.distanceFilter = kCLDistanceFilterNone;
+        [self.locationManager startUpdatingLocation];
+        [self.locationManager requestWhenInUseAuthorization];
+        [self.locationManager requestAlwaysAuthorization];
+        
+        /*if ([CLLocationManager locationServicesEnabled]){
+            CLGeocoder *reverseGeocoder = [[CLGeocoder alloc] init];
+            
+            [reverseGeocoder reverseGeocodeLocation:self.locationManager.location completionHandler:^(NSArray *placemarks, NSError *error)
+             {
+                 if (error){
+                     return;
+                 }
+                 CLPlacemark *myPlacemark = [placemarks objectAtIndex:0];
+                 
+                 NSString *countryCode = myPlacemark.ISOcountryCode;
+                 
+                 NSString *latitude = [NSString stringWithFormat:@"%f",myPlacemark.location.coordinate.latitude];
+                 NSString *longitude = [NSString stringWithFormat:@"%f",myPlacemark.location.coordinate.longitude];
+                 
+                 //[locationManager stopUpdatingLocation];
+             }];
+        }*/
+    }
+    return self;
+}
 #pragma mark LineSDKLoginDelegate
 
 - (void)didLogin:(LineSDKLogin *)login
@@ -80,6 +114,24 @@ RCT_EXPORT_METHOD(lineLogin
  * @param downloadFromCorePromise
  */
 
+
+// Wait for location callbacks
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
+{
+    //NSLog(@"tess");
+}
+
+- (CLLocationDegrees)deviceLat
+{
+    return self.locationManager.location.coordinate.latitude;
+}
+
+
+- (CLLocationDegrees)deviceLong
+{
+    return self.locationManager.location.coordinate.longitude;
+}
+
 RCT_EXPORT_METHOD(executeCoreRESTCall
                   
                   :(NSString*)endPoint
@@ -92,24 +144,52 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    
-    
-    RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
-    //NSString* udid = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
-    //NSString* payload = [NSString stringWithFormat:@"{\"uid\":\"%@\"}", udid];
-    [main executeCoreRESTCallWithApicore:endPoint apifunc:getPost payload:payLoad secret:secret token:token force:force completion:^(NSString* callback, NSError* error) {
+    if ([endPoint containsString:@"location_services"]) {
         
-        NSLog(@"callback %@", callback);
-        NSLog(@"error %@", error);
-        
-        if (error == NULL) {
-            resolve(callback);
-            [self.bridge.eventDispatcher sendAppEventWithName:@"executeCoreRESTCall" body:callback];
-        }else{
+        if (![CLLocationManager locationServicesEnabled]) {
+            NSMutableDictionary* details = [NSMutableDictionary dictionary];
+            [details setValue:@"Please Turn On Your Location Services" forKey:NSLocalizedDescriptionKey];
+            // populate the error object with the details
+            NSError *error = [NSError errorWithDomain:@"OkkamiLocationOFF" code:201 userInfo:details];
             reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
         }
+        RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
+        NSString *newEndPoint =[NSString stringWithFormat:@"%@lat=%.7f&lng=%.7f",endPoint,self.deviceLat,self.deviceLong];
         
-    }];
+        //use below only for testing using simulator
+        //NSString *newEndPoint =[NSString stringWithFormat:@"%@lat=13.7441961&lng=100.5568176", endPoint];
+        NSLog(@"%@",newEndPoint);
+        [main executeCoreRESTCallWithApicore:newEndPoint apifunc:getPost payload:payLoad secret:secret token:token force:force completion:^(NSString* callback, NSError* error) {
+            
+            NSLog(@"callback %@", callback);
+            NSLog(@"error %@", error);
+            
+            if (error == NULL) {
+                resolve(callback);
+                [self.bridge.eventDispatcher sendAppEventWithName:@"executeCoreRESTCall" body:callback];
+            }else{
+                reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+            }
+            
+        }];
+        
+    } else {
+        RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
+        [main executeCoreRESTCallWithApicore:endPoint apifunc:getPost payload:payLoad secret:secret token:token force:force completion:^(NSString* callback, NSError* error) {
+            
+            NSLog(@"callback %@", callback);
+            NSLog(@"error %@", error);
+            
+            if (error == NULL) {
+                resolve(callback);
+                [self.bridge.eventDispatcher sendAppEventWithName:@"executeCoreRESTCall" body:callback];
+            }else{
+                reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+            }
+            
+        }];
+    }
+    
     /*if([getPost isEqualToString:@"LINE"]){
         [LineSDKLogin sharedInstance].delegate = self;
         NSLog(@"equal to line");
