@@ -39,6 +39,7 @@ import retrofit2.Response;
 class OkkamiSdkModule extends ReactContextBaseJavaModule {
     private Context context;
     private static final String TAG = "OKKAMISDK";
+    private static final int LINE_LOGIN_REQUEST_CODE = 10;
     private SDK okkamiSdk;
     private Promise lineLoginPromise = null;
 
@@ -48,11 +49,8 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
         public void onActivityResult(Activity activity, int requestCode, int resultCode,
                 Intent data) {
             super.onActivityResult(activity, requestCode, resultCode, data);
-            //            super.onActivityResult(requestCode, resultCode, data);
-//            if (requestCode != REQUEST_CODE) {
-//                return;
-//            }
             Log.d(TAG, "onActivityResult: "+requestCode);
+            if (requestCode != LINE_LOGIN_REQUEST_CODE) return;
             LineLoginResult result = LineLoginApi.getLoginResultFromIntent(data);
             String accessToken = result.getLineCredential().getAccessToken().getAccessToken();
 
@@ -73,12 +71,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
                     }
 
                     lineLoginPromise.resolve(jObj.toString());
-//                    Intent transitionIntent = new Intent(this, PostLoginActivity.class);
-//
-//                    transitionIntent.putExtra("display_name", result.getLineProfile().getDisplayName());
-//                    transitionIntent.putExtra("status_message", result.getLineProfile().getStatusMessage());
-//                    transitionIntent.putExtra("user_id", result.getLineProfile().getUserId());
-//                    transitionIntent.putExtra("picture_url", result.getLineProfile().getPictureUrl().toString());
                     break;
                 case CANCEL:
                     // Login was cancelled by the user
@@ -91,39 +83,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
             }
         }
 
-//        @Override
-//        public void onActivityResult(int requestCode, int resultCode, Intent data) {
-////            super.onActivityResult(requestCode, resultCode, data);
-////            if (requestCode != REQUEST_CODE) {
-////                return;
-////            }
-//            Log.d(TAG, "onActivityResult: "+requestCode);
-//            LineLoginResult result = LineLoginApi.getLoginResultFromIntent(data);
-//            String accessToken = result.getLineCredential().getAccessToken().getAccessToken();
-//
-//            switch (result.getResponseCode()) {
-//
-//                case SUCCESS:
-//                    // Login is successful
-//                    // Do something...
-//                    lineLoginPromise.resolve(accessToken);
-////                    Intent transitionIntent = new Intent(this, PostLoginActivity.class);
-////
-////                    transitionIntent.putExtra("display_name", result.getLineProfile().getDisplayName());
-////                    transitionIntent.putExtra("status_message", result.getLineProfile().getStatusMessage());
-////                    transitionIntent.putExtra("user_id", result.getLineProfile().getUserId());
-////                    transitionIntent.putExtra("picture_url", result.getLineProfile().getPictureUrl().toString());
-//                    break;
-//                case CANCEL:
-//                    // Login was cancelled by the user
-//                    // Do something...
-//                    lineLoginPromise.reject("error", "error");
-//                    break;
-//                default:
-//                    // Login was cancelled by the user
-//                    // Do something...
-//            }
-//        }
     };
 
     public OkkamiSdkModule(ReactApplicationContext reactContext) {
@@ -150,9 +109,8 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
     public void lineLogin(Promise lineLoginPromise) {
         this.lineLoginPromise = lineLoginPromise;
         Intent loginIntent = LineLoginApi.getLoginIntent(this.context, "1499319131");
-        getCurrentActivity().startActivityForResult(loginIntent, 1);
+        getCurrentActivity().startActivityForResult(loginIntent, LINE_LOGIN_REQUEST_CODE);
     }
-
 
 
      /*---------------------------Core------------------------------------------------------------------------*/
