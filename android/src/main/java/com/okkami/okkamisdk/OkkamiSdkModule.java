@@ -1,24 +1,96 @@
 package com.okkami.okkamisdk;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 
+import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.bridge.ActivityEventListener;
+import com.facebook.react.bridge.BaseActivityEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.gson.JsonObject;
+import com.linecorp.linesdk.auth.LineLoginApi;
+import com.linecorp.linesdk.auth.LineLoginResult;
 import com.okkami.android.sdk.SDK;
+import com.okkami.android.sdk.enums.AUTH_TYPE;
+import com.okkami.android.sdk.model.BaseAuthentication;
+import com.okkami.android.sdk.model.CompanyAuth;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.net.URL;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import okhttp3.ResponseBody;
+import retrofit2.Response;
 
 class OkkamiSdkModule extends ReactContextBaseJavaModule {
     private Context context;
     private static final String TAG = "OKKAMISDK";
+    private static final int LINE_LOGIN_REQUEST_CODE = 10;
     private SDK okkamiSdk;
+    private Promise lineLoginPromise = null;
+
+    private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
+
+        @Override
+        public void onActivityResult(Activity activity, int requestCode, int resultCode,
+                Intent data) {
+            super.onActivityResult(activity, requestCode, resultCode, data);
+            Log.d(TAG, "onActivityResult: "+requestCode);
+            if (requestCode != LINE_LOGIN_REQUEST_CODE) return;
+            LineLoginResult result = LineLoginApi.getLoginResultFromIntent(data);
+            String accessToken = result.getLineCredential().getAccessToken().getAccessToken();
+
+            switch (result.getResponseCode()) {
+
+                case SUCCESS:
+                    // Login is successful
+                    // Do something...
+                    JSONObject jObj = new JSONObject();
+                    try {
+                        jObj.put("accessToken", accessToken);
+                        jObj.put("user_id", result.getLineProfile().getUserId());
+                        jObj.put("display_name", result.getLineProfile().getDisplayName());
+                        jObj.put("picture", result.getLineProfile().getPictureUrl().toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        lineLoginPromise.reject("error", e.getMessage());
+                    }
+
+                    lineLoginPromise.resolve(jObj.toString());
+                    break;
+                case CANCEL:
+                    // Login was cancelled by the user
+                    // Do something...
+                    lineLoginPromise.reject("error", "error");
+                    break;
+                default:
+                    // Login was cancelled by the user
+                    // Do something...
+            }
+        }
+
+    };
 
     public OkkamiSdkModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.context = reactContext;
 
-        okkamiSdk = new SDK().init(context,"https://app.fingi.com"); // TODO : how do we pass the URL dynamically from react??
+        reactContext.addActivityEventListener(mActivityEventListener);
+        okkamiSdk = new SDK().init(context, "https://api.fingi.com"); // TODO : how do we pass the URL dynamically from react??
     }
 
     /**
@@ -33,6 +105,12 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
 
      /*-------------------------------------- Utility   --------------------------------------------------*/
 
+    @ReactMethod
+    public void lineLogin(Promise lineLoginPromise) {
+        this.lineLoginPromise = lineLoginPromise;
+        Intent loginIntent = LineLoginApi.getLoginIntent(this.context, "1499319131");
+        getCurrentActivity().startActivityForResult(loginIntent, LINE_LOGIN_REQUEST_CODE);
+    }
 
 
      /*---------------------------Core------------------------------------------------------------------------*/
@@ -44,17 +122,58 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      * on success : downloadFromCorePromise.resolve(coreResponseJSONString)
      * on failure:  downloadFromCorePromise.reject(Throwable e)
      *
-     * @param endPoint                full core url . https://api.fingi.com/devices/v1/register
-     * @param getPost                 "GET" or "POST"
-     * @param payload                 JSON encoded payload if it is POST
-     * @param downloadFromCorePromise
+     * @param endPoint full core url . https://api.fingi.com/devices/v1/register
+     * @param getPost  "GET" or "POST"
+     * @param payload  JSON encoded payload if it is POST
      */
     @ReactMethod
-    public void executeCoreRESTCall(String endPoint, String getPost, String payload, String secret,String token,Boolean force,Promise downloadFromCorePromise) {
+    public void executeCoreRESTCall(String endPoint, String getPost, String payload, String secret, String token, Boolean force, final Promise downloadFromCorePromise) {
+        try {
+            URL u = new URL(endPoint);
+            String path = u.getPath();
+            BaseAuthentication b = new CompanyAuth(token, secret);
+            if (getPost.compareTo("POST") == 0) {
 
-       // okkamiSdk.
+                okkamiSdk.getBACKEND_SERVICE_MODULE().doCorePostCall(path, "POST", payload, b)
+                        .subscribeOn(io.reactivex.schedulers.Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<Response<ResponseBody>>() {
+                            @Override
+                            public void onSubscribe(Disposable d) {
+                                System.out.println("Disposable method.");
+                            }
 
-        SDK s = okkamiSdk;
+                            @Override
+                            public void onNext(Response<ResponseBody> value) {
+                                try {
+                                    String x = value.body().string();
+                                    downloadFromCorePromise.resolve(x);
+                                } catch (Exception e) {
+                                    downloadFromCorePromise.reject(e);
+                                    // e.printStackTrace();
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                downloadFromCorePromise.reject(e);
+                            }
+
+                            @Override
+                            public void onComplete() {
+
+
+
+                                // Nothing for now.
+                            }
+                        });
+            }
+        } catch (Exception e) {
+            downloadFromCorePromise.reject(e);
+
+
+        }
+
     }
 
     /*-------------------------------------- Hub -------------------------------------------------*/
@@ -67,12 +186,12 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      * on failure:  hubConnectionPromise.reject(Throwable e)
      * Native module should also take care of the PING PONG and reconnect if PING drops
      *
-     * @param secrect secrect obtained from core
-     * @param token   token obtained from core
+     * @param secrect              secrect obtained from core
+     * @param token                token obtained from core
      * @param hubConnectionPromise
      */
     @ReactMethod
-    public void connectToHub(String secrect,String token , Promise hubConnectionPromise) {
+    public void connectToHub(String secrect, String token, Promise hubConnectionPromise) {
 
     }
 
@@ -119,8 +238,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
     public void sendCommandToHub(String command, Promise sendMessageToHubPromise) {
 
     }
-
-
 
 
     /**
@@ -177,7 +294,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
     * */
 
     /*---------------------------------------------------------------------------------------------------*/
-
 
 
 }
