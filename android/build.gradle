@@ -39,6 +39,11 @@ allprojects {
             url "$rootDir/../node_modules/react-native/android"
         }
 
+        // for Line libs
+        flatDir {
+            dirs 'libs'
+        }
+
     }
 }
 
@@ -47,4 +52,8 @@ dependencies {
     compile 'com.facebook.react:react-native:+'
 
     compile project(':okkami-sdk')
+
+    // Line SDK
+    compile(name:'line-sdk-4.0.0', ext:'aar')
+    compile 'com.android.support:customtabs:23.2.1'
 }
