@@ -12,6 +12,7 @@ import com.okkami.android.sdk.SDK;
 import com.okkami.android.sdk.enums.AUTH_TYPE;
 import com.okkami.android.sdk.model.BaseAuthentication;
 import com.okkami.android.sdk.model.CompanyAuth;
+import com.okkami.android.sdk.model.DeviceAuth;
 
 import org.json.JSONException;
 
@@ -74,6 +75,40 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
             if (getPost.compareTo("POST") == 0) {
 
                 okkamiSdk.getBACKEND_SERVICE_MODULE().doCorePostCall(path, "POST", payload, b)
+                        .subscribeOn(io.reactivex.schedulers.Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<Response<ResponseBody>>() {
+                            @Override
+                            public void onSubscribe(Disposable d) {
+                                System.out.println("Disposable method.");
+                            }
+
+                            @Override
+                            public void onNext(Response<ResponseBody> value) {
+                                try {
+                                    String x = value.body().string();
+                                    downloadFromCorePromise.resolve(x);
+                                } catch (Exception e) {
+                                    downloadFromCorePromise.reject(e);
+                                    // e.printStackTrace();
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                downloadFromCorePromise.reject(e);
+                            }
+
+                            @Override
+                            public void onComplete() {
+
+
+
+                                // Nothing for now.
+                            }
+                        });
+            } else if (getPost.compareTo("GET") == 0){
+                okkamiSdk.getBACKEND_SERVICE_MODULE().doCoreGetCall(path, "GET", payload, b)
                         .subscribeOn(io.reactivex.schedulers.Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Observer<Response<ResponseBody>>() {
