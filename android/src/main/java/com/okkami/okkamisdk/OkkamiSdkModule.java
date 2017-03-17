@@ -113,6 +113,20 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
         getCurrentActivity().startActivityForResult(loginIntent, LINE_LOGIN_REQUEST_CODE);
     }
 
+    /**
+     * Set new the Smooch app token to Okkami SDK for switching channel to let user talk to different hotels
+     * @param appToken - an app token provided by Smooch
+     */
+    @ReactMethod
+     public void setSmoochAppToken(String appToken){
+        okkamiSdk.setSmoochAppToken(appToken);
+     }
+
+     @ReactMethod
+     public void showSmoochUI(){
+         okkamiSdk.showSmoochUI();
+     }
+
 
      /*---------------------------Core------------------------------------------------------------------------*/
 
