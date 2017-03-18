@@ -82,7 +82,7 @@ class OkkamiSdk {
       "time_since_last_message": "5 hr"
     }
   ],
-  "INACTIVE_CHATS": [
+  "INACTIVE_CHATS": [ // for inactive chats, take a look at this : https://fingi1.atlassian.net/browse/FD-3529
     {
       "unread_messages": "0",
       "icon": "http://www.vieuxmontreal.ca/wp-content/uploads/2015/07/Intercontinental_logo_233X2331.png",
@@ -107,9 +107,27 @@ class OkkamiSdk {
     return await OkkamiSdkManager.getConversationsList();
   }
 
+  /**
+   * Open the smooch chat window for a particular channel
+   * @param smoochAppToken
+   * @returns {Promise.<void>}
+   */
   async openChatWindow(smoochAppToken) {
     return await OkkamiSdkManager.openChatWindow(smoochAppToken);
   }
+
+  /**
+   * Get number of unread messages in a channel
+   * To be used in a screen like this : https://projects.invisionapp.com/share/2XAK26Y4G#/screens/223161039
+   * @param smoochAppToken
+   * @returns {Promise.<int>}
+   */
+  async getUnreadMessageCount(smoochAppToken){
+    return await OkkamiSdkManager.getUnreadMessageCount(smoochAppToken);
+  }
+
+
+
 
 
 
