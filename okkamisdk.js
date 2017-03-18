@@ -111,6 +111,8 @@ class OkkamiSdk {
     return await OkkamiSdkManager.openChatWindow(smoochAppToken);
   }
 
+
+
 }
 let okkamiSdk = new OkkamiSdk();
 export default okkamiSdk;
