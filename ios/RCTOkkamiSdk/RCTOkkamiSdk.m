@@ -150,8 +150,8 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
             NSMutableDictionary* details = [NSMutableDictionary dictionary];
             [details setValue:@"Please Turn On Your Location Services" forKey:NSLocalizedDescriptionKey];
             // populate the error object with the details
-            NSError *error = [NSError errorWithDomain:@"OkkamiLocationOFF" code:201 userInfo:details];
-            reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+            NSError *error = [NSError errorWithDomain:@"OkkamiLocationOFF" code:1001 userInfo:details];
+            reject([NSString stringWithFormat:@"%ld", error.code],error.userInfo[@"NSLocalizedFailureReason"], error);
         }
         RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
         NSString *newEndPoint =[NSString stringWithFormat:@"%@lat=%.7f&lng=%.7f",endPoint,self.deviceLat,self.deviceLong];
@@ -168,7 +168,7 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
                 resolve(callback);
                 [self.bridge.eventDispatcher sendAppEventWithName:@"executeCoreRESTCall" body:callback];
             }else{
-                reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+                reject([NSString stringWithFormat:@"%ld", error.code],error.userInfo[@"NSLocalizedFailureReason"], error);
             }
             
         }];
@@ -184,7 +184,7 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
                 resolve(callback);
                 [self.bridge.eventDispatcher sendAppEventWithName:@"executeCoreRESTCall" body:callback];
             }else{
-                reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+                reject([NSString stringWithFormat:@"%ld", error.code],error.userInfo[@"NSLocalizedFailureReason"], error);
             }
             
         }];

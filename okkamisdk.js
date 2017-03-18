@@ -19,8 +19,6 @@ class OkkamiSdk {
     }
 
     executeCoreRESTCall (endPoint,getPost,payLoad,secret,token,force) {
-        console.log("executeCoreRESTCall : endpoing = ",endPoint," ",
-          "getPost = ",getPost," payload = ",payLoad," secret = ",secret," token = " ,token , " force = ",force )
         return OkkamiSdkManager.executeCoreRESTCall(endPoint,getPost,payLoad,secret,token,force);
     }
 
