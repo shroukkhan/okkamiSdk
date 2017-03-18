@@ -1,19 +1,30 @@
 package com.okkami.okkamisdk;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 
+import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.bridge.ActivityEventListener;
+import com.facebook.react.bridge.BaseActivityEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.gson.JsonObject;
+import com.linecorp.linesdk.auth.LineLoginApi;
+import com.linecorp.linesdk.auth.LineLoginResult;
 import com.okkami.android.sdk.SDK;
 import com.okkami.android.sdk.enums.AUTH_TYPE;
 import com.okkami.android.sdk.model.BaseAuthentication;
 import com.okkami.android.sdk.model.CompanyAuth;
+import com.okkami.android.sdk.model.DeviceAuth;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
@@ -29,12 +40,57 @@ import retrofit2.Response;
 class OkkamiSdkModule extends ReactContextBaseJavaModule {
     private Context context;
     private static final String TAG = "OKKAMISDK";
+    private static final int LINE_LOGIN_REQUEST_CODE = 10;
     private SDK okkamiSdk;
+    private Promise lineLoginPromise = null;
+
+    private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
+
+        @Override
+        public void onActivityResult(Activity activity, int requestCode, int resultCode,
+                Intent data) {
+            super.onActivityResult(activity, requestCode, resultCode, data);
+            Log.d(TAG, "onActivityResult: "+requestCode);
+            if (requestCode != LINE_LOGIN_REQUEST_CODE) return;
+            LineLoginResult result = LineLoginApi.getLoginResultFromIntent(data);
+            String accessToken = result.getLineCredential().getAccessToken().getAccessToken();
+
+            switch (result.getResponseCode()) {
+
+                case SUCCESS:
+                    // Login is successful
+                    // Do something...
+                    JSONObject jObj = new JSONObject();
+                    try {
+                        jObj.put("accessToken", accessToken);
+                        jObj.put("user_id", result.getLineProfile().getUserId());
+                        jObj.put("display_name", result.getLineProfile().getDisplayName());
+                        jObj.put("picture", result.getLineProfile().getPictureUrl().toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        lineLoginPromise.reject("error", e.getMessage());
+                    }
+
+                    lineLoginPromise.resolve(jObj.toString());
+                    break;
+                case CANCEL:
+                    // Login was cancelled by the user
+                    // Do something...
+                    lineLoginPromise.reject("error", "error");
+                    break;
+                default:
+                    // Login was cancelled by the user
+                    // Do something...
+            }
+        }
+
+    };
 
     public OkkamiSdkModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.context = reactContext;
 
+        reactContext.addActivityEventListener(mActivityEventListener);
         okkamiSdk = new SDK().init(context, "https://api.fingi.com"); // TODO : how do we pass the URL dynamically from react??
     }
 
@@ -50,6 +106,12 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
 
      /*-------------------------------------- Utility   --------------------------------------------------*/
 
+    @ReactMethod
+    public void lineLogin(Promise lineLoginPromise) {
+        this.lineLoginPromise = lineLoginPromise;
+        Intent loginIntent = LineLoginApi.getLoginIntent(this.context, "1499319131");
+        getCurrentActivity().startActivityForResult(loginIntent, LINE_LOGIN_REQUEST_CODE);
+    }
 
 
      /*---------------------------Core------------------------------------------------------------------------*/
@@ -74,6 +136,39 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
             if (getPost.compareTo("POST") == 0) {
 
                 okkamiSdk.getBACKEND_SERVICE_MODULE().doCorePostCall(path, "POST", payload, b)
+                        .subscribeOn(io.reactivex.schedulers.Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<Response<ResponseBody>>() {
+                            @Override
+                            public void onSubscribe(Disposable d) {
+                                System.out.println("Disposable method.");
+                            }
+
+                            @Override
+                            public void onNext(Response<ResponseBody> value) {
+                                try {
+                                    String x = value.body().string();
+                                    downloadFromCorePromise.resolve(x);
+                                } catch (Exception e) {
+                                    downloadFromCorePromise.reject(e);
+                                    // e.printStackTrace();
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                downloadFromCorePromise.reject(e);
+                            }
+
+                            @Override
+                            public void onComplete() {
+
+
+                                // Nothing for now.
+                            }
+                        });
+            } else if (getPost.compareTo("GET") == 0){
+                okkamiSdk.getBACKEND_SERVICE_MODULE().doCoreGetCall(path, "GET", payload, b)
                         .subscribeOn(io.reactivex.schedulers.Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Observer<Response<ResponseBody>>() {
@@ -233,6 +328,88 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
     * */
 
     /*---------------------------------------------------------------------------------------------------*/
+
+
+    /**
+     * Returns the list of conversations as shown in : https://projects.invisionapp.com/share/2XAK26Y4G#/screens/223142641
+     * returns a Promise which resolves to a json like this:
+     * <p>
+     * {
+     * "OKKAMI_CHAT": [
+     * {
+     * "unread_messages": "2",
+     * "icon": "http://orig15.deviantart.net/4679/f/2009/042/f/8/test_by_kaitoukat.png",
+     * "channel_name": "OKKAMI Concierge",
+     * "last_message": "We'll be happy to help your find good activities to do tonight",
+     * "time_since_last_message": "5 min"
+     * }
+     * ],
+     * "ACTIVE_CHATS": [
+     * {
+     * "unread_messages": "1",
+     * "icon": "http://www.vieuxmontreal.ca/wp-content/uploads/2015/07/Intercontinental_logo_233X2331.png",
+     * "channel_name": "Intercontinental Montreal",
+     * "last_message": "Your room upgrade can be purchased using the link below",
+     * "time_since_last_message": "1 hr 10 min"
+     * },
+     * {
+     * "unread_messages": "3",
+     * "icon": "http://orig15.deviantart.net/4679/f/2009/042/f/8/test_by_kaitoukat.png",
+     * "channel_name": "Aloft Bangkok",
+     * "last_message": "Food and wine at XYZ Bar",
+     * "time_since_last_message": "5 hr"
+     * }
+     * ],
+     * "INACTIVE_CHATS": [
+     * {
+     * "unread_messages": "0",
+     * "icon": "http://www.vieuxmontreal.ca/wp-content/uploads/2015/07/Intercontinental_logo_233X2331.png",
+     * "channel_name": "Grand President Hotel",
+     * "last_message": "",
+     * "time_since_last_message": ""
+     * },
+     * {
+     * "unread_messages": "0",
+     * "icon": "http://orig15.deviantart.net/4679/f/2009/042/f/8/test_by_kaitoukat.png",
+     * "channel_name": "Ambassador Bangkok",
+     * "last_message": "",
+     * "time_since_last_message": ""
+     * }
+     * ]
+     * }
+     *
+     * @param getConversationListPromise
+     */
+    @ReactMethod
+    public void getConversationsList(Promise getConversationListPromise) {
+
+    }
+
+    /**
+     * Open the smooch chat window for a particular channel
+     * openChatWindowPromise.resolve(true) on success
+     * openChatWindowPromise.reject(Exception) on failure
+     * @param smoochAppToken
+     * @param openChatWindowPromise
+     */
+   @ReactMethod
+    public void openChatWindow(String smoochAppToken, Promise openChatWindowPromise) {
+
+    }
+
+
+    /**
+     * returns the number of unread message in a channel
+     * getUnreadMessageCountPromise.resolve(Int) on success
+     * getUnreadMessageCountPromise.reject(Exception) on failure
+     * @param smoochAppToken
+     * @param getUnreadMessageCountPromise
+     */
+    @ReactMethod
+    public void getUnreadMessageCount(String smoochAppToken, Promise getUnreadMessageCountPromise){
+
+    }
+
 
 
 }
