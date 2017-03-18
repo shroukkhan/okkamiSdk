@@ -17,10 +17,8 @@ class OkkamiSdk {
     return OkkamiSdkManager.lineLogin();
   }
 
-  executeCoreRESTCall(endPoint, getPost, payLoad, secret, token, force) {
-    console.log("executeCoreRESTCall : endpoing = ", endPoint, " ",
-      "getPost = ", getPost, " payload = ", payLoad, " secret = ", secret, " token = ", token, " force = ", force)
-    return OkkamiSdkManager.executeCoreRESTCall(endPoint, getPost, payLoad, secret, token, force);
+  executeCoreRESTCall (endPoint,getPost,payLoad,secret,token,force) {
+    return OkkamiSdkManager.executeCoreRESTCall(endPoint,getPost,payLoad,secret,token,force);
   }
 
   connectToHub(uid, secret, token, hubUrl, hubPort) {
@@ -112,8 +110,8 @@ class OkkamiSdk {
    * @param smoochAppToken
    * @returns {Promise.<void>}
    */
-  async openChatWindow(smoochAppToken) {
-    return await OkkamiSdkManager.openChatWindow(smoochAppToken);
+  async openChatWindow(smoochAppToken, userID) {
+    return await OkkamiSdkManager.openChatWindow(smoochAppToken, userID);
   }
 
   /**
@@ -122,8 +120,12 @@ class OkkamiSdk {
    * @param smoochAppToken
    * @returns {Promise.<int>}
    */
-  async getUnreadMessageCount(smoochAppToken){
-    return await OkkamiSdkManager.getUnreadMessageCount(smoochAppToken);
+  async getUnreadMessageCount(smoochAppToken, userID){
+    return await OkkamiSdkManager.getUnreadMessageCount(smoochAppToken, userID);
+  }
+
+  async logoutChatWindow(){
+    return await OkkamiSdkManager.logoutChatWindow();
   }
 
 
