@@ -393,7 +393,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      * @param openChatWindowPromise
      */
    @ReactMethod
-    public void openChatWindow(String smoochAppToken, Promise openChatWindowPromise) {
+    public void openChatWindow(String smoochAppToken, String userId, Promise openChatWindowPromise) {
 
     }
 
@@ -406,7 +406,19 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      * @param getUnreadMessageCountPromise
      */
     @ReactMethod
-    public void getUnreadMessageCount(String smoochAppToken, Promise getUnreadMessageCountPromise){
+    public void getUnreadMessageCount(String smoochAppToken, String userId, Promise getUnreadMessageCountPromise){
+
+    }
+
+
+    /**
+     * Closes the current chat window / destroy
+     * logoutChatWindowPromise.resolve(Int) on success
+     * logoutChatWindowPromise.reject(Exception) on failure
+     * @param logoutChatWindowPromise
+     */
+    @ReactMethod
+    public void logoutChatWindow(Promise logoutChatWindowPromise){
 
     }
 

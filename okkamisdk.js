@@ -124,6 +124,10 @@ class OkkamiSdk {
     return await OkkamiSdkManager.getUnreadMessageCount(smoochAppToken, userID);
   }
 
+  /**
+   * Closese the current chat window
+   * @returns {Promise}
+   */
   async logoutChatWindow(){
     return await OkkamiSdkManager.logoutChatWindow();
   }
