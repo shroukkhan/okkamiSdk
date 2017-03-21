@@ -398,7 +398,13 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      */
    @ReactMethod
     public void openChatWindow(String smoochAppToken, String userId, Promise openChatWindowPromise) {
-
+       try {
+           okkamiSdk.openChatWindow(smoochAppToken, userId);
+       } catch (Exception e){
+           openChatWindowPromise.reject(e);
+           return;
+       }
+       openChatWindowPromise.resolve(true);
     }
 
 
