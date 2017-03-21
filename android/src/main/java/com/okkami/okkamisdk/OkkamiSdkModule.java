@@ -1,6 +1,7 @@
 package com.okkami.okkamisdk;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -86,12 +87,12 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
 
     };
 
-    public OkkamiSdkModule(ReactApplicationContext reactContext) {
+    public OkkamiSdkModule(ReactApplicationContext reactContext, Application app) {
         super(reactContext);
         this.context = reactContext;
-
+        Log.d(TAG, "OkkamiSdkModule: "+app);
         reactContext.addActivityEventListener(mActivityEventListener);
-        okkamiSdk = new SDK().init(context, "https://app.develop.okkami.com"); // TODO : how do we pass the URL dynamically from react??
+        okkamiSdk = new SDK().init(app, reactContext, "https://app.develop.okkami.com"); // TODO : how do we pass the URL dynamically from react??
     }
 
     /**
@@ -399,7 +400,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
    @ReactMethod
     public void openChatWindow(String smoochAppToken, String userId, Promise openChatWindowPromise) {
        try {
-           okkamiSdk.openChatWindow(smoochAppToken, userId);
+//           okkamiSdk.openChatWindow(smoochAppToken, userId);
        } catch (Exception e){
            openChatWindowPromise.reject(e);
            return;
