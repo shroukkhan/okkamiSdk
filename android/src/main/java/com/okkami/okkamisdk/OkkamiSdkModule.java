@@ -91,7 +91,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
         this.context = reactContext;
 
         reactContext.addActivityEventListener(mActivityEventListener);
-        okkamiSdk = new SDK().init(context, "https://api.fingi.com"); // TODO : how do we pass the URL dynamically from react??
+        okkamiSdk = new SDK().init(context, "https://app.develop.okkami.com"); // TODO : how do we pass the URL dynamically from react??
     }
 
     /**
@@ -147,8 +147,12 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
                             @Override
                             public void onNext(Response<ResponseBody> value) {
                                 try {
-                                    String x = value.body().string();
-                                    downloadFromCorePromise.resolve(x);
+                                    if (value.raw().code() >= 400 || value.body() == null){
+                                        downloadFromCorePromise.reject(value.raw().code()+"",value.raw().message());
+                                    } else {
+                                        String x = value.body().string();
+                                        downloadFromCorePromise.resolve(x);
+                                    }
                                 } catch (Exception e) {
                                     downloadFromCorePromise.reject(e);
                                     // e.printStackTrace();
