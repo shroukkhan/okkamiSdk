@@ -135,7 +135,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
             BaseAuthentication b = new CompanyAuth(token, secret);
             if (getPost.compareTo("POST") == 0) {
 
-                okkamiSdk.getBACKEND_SERVICE_MODULE().doCorePostCall(path, "POST", payload, b)
+                okkamiSdk.getBACKEND_SERVICE_MODULE().doCorePostCall(endPoint, "POST", payload, b)
                         .subscribeOn(io.reactivex.schedulers.Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Observer<Response<ResponseBody>>() {
