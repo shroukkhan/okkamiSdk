@@ -130,8 +130,8 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void executeCoreRESTCall(String endPoint, String getPost, String payload, String secret, String token, Boolean force, final Promise downloadFromCorePromise) {
         try {
-            URL u = new URL(endPoint);
-            String path = u.getPath();
+//            URL u = new URL(endPoint);
+//            String path = u.getPath();
             BaseAuthentication b = new CompanyAuth(token, secret);
             if (getPost.compareTo("POST") == 0) {
 
@@ -172,7 +172,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
                             }
                         });
             } else if (getPost.compareTo("GET") == 0){
-                okkamiSdk.getBACKEND_SERVICE_MODULE().doCoreGetCall(path, "GET", payload, b)
+                okkamiSdk.getBACKEND_SERVICE_MODULE().doCoreGetCall(endPoint, "GET", payload, b)
                         .subscribeOn(io.reactivex.schedulers.Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Observer<Response<ResponseBody>>() {
