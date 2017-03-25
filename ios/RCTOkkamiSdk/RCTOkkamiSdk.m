@@ -23,7 +23,7 @@ RCT_EXPORT_MODULE();
         self.locationManager.distanceFilter = kCLDistanceFilterNone;
         [self.locationManager startUpdatingLocation];
         [self.locationManager requestWhenInUseAuthorization];
-        [self.locationManager requestAlwaysAuthorization];
+        //[self.locationManager requestAlwaysAuthorization];
         
         /*if ([CLLocationManager locationServicesEnabled]){
             CLGeocoder *reverseGeocoder = [[CLGeocoder alloc] init];
@@ -144,6 +144,25 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
+    
+    RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [main executeCoreRESTCallWithApicore:endPoint apifunc:getPost payload:payLoad secret:secret token:token force:force completion:^(NSString* callback, NSError* error) {
+            
+            NSLog(@"callback %@", callback);
+            NSLog(@"error %@", error);
+            
+            if (error == NULL) {
+                resolve(callback);
+                [self.bridge.eventDispatcher sendAppEventWithName:@"executeCoreRESTCall" body:callback];
+            }else{
+                reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+            }
+            
+        }];
+    });
+    /*
     if ([endPoint containsString:@"location_services"]) {
         
         if (![CLLocationManager locationServicesEnabled]) {
@@ -188,7 +207,7 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
             }
             
         }];
-    }
+    }*/
     
     /*if([getPost isEqualToString:@"LINE"]){
         [LineSDKLogin sharedInstance].delegate = self;
@@ -472,8 +491,62 @@ RCT_EXPORT_METHOD(isHubConnected
     
 }
 
+/*-------------------------------------- Smooch   --------------------------------------------------*/
 
 
+RCT_EXPORT_METHOD(getConversationsList
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    resolve([self.smooch getConversationsList]);
+}
+
+
+RCT_EXPORT_METHOD(openChatWindow
+                  
+                  :(NSString *) smoochAppToken
+                  :(NSString *) userID
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    if (self.smooch == nil) {
+        OkkamiSmoochChat *smooch = [OkkamiSmoochChat newInstanceWithAppToken:smoochAppToken];
+        self.smooch = smooch;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.smooch smoochChatWithUser:userID];
+        });
+    }else{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.smooch smoochChatWithUser:userID];
+        });
+    }
+}
+
+
+RCT_EXPORT_METHOD(getUnreadMessageCount
+                  
+                  :(NSString *) smoochAppToken
+                  :(NSString *) userID
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    
+    NSUInteger unreadMessage = [self.smooch getUnreadMessageCount];
+    NSString *unread = [NSString stringWithFormat:@"%ld", unreadMessage];
+    resolve(unread);
+}
+
+
+RCT_EXPORT_METHOD(logoutChatWindow
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    [self.smooch okkamiLogout];
+}
 
 
 
