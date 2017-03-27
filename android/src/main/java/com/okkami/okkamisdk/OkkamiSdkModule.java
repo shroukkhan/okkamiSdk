@@ -1,11 +1,13 @@
 package com.okkami.okkamisdk;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.BaseActivityEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -13,31 +15,36 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.gson.JsonObject;
+import com.facebook.react.bridge.ReadableArray;
 import com.linecorp.linesdk.auth.LineLoginApi;
 import com.linecorp.linesdk.auth.LineLoginResult;
 import com.okkami.android.sdk.SDK;
-import com.okkami.android.sdk.enums.AUTH_TYPE;
 import com.okkami.android.sdk.model.BaseAuthentication;
 import com.okkami.android.sdk.model.CompanyAuth;
-import com.okkami.android.sdk.model.DeviceAuth;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.net.URL;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Timer;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.smooch.core.InitializationStatus;
+import io.smooch.core.Message;
+import io.smooch.core.Smooch;
+import io.smooch.core.SmoochConnectionStatus;
+import io.smooch.ui.ConversationActivity;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 
 class OkkamiSdkModule extends ReactContextBaseJavaModule {
+    private Application app;
     private Context context;
     private static final String TAG = "OKKAMISDK";
     private static final int LINE_LOGIN_REQUEST_CODE = 10;
@@ -86,12 +93,13 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
 
     };
 
-    public OkkamiSdkModule(ReactApplicationContext reactContext) {
+    public OkkamiSdkModule(ReactApplicationContext reactContext, Application app) {
         super(reactContext);
         this.context = reactContext;
-
+        Log.d(TAG, "OkkamiSdkModule: "+app);
         reactContext.addActivityEventListener(mActivityEventListener);
-        okkamiSdk = new SDK().init(context, "https://app.develop.okkami.com"); // TODO : how do we pass the URL dynamically from react??
+        okkamiSdk = new SDK().init(reactContext, "https://app.develop.okkami.com"); // TODO : how do we pass the URL dynamically from react??
+        this.app = app;
     }
 
     /**
@@ -385,8 +393,92 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      * @param getConversationListPromise
      */
     @ReactMethod
-    public void getConversationsList(Promise getConversationListPromise) {
+    public void getConversationsList(ReadableArray smoochAllAppTokenArray, Promise getConversationListPromise) {
+//        Smooch.getConversation().sendMessage(new Message("Hello WWorld!"));
+        try {
+            final String ALL_CHAT_STR = "ALL_CHAT";
+            final String OKKAMI_CHAT_STR = "OKKAMI_CHAT";
+            final String ACTIVE_CHATS_STR = "ACTIVE_CHATS";
+            final String INACTIVE_CHATS_STR = "INACTIVE_CHATS";
+            JSONObject jsonObj = new JSONObject();
+//            JSONObject allChatJsonArray = new JSONObject();
+            ArrayList<JSONObject> activeChatList = new ArrayList<>();
+            ArrayList<JSONObject> inactiveChatList = new ArrayList<>();
+//            ArrayList<JSONObject> allChatList = new ArrayList<>();
 
+//            SharedPreferences pref =
+//                    PreferenceManager.getDefaultSharedPreferences(this.context);
+//            String username = pref.getString(ALL_CHAT_STR, "n/a");
+
+            for (int i = 0; i < smoochAllAppTokenArray.size(); i++) {
+                Smooch.init(this.app, smoochAllAppTokenArray.getString(i));
+                Thread.sleep(1000);
+                List<Message> listMsg = Smooch.getConversation().getMessages();
+                int unreadMsgCount = Smooch.getConversation().getUnreadCount();
+                if (listMsg.size() == 0 ) continue; // this smooch app token not start conversation yet
+                String iconUrl = "";
+                String channelName = "";
+                for (Message msg : listMsg) {
+                    if (!msg.isFromCurrentUser()) {
+                        iconUrl = msg.getAvatarUrl();
+                        channelName = msg.getName();
+                        break;
+                    }
+                }
+
+                Message lastMsg = listMsg.get(listMsg.size() - 1);
+                String lastMsgText = lastMsg.getText();
+                Date epTime = lastMsg.getDate();
+                Log.d(TAG, "getConversationsList: " + listMsg.toString());
+
+
+                JSONObject okkamiJsonObj = createConversationJsonObj(unreadMsgCount,
+                        iconUrl, channelName,
+                        lastMsgText, epTime, smoochAllAppTokenArray.getString(i));
+
+                if (i == 0) {
+                    jsonObj.put(OKKAMI_CHAT_STR, new JSONArray().put(okkamiJsonObj));
+                } else if (i > 0 && unreadMsgCount > 0) {
+                    activeChatList.add(okkamiJsonObj);
+                } else { // unactive chat
+                    inactiveChatList.add(okkamiJsonObj);
+                }
+//                allChatList.add(okkamiJsonObj);
+            }
+
+//            allChatJsonArray.put(ALL_CHAT_STR, new JSONArray(allChatJsonArray));
+//
+//            if (!username.equals("n/a")) {
+//
+//            } else { // create new preference for saving all chat data
+//                SharedPreferences.Editor edit = pref.edit();
+//                edit.putString(ALL_CHAT_STR, allChatJsonArray.toString());
+//                edit.commit();
+//            }
+
+            jsonObj.put(ACTIVE_CHATS_STR, new JSONArray(activeChatList));
+            jsonObj.put(INACTIVE_CHATS_STR, new JSONArray(inactiveChatList));
+
+            Log.d(TAG, "getConversationsList: "+jsonObj.toString());
+            getConversationListPromise.resolve(jsonObj.toString());
+
+        } catch (Exception e) {
+            getConversationListPromise.reject(e.getMessage(), e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private static JSONObject createConversationJsonObj(int unreadMsgCount, String iconUrl,
+            String channelName, String lastMsgText, Date epTime, String smoochAppToken) throws JSONException {
+        JSONObject jsonObj = new JSONObject();
+        jsonObj.put("unread_messages", unreadMsgCount);
+        jsonObj.put("icon", iconUrl);
+        jsonObj.put("channel_name", channelName);
+        jsonObj.put("last_message", lastMsgText);
+        // TODO: 3/26/2017 AD update proper eplased time string
+        jsonObj.put("time_since_last_message", epTime.toString());
+        jsonObj.put("app_token", smoochAppToken);
+        return jsonObj;
     }
 
     /**
@@ -398,7 +490,13 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      */
    @ReactMethod
     public void openChatWindow(String smoochAppToken, String userId, Promise openChatWindowPromise) {
-
+       Smooch.init(this.app, smoochAppToken);
+       try {
+           ConversationActivity.show(this.context);
+           openChatWindowPromise.resolve(true);
+       } catch (Exception e){
+           openChatWindowPromise.reject(e);
+       }
     }
 
 
@@ -411,7 +509,12 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void getUnreadMessageCount(String smoochAppToken, String userId, Promise getUnreadMessageCountPromise){
-
+        try {
+            Smooch.init(this.app, smoochAppToken);
+            getUnreadMessageCountPromise.resolve(Smooch.getConversation().getUnreadCount());
+        } catch (Exception e) {
+            getUnreadMessageCountPromise.reject(e.getMessage(), e.getMessage());
+        }
     }
 
 
@@ -423,7 +526,16 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void logoutChatWindow(Promise logoutChatWindowPromise){
-
+        try {
+            if (Smooch.getInitializationStatus() == InitializationStatus.Success &&
+                    Smooch.getSmoochConnectionStatus() == SmoochConnectionStatus.Connected) {
+                Smooch.logout();
+//            Smooch.destroy();
+                logoutChatWindowPromise.resolve(1);
+            }
+        } catch (Exception e) {
+            logoutChatWindowPromise.reject(e.getMessage(), e.getMessage());
+        }
     }
 
 
