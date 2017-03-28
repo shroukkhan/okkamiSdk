@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.facebook.react.bridge.ActivityEventListener;
@@ -16,21 +17,42 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
 
 import com.facebook.react.bridge.ReadableArray;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.linecorp.linesdk.auth.LineLoginApi;
 import com.linecorp.linesdk.auth.LineLoginResult;
 import com.okkami.android.sdk.SDK;
+import com.okkami.android.sdk.config.MockConfigModule;
+import com.okkami.android.sdk.domain.legacy.NonceManagerModule;
+import com.okkami.android.sdk.domain.legacy.NumberFormatterModule;
+import com.okkami.android.sdk.domain.response.ConnectResponse;
+import com.okkami.android.sdk.domain.response.PreConnectResponse;
+import com.okkami.android.sdk.helper.CommonUtil;
+import com.okkami.android.sdk.hub.Command;
+import com.okkami.android.sdk.hub.CommandFactoryModule;
+import com.okkami.android.sdk.hub.CommandSerializerModule;
+import com.okkami.android.sdk.hub.OnHubCommandReceivedListener;
 import com.okkami.android.sdk.model.BaseAuthentication;
 import com.okkami.android.sdk.model.CompanyAuth;
+import com.okkami.android.sdk.model.DeviceAuth;
+import com.okkami.android.sdk.module.HubModule;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.net.URL;
+import java.security.InvalidKeyException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
+import java.util.TimerTask;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -43,13 +65,21 @@ import io.smooch.ui.ConversationActivity;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 
-class OkkamiSdkModule extends ReactContextBaseJavaModule {
+class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommandReceivedListener{
     private Application app;
     private Context context;
     private static final String TAG = "OKKAMISDK";
     private static final int LINE_LOGIN_REQUEST_CODE = 10;
     private SDK okkamiSdk;
     private Promise lineLoginPromise = null;
+    private MockConfigModule mock;
+    private DeviceAuth mDeviceAuth;
+    private static HubModule hubModule;
+    private final NonceManagerModule nonce = new NonceManagerModule();
+    private final CommandSerializerModule cmdSerializer = new CommandSerializerModule();
+    private final NumberFormatterModule numberFormatter = new NumberFormatterModule();
+    private CommandFactoryModule mCmdFactory;
+
 
     private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
 
@@ -99,6 +129,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
         Log.d(TAG, "OkkamiSdkModule: "+app);
         reactContext.addActivityEventListener(mActivityEventListener);
         okkamiSdk = new SDK().init(reactContext, "https://app.develop.okkami.com"); // TODO : how do we pass the URL dynamically from react??
+        initMockData();
         this.app = app;
     }
 
@@ -224,21 +255,202 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
 
     /*-------------------------------------- Hub -------------------------------------------------*/
 
+    private void initMockData () {
+        try {
+            mock = new MockConfigModule(this.context, CommonUtil.loadProperty(this.context));
+        } catch (IOException e) {
+            Log.e("ERR", "Couldn't load mock config...");
+        }
+    }
 
-    /**
-     * Connects to hub using the presets and attempts to login ( send IDENTIFY)
-     * If Hub is already connected, reply with  hubConnectionPromise.resolve(true)
-     * on success: hubConnectionPromise.resolve(true)
-     * on failure:  hubConnectionPromise.reject(Throwable e)
-     * Native module should also take care of the PING PONG and reconnect if PING drops
-     *
-     * @param secrect              secrect obtained from core
-     * @param token                token obtained from core
-     * @param hubConnectionPromise
-     */
+
+    private void testSdk() {
+
+        try {
+
+
+
+            okkamiSdk.getBACKEND_SERVICE_MODULE().doConnect(mock.getUSER_NAME(), mock.getPASSWORD(),
+                    mock.getUID(), mock.getPROPERTY_ID(), mock.getCOMPANY_AUTH())
+                    .subscribeOn(io.reactivex.schedulers.Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<Response<ResponseBody>>() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
+
+                        }
+
+                        @Override
+                        public void onNext(Response<ResponseBody> value) {
+                            try {
+                                handleConnectResponse(value);
+                            } catch (Exception e) {
+                                okkamiSdk.getLoggerModule().logE("" + e);
+                            }
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            okkamiSdk.getLoggerModule().logE("" + e);
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            // Nothing for now.
+                        }
+                    });
+        } catch (Exception e) {
+            okkamiSdk.getLoggerModule().logE("" + e);
+        }
+    }
+
+    private void handlePreconnectResponse(Response<ResponseBody> value) throws IOException,
+            JSONException {
+        JSONObject jsonObject = new JSONObject(value.body().string());
+        JsonNode rootNode = CommonUtil.toJsonNode(jsonObject);
+        PreConnectResponse response = new PreConnectResponse();
+        response.mapFields(rootNode);
+
+        okkamiSdk.savePreconnectResponse(response);
+    }
+
+    private void handleConnectResponse(Response<ResponseBody> value) throws IOException,
+            JSONException, CertificateException, UnrecoverableKeyException,
+            NoSuchAlgorithmException, KeyManagementException, KeyStoreException,
+            InvalidKeyException {
+
+        JSONObject jsonObject = new JSONObject(value.body().string());
+        JsonNode rootNode = CommonUtil.toJsonNode(jsonObject);
+        final ConnectResponse response = new ConnectResponse();
+        response.mapFields(rootNode);
+
+        okkamiSdk.saveConnectResponse(response);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    okkamiSdk.getBACKEND_SERVICE_MODULE().getPresets(mock.getUID(), mock.getPROPERTY_ID(),
+                            mock.getBRAND_ID(), mock.getCOMPANY_ID(), response.getAuth());
+
+                    kickoffHubConnection(response);
+
+                } catch (Exception e) {
+                    Log.e("SDK", "Failed getting presets. \n" + e);
+                }
+            }
+        }).start();
+    }
+
+    private void kickoffHubConnection(final ConnectResponse response) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    mDeviceAuth = response.getAuth();
+                    JSONObject obj = new JSONObject(response.getRoom().getPresetsAsJson());
+                    String hubDnsName = obj.getString("hub_dns_name");
+                    int hubSslPort = obj.getInt("hub_ssl_port");
+
+                    testHub(mock.getUID(), mDeviceAuth, hubDnsName, hubSslPort);
+
+                } catch (Exception e) {
+                    Log.e("HUB", "" + e);
+                }
+            }
+        }).start();
+    }
+
+    private void testHub(String deviceId, BaseAuthentication auth, String hubDnsName,
+            int hubSslPort) throws IOException {
+
+        initHub(deviceId, hubDnsName, hubSslPort, auth, true);
+        hubModule.connect();
+        hubModule.doWork();
+
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                hubModule.sendCommand(mCmdFactory.query());
+            }
+        }, 0, 15 * 1000);
+    }
+
+    private HubModule initHub(String deviceId, String hubDnsName, int hubSslPort,
+            BaseAuthentication auth,
+            boolean force) {
+
+        if (TextUtils.isEmpty(deviceId) || auth == null || TextUtils.isEmpty(hubDnsName)) {
+            throw new IllegalArgumentException("deviceId and authentication can not be null");
+        }
+
+        mCmdFactory = getCmdFactotry(deviceId, auth);
+        mock.setHubDnsName(hubDnsName);
+        mock.setHubSslPort(hubSslPort);
+        hubModule = new HubModule(
+                context,
+                mock,
+                mCmdFactory,
+                okkamiSdk.getLoggerModule(),
+                this
+        );
+
+        if (force) {
+            hubModule.reInitHubConn();
+        } else {
+            if (!hubModule.isHubConnected()) {
+                hubModule.initHub();
+            }
+        }
+
+        return hubModule;
+    }
+
+
+    private CommandFactoryModule getCmdFactotry(
+            String deviceId, BaseAuthentication auth) {
+
+        return new CommandFactoryModule(
+                deviceId,
+                auth == null ? mock.getCOMPANY_AUTH() : auth,
+                mock,
+                okkamiSdk.getSingerModule(),
+                nonce,
+                cmdSerializer,
+                numberFormatter,
+                okkamiSdk.getLoggerModule()
+        );
+    }
+
+        /**
+         * Connects to hub using the presets and attempts to login ( send IDENTIFY)
+         * If Hub is already connected, reply with  hubConnectionPromise.resolve(true)
+         * on success: hubConnectionPromise.resolve(true)
+         * on failure:  hubConnectionPromise.reject(Throwable e)
+         * Native module should also take care of the PING PONG and reconnect if PING drops
+         *
+         * @param secret              device id logged in to room
+         * @param secret              secrect obtained from core
+         * @param token               oken obtained from core
+         * @param hubUrl              hub url
+         * @param token               hub port
+         * @param hubConnectionPromise
+         */
     @ReactMethod
-    public void connectToHub(String secrect, String token, Promise hubConnectionPromise) {
+    public void connectToHub(String uid, String secret, String token, String hubUrl, int hubPort, Promise hubConnectionPromise) {
 
+        // TODO: 3/27/2017 AD Have to use a given parameters (secret, token) to the connect to hub logic
+        BaseAuthentication auth = new CompanyAuth(token, secret);
+        try {
+            initHub(uid, hubUrl, hubPort, auth, true);
+            hubModule.connect();
+            hubModule.doWork();
+        } catch (Exception e){
+            hubConnectionPromise.reject(e);
+            return;
+        }
+        hubConnectionPromise.resolve(true);
     }
 
     /**
@@ -251,7 +463,14 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void disconnectFromHub(Promise hubDisconnectionPromise) {
-
+        try {
+            hubModule.disconnect();
+            hubModule.doWork();
+        } catch (Exception e){
+            hubDisconnectionPromise.reject(e);
+            return;
+        }
+        hubDisconnectionPromise.resolve(true);
     }
 
     /**
@@ -264,7 +483,17 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void reconnectToHub(Promise hubReconnectionPromise) {
-
+        try {
+            hubModule.reInitHubConn();
+//            hubModule.disconnect();
+//            hubModule.doWork();
+//            hubModule.connect();
+            hubModule.doWork();
+        } catch (Exception e){
+            hubReconnectionPromise.reject(e);
+            return;
+        }
+        hubReconnectionPromise.resolve(true);
     }
 
     /**
@@ -296,6 +525,11 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void isHubLoggedIn(Promise hubLoggedPromise) {
+        try {
+            hubLoggedPromise.resolve(hubModule.isHubConnected() && hubModule.isCheckedIn());
+        } catch (Exception e){
+            hubLoggedPromise.reject(e);
+        }
         /*
             //ok
             hubLoggedPromise.resolve(true);
@@ -314,6 +548,11 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void isHubConnected(Promise hubConnectedPromise) {
+        try {
+            hubConnectedPromise.resolve(hubModule.isHubConnected());
+        } catch (Exception e){
+            hubConnectedPromise.reject(e);
+        }
         /*
             //connected
             hubConnectedPromise.resolve(true);
@@ -539,5 +778,33 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
     }
 
 
+    @Override
+    public void onCommandReceived(Command cmd) {
 
+    }
+
+    @Override
+    public void onCommandReceived(boolean isPong, Command cmd) {
+
+    }
+
+    @Override
+    public void reconnectToHub() {
+
+    }
+
+    @Override
+    public void sendCommandToHub(Command cmd) {
+
+    }
+
+    @Override
+    public boolean isHubLoggedIn() {
+        return false;
+    }
+
+    @Override
+    public boolean isHubConnected() {
+        return false;
+    }
 }
