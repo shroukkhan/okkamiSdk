@@ -263,123 +263,8 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         }
     }
 
-
-    private void testSdk() {
-
-        try {
-
-
-
-            okkamiSdk.getBACKEND_SERVICE_MODULE().doConnect(mock.getUSER_NAME(), mock.getPASSWORD(),
-                    mock.getUID(), mock.getPROPERTY_ID(), mock.getCOMPANY_AUTH())
-                    .subscribeOn(io.reactivex.schedulers.Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<Response<ResponseBody>>() {
-                        @Override
-                        public void onSubscribe(Disposable d) {
-
-                        }
-
-                        @Override
-                        public void onNext(Response<ResponseBody> value) {
-                            try {
-                                handleConnectResponse(value);
-                            } catch (Exception e) {
-                                okkamiSdk.getLoggerModule().logE("" + e);
-                            }
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            okkamiSdk.getLoggerModule().logE("" + e);
-                        }
-
-                        @Override
-                        public void onComplete() {
-                            // Nothing for now.
-                        }
-                    });
-        } catch (Exception e) {
-            okkamiSdk.getLoggerModule().logE("" + e);
-        }
-    }
-
-    private void handlePreconnectResponse(Response<ResponseBody> value) throws IOException,
-            JSONException {
-        JSONObject jsonObject = new JSONObject(value.body().string());
-        JsonNode rootNode = CommonUtil.toJsonNode(jsonObject);
-        PreConnectResponse response = new PreConnectResponse();
-        response.mapFields(rootNode);
-
-        okkamiSdk.savePreconnectResponse(response);
-    }
-
-    private void handleConnectResponse(Response<ResponseBody> value) throws IOException,
-            JSONException, CertificateException, UnrecoverableKeyException,
-            NoSuchAlgorithmException, KeyManagementException, KeyStoreException,
-            InvalidKeyException {
-
-        JSONObject jsonObject = new JSONObject(value.body().string());
-        JsonNode rootNode = CommonUtil.toJsonNode(jsonObject);
-        final ConnectResponse response = new ConnectResponse();
-        response.mapFields(rootNode);
-
-        okkamiSdk.saveConnectResponse(response);
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    okkamiSdk.getBACKEND_SERVICE_MODULE().getPresets(mock.getUID(), mock.getPROPERTY_ID(),
-                            mock.getBRAND_ID(), mock.getCOMPANY_ID(), response.getAuth());
-
-                    kickoffHubConnection(response);
-
-                } catch (Exception e) {
-                    Log.e("SDK", "Failed getting presets. \n" + e);
-                }
-            }
-        }).start();
-    }
-
-    private void kickoffHubConnection(final ConnectResponse response) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    mDeviceAuth = response.getAuth();
-                    JSONObject obj = new JSONObject(response.getRoom().getPresetsAsJson());
-                    String hubDnsName = obj.getString("hub_dns_name");
-                    int hubSslPort = obj.getInt("hub_ssl_port");
-
-                    testHub(mock.getUID(), mDeviceAuth, hubDnsName, hubSslPort);
-
-                } catch (Exception e) {
-                    Log.e("HUB", "" + e);
-                }
-            }
-        }).start();
-    }
-
-    private void testHub(String deviceId, BaseAuthentication auth, String hubDnsName,
-            int hubSslPort) throws IOException {
-
-        initHub(deviceId, hubDnsName, hubSslPort, auth, true);
-        hubModule.connect();
-//        hubModule.doWork();
-
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                hubModule.sendCommand(mCmdFactory.query());
-            }
-        }, 0, 15 * 1000);
-    }
-
     private HubModule initHub(String deviceId, String hubDnsName, int hubSslPort,
-            BaseAuthentication auth,
-            boolean force) {
+            BaseAuthentication auth) {
 
         if (TextUtils.isEmpty(deviceId) || auth == null || TextUtils.isEmpty(hubDnsName)) {
             throw new IllegalArgumentException("deviceId and authentication can not be null");
@@ -395,14 +280,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
                 okkamiSdk.getLoggerModule(),
                 this
         );
-
-//        if (force) {
-//            hubModule.reInitHubConn();
-//        } else {
-//            if (!hubModule.isHubConnected()) {
-//                hubModule.initHub();
-//            }
-//        }
 
         return hubModule;
     }
@@ -440,10 +317,9 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     @ReactMethod
     public void connectToHub(String uid, String secret, String token, String hubUrl, int hubPort, Promise hubConnectionPromise) {
 
-        // TODO: 3/27/2017 AD Have to use a given parameters (secret, token) to the connect to hub logic
         BaseAuthentication auth = new CompanyAuth(token, secret);
         try {
-            initHub(uid, hubUrl, hubPort, auth, true);
+            initHub(uid, hubUrl, hubPort, auth);
             hubModule.connect();
         } catch (Exception e){
             hubConnectionPromise.reject(e);
@@ -505,7 +381,12 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
      */
     @ReactMethod
     public void sendCommandToHub(String command, Promise sendMessageToHubPromise) {
-
+        try {
+            hubModule.sendCommand(command);
+            sendMessageToHubPromise.resolve(true);
+        } catch (Exception e){
+            sendMessageToHubPromise.reject(e);
+        }
     }
 
 
@@ -524,12 +405,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         } catch (Exception e){
             hubLoggedPromise.reject(e);
         }
-        /*
-            //ok
-            hubLoggedPromise.resolve(true);
-            //not ok!
-            hubLoggedPromise.resolve(false);
-        */
     }
 
     /**
@@ -547,12 +422,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         } catch (Exception e){
             hubConnectedPromise.reject(e);
         }
-        /*
-            //connected
-            hubConnectedPromise.resolve(true);
-            //not connected
-            hubConnectedPromise.resolve(false);
-        */
     }
 
 
@@ -571,6 +440,40 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     *            map.putString("command", "DISCONNECT_REASON");
     *            this.sendEventToJs("onHubDisconnected", map);
     * */
+
+
+
+    @Override
+    public void onCommandReceived(Command cmd) {
+
+    }
+
+    @Override
+    public void onCommandReceived(boolean isPong, Command cmd) {
+
+    }
+
+    @Override
+    public void reconnectToHub() {
+
+    }
+
+    @Override
+    public void sendCommandToHub(Command cmd) {
+
+    }
+
+    @Override
+    public boolean isHubLoggedIn() {
+        return false;
+    }
+
+    @Override
+    public boolean isHubConnected() {
+        return false;
+    }
+
+
 
     /*---------------------------------------------------------------------------------------------------*/
 
@@ -772,34 +675,4 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         }
     }
 
-
-    @Override
-    public void onCommandReceived(Command cmd) {
-
-    }
-
-    @Override
-    public void onCommandReceived(boolean isPong, Command cmd) {
-
-    }
-
-    @Override
-    public void reconnectToHub() {
-
-    }
-
-    @Override
-    public void sendCommandToHub(Command cmd) {
-
-    }
-
-    @Override
-    public boolean isHubLoggedIn() {
-        return false;
-    }
-
-    @Override
-    public boolean isHubConnected() {
-        return false;
-    }
 }
