@@ -366,7 +366,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
 
         initHub(deviceId, hubDnsName, hubSslPort, auth, true);
         hubModule.connect();
-        hubModule.doWork();
+//        hubModule.doWork();
 
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -396,13 +396,13 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
                 this
         );
 
-        if (force) {
-            hubModule.reInitHubConn();
-        } else {
-            if (!hubModule.isHubConnected()) {
-                hubModule.initHub();
-            }
-        }
+//        if (force) {
+//            hubModule.reInitHubConn();
+//        } else {
+//            if (!hubModule.isHubConnected()) {
+//                hubModule.initHub();
+//            }
+//        }
 
         return hubModule;
     }
@@ -445,7 +445,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         try {
             initHub(uid, hubUrl, hubPort, auth, true);
             hubModule.connect();
-            hubModule.doWork();
         } catch (Exception e){
             hubConnectionPromise.reject(e);
             return;
@@ -465,7 +464,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     public void disconnectFromHub(Promise hubDisconnectionPromise) {
         try {
             hubModule.disconnect();
-            hubModule.doWork();
         } catch (Exception e){
             hubDisconnectionPromise.reject(e);
             return;
@@ -484,11 +482,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     @ReactMethod
     public void reconnectToHub(Promise hubReconnectionPromise) {
         try {
-            hubModule.reInitHubConn();
-//            hubModule.disconnect();
-//            hubModule.doWork();
-//            hubModule.connect();
-            hubModule.doWork();
+            hubModule.connect();
         } catch (Exception e){
             hubReconnectionPromise.reject(e);
             return;
@@ -729,8 +723,9 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
      */
    @ReactMethod
     public void openChatWindow(String smoochAppToken, String userId, Promise openChatWindowPromise) {
-       Smooch.init(this.app, smoochAppToken);
        try {
+           Smooch.init(this.app, smoochAppToken);
+           Smooch.login(userId, "");
            ConversationActivity.show(this.context);
            openChatWindowPromise.resolve(true);
        } catch (Exception e){
