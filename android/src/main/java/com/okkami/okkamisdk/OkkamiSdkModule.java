@@ -6,17 +6,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.facebook.react.bridge.ActivityEventListener;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.BaseActivityEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
 
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.linecorp.linesdk.auth.LineLoginApi;
 import com.linecorp.linesdk.auth.LineLoginResult;
@@ -315,17 +320,17 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
          * @param hubConnectionPromise
          */
     @ReactMethod
-    public void connectToHub(String uid, String secret, String token, String hubUrl, int hubPort, Promise hubConnectionPromise) {
+    public void connectToHub(String uid, String secret, String token, String hubUrl, String hubPort, Promise hubConnectionPromise) {
 
         BaseAuthentication auth = new CompanyAuth(token, secret);
         try {
-            initHub(uid, hubUrl, hubPort, auth);
+            initHub(uid, hubUrl, Integer.parseInt(hubPort), auth);
             hubModule.connect();
+            hubConnectionPromise.resolve(true);
+            sendEvent((ReactContext) this.context, "onHubConnected", null);
         } catch (Exception e){
             hubConnectionPromise.reject(e);
-            return;
         }
-        hubConnectionPromise.resolve(true);
     }
 
     /**
@@ -340,11 +345,11 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     public void disconnectFromHub(Promise hubDisconnectionPromise) {
         try {
             hubModule.disconnect();
+            hubDisconnectionPromise.resolve(true);
+            sendEvent((ReactContext) this.context, "onHubDisconnected", null);
         } catch (Exception e){
             hubDisconnectionPromise.reject(e);
-            return;
         }
-        hubDisconnectionPromise.resolve(true);
     }
 
     /**
@@ -364,6 +369,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
             return;
         }
         hubReconnectionPromise.resolve(true);
+        sendEvent((ReactContext) this.context, "onHubConnected", null);
     }
 
     /**
@@ -402,6 +408,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     public void isHubLoggedIn(Promise hubLoggedPromise) {
         try {
             hubLoggedPromise.resolve(hubModule.isHubConnected() && hubModule.isCheckedIn());
+            sendEvent((ReactContext) this.context, "onHubLoggedIn", null);
         } catch (Exception e){
             hubLoggedPromise.reject(e);
         }
@@ -418,7 +425,8 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     @ReactMethod
     public void isHubConnected(Promise hubConnectedPromise) {
         try {
-            hubConnectedPromise.resolve(hubModule.isHubConnected());
+            boolean isConnected = hubModule.isHubConnected();
+            hubConnectedPromise.resolve(isConnected);
         } catch (Exception e){
             hubConnectedPromise.reject(e);
         }
@@ -445,12 +453,16 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
 
     @Override
     public void onCommandReceived(Command cmd) {
-
+        WritableMap params = Arguments.createMap();
+        params.putString("command", cmd.toString());
+        sendEvent((ReactContext) this.context, "onHubCommand", params);
     }
 
     @Override
     public void onCommandReceived(boolean isPong, Command cmd) {
-
+        WritableMap params = Arguments.createMap();
+        params.putString("command", cmd.toString());
+        sendEvent((ReactContext) this.context, "onHubCommand", params);
     }
 
     @Override
@@ -473,6 +485,13 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         return false;
     }
 
+    private void sendEvent(ReactContext reactContext,
+            String eventName,
+            @Nullable WritableMap params) {
+        reactContext
+                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit(eventName, params);
+    }
 
 
     /*---------------------------------------------------------------------------------------------------*/
