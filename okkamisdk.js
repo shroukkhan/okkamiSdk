@@ -101,8 +101,8 @@ class OkkamiSdk {
    *
    * @returns {Promise}
    */
-  async getConversationsList() {
-    return await OkkamiSdkManager.getConversationsList();
+  async getConversationsList(smoochAllAppTokenArray) {
+    return await OkkamiSdkManager.getConversationsList(smoochAllAppTokenArray);
   }
 
   /**
@@ -111,6 +111,8 @@ class OkkamiSdk {
    * @returns {Promise.<void>}
    */
   async openChatWindow(smoochAppToken, userID) {
+    console.log("smoochAppToken: "+smoochAppToken);
+    console.log("userID: "+userID);
     return await OkkamiSdkManager.openChatWindow(smoochAppToken, userID);
   }
 
@@ -124,6 +126,10 @@ class OkkamiSdk {
     return await OkkamiSdkManager.getUnreadMessageCount(smoochAppToken, userID);
   }
 
+  /**
+   * Closese the current chat window
+   * @returns {Promise}
+   */
   async logoutChatWindow(){
     return await OkkamiSdkManager.logoutChatWindow();
   }
