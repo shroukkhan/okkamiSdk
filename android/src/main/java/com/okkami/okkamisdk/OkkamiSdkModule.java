@@ -6,31 +6,58 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.facebook.react.bridge.ActivityEventListener;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.BaseActivityEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
 
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.linecorp.linesdk.auth.LineLoginApi;
 import com.linecorp.linesdk.auth.LineLoginResult;
 import com.okkami.android.sdk.SDK;
+import com.okkami.android.sdk.config.MockConfigModule;
+import com.okkami.android.sdk.domain.legacy.NonceManagerModule;
+import com.okkami.android.sdk.domain.legacy.NumberFormatterModule;
+import com.okkami.android.sdk.domain.response.ConnectResponse;
+import com.okkami.android.sdk.domain.response.PreConnectResponse;
+import com.okkami.android.sdk.helper.CommonUtil;
+import com.okkami.android.sdk.hub.Command;
+import com.okkami.android.sdk.hub.CommandFactoryModule;
+import com.okkami.android.sdk.hub.CommandSerializerModule;
+import com.okkami.android.sdk.hub.OnHubCommandReceivedListener;
 import com.okkami.android.sdk.model.BaseAuthentication;
 import com.okkami.android.sdk.model.CompanyAuth;
+import com.okkami.android.sdk.model.DeviceAuth;
+import com.okkami.android.sdk.module.HubModule;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.net.URL;
+import java.security.InvalidKeyException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
+import java.util.TimerTask;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -43,13 +70,21 @@ import io.smooch.ui.ConversationActivity;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 
-class OkkamiSdkModule extends ReactContextBaseJavaModule {
+class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommandReceivedListener{
     private Application app;
     private Context context;
     private static final String TAG = "OKKAMISDK";
     private static final int LINE_LOGIN_REQUEST_CODE = 10;
     private SDK okkamiSdk;
     private Promise lineLoginPromise = null;
+    private MockConfigModule mock;
+    private DeviceAuth mDeviceAuth;
+    private static HubModule hubModule;
+    private final NonceManagerModule nonce = new NonceManagerModule();
+    private final CommandSerializerModule cmdSerializer = new CommandSerializerModule();
+    private final NumberFormatterModule numberFormatter = new NumberFormatterModule();
+    private CommandFactoryModule mCmdFactory;
+
 
     private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
 
@@ -99,6 +134,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
         Log.d(TAG, "OkkamiSdkModule: "+app);
         reactContext.addActivityEventListener(mActivityEventListener);
         okkamiSdk = new SDK().init(reactContext, "https://app.develop.okkami.com"); // TODO : how do we pass the URL dynamically from react??
+        initMockData();
         this.app = app;
     }
 
@@ -117,7 +153,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void lineLogin(Promise lineLoginPromise) {
         this.lineLoginPromise = lineLoginPromise;
-        Intent loginIntent = LineLoginApi.getLoginIntent(this.context, "1499319131");
+        Intent loginIntent = LineLoginApi.getLoginIntent(this.context, "1508019538");
         getCurrentActivity().startActivityForResult(loginIntent, LINE_LOGIN_REQUEST_CODE);
     }
 
@@ -238,21 +274,77 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
 
     /*-------------------------------------- Hub -------------------------------------------------*/
 
+    private void initMockData () {
+        try {
+            mock = new MockConfigModule(this.context, CommonUtil.loadProperty(this.context));
+        } catch (IOException e) {
+            Log.e("ERR", "Couldn't load mock config...");
+        }
+    }
 
-    /**
-     * Connects to hub using the presets and attempts to login ( send IDENTIFY)
-     * If Hub is already connected, reply with  hubConnectionPromise.resolve(true)
-     * on success: hubConnectionPromise.resolve(true)
-     * on failure:  hubConnectionPromise.reject(Throwable e)
-     * Native module should also take care of the PING PONG and reconnect if PING drops
-     *
-     * @param secrect              secrect obtained from core
-     * @param token                token obtained from core
-     * @param hubConnectionPromise
-     */
+    private HubModule initHub(String deviceId, String hubDnsName, int hubSslPort,
+            BaseAuthentication auth) {
+
+        if (TextUtils.isEmpty(deviceId) || auth == null || TextUtils.isEmpty(hubDnsName)) {
+            throw new IllegalArgumentException("deviceId and authentication can not be null");
+        }
+
+        mCmdFactory = getCmdFactotry(deviceId, auth);
+        mock.setHubDnsName(hubDnsName);
+        mock.setHubSslPort(hubSslPort);
+        hubModule = new HubModule(
+                context,
+                mock,
+                mCmdFactory,
+                okkamiSdk.getLoggerModule(),
+                this
+        );
+
+        return hubModule;
+    }
+
+
+    private CommandFactoryModule getCmdFactotry(
+            String deviceId, BaseAuthentication auth) {
+
+        return new CommandFactoryModule(
+                deviceId,
+                auth == null ? mock.getCOMPANY_AUTH() : auth,
+                mock,
+                okkamiSdk.getSingerModule(),
+                nonce,
+                cmdSerializer,
+                numberFormatter,
+                okkamiSdk.getLoggerModule()
+        );
+    }
+
+        /**
+         * Connects to hub using the presets and attempts to login ( send IDENTIFY)
+         * If Hub is already connected, reply with  hubConnectionPromise.resolve(true)
+         * on success: hubConnectionPromise.resolve(true)
+         * on failure:  hubConnectionPromise.reject(Throwable e)
+         * Native module should also take care of the PING PONG and reconnect if PING drops
+         *
+         * @param secret              device id logged in to room
+         * @param secret              secrect obtained from core
+         * @param token               oken obtained from core
+         * @param hubUrl              hub url
+         * @param token               hub port
+         * @param hubConnectionPromise
+         */
     @ReactMethod
-    public void connectToHub(String secrect, String token, Promise hubConnectionPromise) {
+    public void connectToHub(String uid, String secret, String token, String hubUrl, String hubPort, Promise hubConnectionPromise) {
 
+        BaseAuthentication auth = new CompanyAuth(token, secret);
+        try {
+            initHub(uid, hubUrl, Integer.parseInt(hubPort), auth);
+            hubModule.connect();
+            hubConnectionPromise.resolve(true);
+            sendEvent((ReactContext) this.context, "onHubConnected", null);
+        } catch (Exception e){
+            hubConnectionPromise.reject(e);
+        }
     }
 
     /**
@@ -265,7 +357,13 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void disconnectFromHub(Promise hubDisconnectionPromise) {
-
+        try {
+            hubModule.disconnect();
+            hubDisconnectionPromise.resolve(true);
+            sendEvent((ReactContext) this.context, "onHubDisconnected", null);
+        } catch (Exception e){
+            hubDisconnectionPromise.reject(e);
+        }
     }
 
     /**
@@ -278,7 +376,14 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void reconnectToHub(Promise hubReconnectionPromise) {
-
+        try {
+            hubModule.connect();
+        } catch (Exception e){
+            hubReconnectionPromise.reject(e);
+            return;
+        }
+        hubReconnectionPromise.resolve(true);
+        sendEvent((ReactContext) this.context, "onHubConnected", null);
     }
 
     /**
@@ -296,7 +401,12 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void sendCommandToHub(String command, Promise sendMessageToHubPromise) {
-
+        try {
+            hubModule.sendCommand(command);
+            sendMessageToHubPromise.resolve(true);
+        } catch (Exception e){
+            sendMessageToHubPromise.reject(e);
+        }
     }
 
 
@@ -310,12 +420,12 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void isHubLoggedIn(Promise hubLoggedPromise) {
-        /*
-            //ok
-            hubLoggedPromise.resolve(true);
-            //not ok!
-            hubLoggedPromise.resolve(false);
-        */
+        try {
+            hubLoggedPromise.resolve(hubModule.isHubConnected() && hubModule.isCheckedIn());
+            sendEvent((ReactContext) this.context, "onHubLoggedIn", null);
+        } catch (Exception e){
+            hubLoggedPromise.reject(e);
+        }
     }
 
     /**
@@ -328,12 +438,12 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     public void isHubConnected(Promise hubConnectedPromise) {
-        /*
-            //connected
-            hubConnectedPromise.resolve(true);
-            //not connected
-            hubConnectedPromise.resolve(false);
-        */
+        try {
+            boolean isConnected = hubModule.isHubConnected();
+            hubConnectedPromise.resolve(isConnected);
+        } catch (Exception e){
+            hubConnectedPromise.reject(e);
+        }
     }
 
 
@@ -352,6 +462,51 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
     *            map.putString("command", "DISCONNECT_REASON");
     *            this.sendEventToJs("onHubDisconnected", map);
     * */
+
+
+
+    @Override
+    public void onCommandReceived(Command cmd) {
+        WritableMap params = Arguments.createMap();
+        params.putString("command", cmd.toString());
+        sendEvent((ReactContext) this.context, "onHubCommand", params);
+    }
+
+    @Override
+    public void onCommandReceived(boolean isPong, Command cmd) {
+        WritableMap params = Arguments.createMap();
+        params.putString("command", cmd.toString());
+        sendEvent((ReactContext) this.context, "onHubCommand", params);
+    }
+
+    @Override
+    public void reconnectToHub() {
+
+    }
+
+    @Override
+    public void sendCommandToHub(Command cmd) {
+
+    }
+
+    @Override
+    public boolean isHubLoggedIn() {
+        return false;
+    }
+
+    @Override
+    public boolean isHubConnected() {
+        return false;
+    }
+
+    private void sendEvent(ReactContext reactContext,
+            String eventName,
+            @Nullable WritableMap params) {
+        reactContext
+                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit(eventName, params);
+    }
+
 
     /*---------------------------------------------------------------------------------------------------*/
 
@@ -504,8 +659,9 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
      */
    @ReactMethod
     public void openChatWindow(String smoochAppToken, String userId, Promise openChatWindowPromise) {
-       Smooch.init(this.app, smoochAppToken);
        try {
+           Smooch.init(this.app, smoochAppToken);
+           Smooch.login(userId, "");
            ConversationActivity.show(this.context);
            openChatWindowPromise.resolve(true);
        } catch (Exception e){
@@ -551,7 +707,5 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule {
             logoutChatWindowPromise.reject(e.getMessage(), e.getMessage());
         }
     }
-
-
 
 }
