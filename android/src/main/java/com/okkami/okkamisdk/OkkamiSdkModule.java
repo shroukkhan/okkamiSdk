@@ -322,7 +322,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     @ReactMethod
     public void connectToHub(String uid, String secret, String token, String hubUrl, String hubPort, Promise hubConnectionPromise) {
 
-        BaseAuthentication auth = new CompanyAuth(token, secret);
+        BaseAuthentication auth = new DeviceAuth(token, secret);
         try {
             initHub(uid, hubUrl, Integer.parseInt(hubPort), auth);
             hubModule.connect();
