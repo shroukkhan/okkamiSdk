@@ -270,7 +270,15 @@ RCT_EXPORT_METHOD(connectToHub
     NSNumberFormatter* formatter = [[NSNumberFormatter alloc] init];
     UInt16 portNumber = [[formatter numberFromString:hubPort] unsignedShortValue];
     [self.main connectToHubWithNotif:defaultNotif uid:uid secret:secret token:token hubUrl:hubUrl hubPort:portNumber completion:^(NSError * error) {
-        
+        if(error == nil){
+            resolve(@YES);
+        }else{
+            NSMutableDictionary* details = [NSMutableDictionary dictionary];
+            [details setValue:@"Not connected To Room" forKey:NSLocalizedDescriptionKey];
+            // populate the error object with the details
+            NSError *error = [NSError errorWithDomain:@"E_ROOM_NOT_CONNECTED" code:1200 userInfo:details];
+            reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+        }
     }];
     /*[self.main connectToHubWithUid:uid secret:secret token:token hubUrl:hubUrl hubPort:portNumber completion:^(NSError * error) {
         
