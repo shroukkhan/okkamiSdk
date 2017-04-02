@@ -18,6 +18,11 @@ class OkkamiSdk {
   }
 
   executeCoreRESTCall (endPoint,getPost,payLoad,secret,token,force) {
+
+    console.log("Attemptng to cexecuteCoreRESTCall with endpoint : " , endPoint , " method :",
+      getPost, " with payload : " , payLoad , " using secret : " , secret ,
+      " and token : " , token , " forcing : ", force)
+
     return OkkamiSdkManager.executeCoreRESTCall(endPoint,getPost,payLoad,secret,token,force);
   }
 
@@ -111,6 +116,8 @@ class OkkamiSdk {
    * @returns {Promise.<void>}
    */
   async openChatWindow(smoochAppToken, userID) {
+    console.log("smoochAppToken: "+smoochAppToken);
+    console.log("userID: "+userID);
     return await OkkamiSdkManager.openChatWindow(smoochAppToken, userID);
   }
 
