@@ -336,7 +336,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     @ReactMethod
     public void connectToHub(String uid, String secret, String token, String hubUrl, String hubPort, Promise hubConnectionPromise) {
 
-        BaseAuthentication auth = new CompanyAuth(token, secret);
+        BaseAuthentication auth = new DeviceAuth(token, secret);
         try {
             initHub(uid, hubUrl, Integer.parseInt(hubPort), auth);
             hubModule.connect();
@@ -657,16 +657,18 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
      * @param smoochAppToken
      * @param openChatWindowPromise
      */
-   @ReactMethod
+    @ReactMethod
     public void openChatWindow(String smoochAppToken, String userId, Promise openChatWindowPromise) {
-       try {
-           Smooch.init(this.app, smoochAppToken);
-           Smooch.login(userId, "");
-           ConversationActivity.show(this.context);
-           openChatWindowPromise.resolve(true);
-       } catch (Exception e){
-           openChatWindowPromise.reject(e);
-       }
+        try {
+            Smooch.init(app, smoochAppToken);
+            Smooch.login(userId, "");
+            Intent chatWindow = new Intent(context, ConversationActivity.class);
+            chatWindow.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(chatWindow);
+            openChatWindowPromise.resolve(true);
+        } catch (Exception e){
+            openChatWindowPromise.reject(e);
+        }
     }
 
 
