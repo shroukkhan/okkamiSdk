@@ -534,10 +534,12 @@ RCT_EXPORT_METHOD(openChatWindow
         self.smooch = smooch;
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.smooch smoochChatWithUser:userID];
+            [UIApplication sharedApplication].applicationIconBadgeNumber = [self.smooch getUnreadMessageCount];
         });
     }else{
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.smooch smoochChatWithUser:userID];
+            [UIApplication sharedApplication].applicationIconBadgeNumber = [self.smooch getUnreadMessageCount];
         });
     }
 }
@@ -564,6 +566,7 @@ RCT_EXPORT_METHOD(logoutChatWindow
                   :(RCTPromiseRejectBlock)reject)
 {
     [self.smooch okkamiLogout];
+    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
 }
 
 
