@@ -157,19 +157,23 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         getCurrentActivity().startActivityForResult(loginIntent, LINE_LOGIN_REQUEST_CODE);
     }
 
-    /**
-     * Set new the Smooch app token to Okkami SDK for switching channel to let user talk to different hotels
-     * @param appToken - an app token provided by Smooch
-     */
-    @ReactMethod
-     public void setSmoochAppToken(String appToken){
-        okkamiSdk.setSmoochAppToken(appToken);
-     }
 
-     @ReactMethod
-     public void showSmoochUI(){
-         okkamiSdk.showSmoochUI();
-     }
+    //NOTE: commented out by KHAN. it seems the following methods dont exist in ios and also not being called from js anywhere?
+    //      also causing compilation to fail on android because SDK does not have them .
+
+//    /**
+//     * Set new the Smooch app token to Okkami SDK for switching channel to let user talk to different hotels
+//     * @param appToken - an app token provided by Smooch
+//     */
+//    @ReactMethod
+//     public void setSmoochAppToken(String appToken){
+//        okkamiSdk.setSmoochAppToken(appToken);
+//     }
+//
+//     @ReactMethod
+//     public void showSmoochUI(){
+//         okkamiSdk.showSmoochUI();
+//     }
 
 
      /*---------------------------Core------------------------------------------------------------------------*/
