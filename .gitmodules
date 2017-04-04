@@ -1,0 +1,6 @@
+[submodule "ios/okkami-ios-sdk"]
+	path = ios/okkami-ios-sdk
+	url = git@github.com:fingi/okkami-ios-sdk.git
+[submodule "android/okkami-android-sdk"]
+	path = android/okkami-android-sdk
+	url = git@github.com:fingi/okkami-android-sdk.git
