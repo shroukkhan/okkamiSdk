@@ -106,8 +106,8 @@ class OkkamiSdk {
    *
    * @returns {Promise}
    */
-  async getConversationsList(smoochAllAppTokenArray) {
-    return await OkkamiSdkManager.getConversationsList(smoochAllAppTokenArray);
+  async getConversationsList(smoochAllAppTokenArray, userID) {
+    return await OkkamiSdkManager.getConversationsList(smoochAllAppTokenArray, userID);
   }
 
   /**

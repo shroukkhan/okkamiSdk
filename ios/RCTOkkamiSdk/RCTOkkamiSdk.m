@@ -505,6 +505,7 @@ RCT_EXPORT_METHOD(isHubConnected
 RCT_EXPORT_METHOD(getConversationsList
                   
                   :(NSArray*) smoochAppToken
+                  :(NSString*) userID
                   
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
@@ -514,7 +515,7 @@ RCT_EXPORT_METHOD(getConversationsList
     OkkamiSmoochChat *smooch = [OkkamiSmoochChat newInstanceWithAppToken:smoochAppToken[0]];
     self.smooch = smooch;
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSString *jsonObj = [self.smooch getConversationsListWithArray:smoochAppToken];
+        NSString *jsonObj = [self.smooch getConversationsListWithArray:smoochAppToken userID: userID];
         //NSString *jsonObj = [NSString stringWithFormat:@"%@", dictMap];
         resolve(jsonObj);
     });//    resolve([self.smooch getConversationsList]);
