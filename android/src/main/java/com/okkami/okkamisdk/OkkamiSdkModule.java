@@ -562,7 +562,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
      * @param getConversationListPromise
      */
     @ReactMethod
-    public void getConversationsList(ReadableArray smoochAllAppTokenArray, Promise getConversationListPromise) {
+    public void getConversationsList(ReadableArray smoochAllAppTokenArray, String userId, Promise getConversationListPromise) {
 //        Smooch.getConversation().sendMessage(new Message("Hello WWorld!"));
         try {
             final String ALL_CHAT_STR = "ALL_CHAT";
@@ -581,6 +581,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
 
             for (int i = 0; i < smoochAllAppTokenArray.size(); i++) {
                 Smooch.init(this.app, smoochAllAppTokenArray.getString(i));
+                Smooch.login(userId, "");
                 Thread.sleep(1000);
                 List<Message> listMsg = Smooch.getConversation().getMessages();
                 int unreadMsgCount = Smooch.getConversation().getUnreadCount();
