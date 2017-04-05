@@ -707,7 +707,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
             if (Smooch.getInitializationStatus() == InitializationStatus.Success &&
                     Smooch.getSmoochConnectionStatus() == SmoochConnectionStatus.Connected) {
                 Smooch.logout();
-//            Smooch.destroy();
+                ConversationActivity.close();
                 logoutChatWindowPromise.resolve(1);
             }
         } catch (Exception e) {
