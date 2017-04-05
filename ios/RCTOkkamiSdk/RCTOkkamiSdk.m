@@ -530,7 +530,13 @@ RCT_EXPORT_METHOD(openChatWindow
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    if (self.smooch == nil) {
+    OkkamiSmoochChat *smooch = [OkkamiSmoochChat newInstanceWithAppToken:smoochAppToken];
+    self.smooch = smooch;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.smooch smoochChatWithUser:userID];
+        //[UIApplication sharedApplication].applicationIconBadgeNumber = [self.smooch getUnreadMessageCount];
+    });
+    /*if (self.smooch == nil) {
         OkkamiSmoochChat *smooch = [OkkamiSmoochChat newInstanceWithAppToken:smoochAppToken];
         self.smooch = smooch;
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -542,7 +548,7 @@ RCT_EXPORT_METHOD(openChatWindow
             [self.smooch smoochChatWithUser:userID];
             [UIApplication sharedApplication].applicationIconBadgeNumber = [self.smooch getUnreadMessageCount];
         });
-    }
+    }*/
 }
 
 
