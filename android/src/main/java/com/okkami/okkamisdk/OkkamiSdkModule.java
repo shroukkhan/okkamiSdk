@@ -267,6 +267,44 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
                                 // Nothing for now.
                             }
                         });
+            } else if (getPost.compareTo("PUT") == 0) {
+
+                okkamiSdk.getBACKEND_SERVICE_MODULE().doCorePostCall(endPoint, "PUT", payload, b)
+                        .subscribeOn(io.reactivex.schedulers.Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<Response<ResponseBody>>() {
+                            @Override
+                            public void onSubscribe(Disposable d) {
+                                System.out.println("Disposable method.");
+                            }
+
+                            @Override
+                            public void onNext(Response<ResponseBody> value) {
+                                try {
+                                    if (value.raw().code() >= 400 || value.body() == null){
+                                        downloadFromCorePromise.reject(value.raw().code()+"",value.raw().message());
+                                    } else {
+                                        String x = value.body().string();
+                                        downloadFromCorePromise.resolve(x);
+                                    }
+                                } catch (Exception e) {
+                                    downloadFromCorePromise.reject(e);
+                                    // e.printStackTrace();
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                downloadFromCorePromise.reject(e);
+                            }
+
+                            @Override
+                            public void onComplete() {
+
+
+                                // Nothing for now.
+                            }
+                        });
             }
         } catch (Exception e) {
             downloadFromCorePromise.reject(e);
