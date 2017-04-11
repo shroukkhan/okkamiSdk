@@ -701,7 +701,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
      * @param openChatWindowPromise
      */
     @ReactMethod
-    public void openChatWindow(String smoochAppToken, String userId, Promise openChatWindowPromise) {
+    public void openChatWindow(String smoochAppToken, String userId, , Promise openChatWindowPromise) {
         try {
             Smooch.init(app, smoochAppToken);
             Smooch.login(userId, "");
