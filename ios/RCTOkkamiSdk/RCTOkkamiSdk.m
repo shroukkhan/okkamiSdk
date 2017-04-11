@@ -526,6 +526,8 @@ RCT_EXPORT_METHOD(openChatWindow
                   
                   :(NSString *) smoochAppToken
                   :(NSString *) userID
+                  :(NSString*) color
+                  :(NSString*) textColor
                   
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
@@ -533,7 +535,7 @@ RCT_EXPORT_METHOD(openChatWindow
     OkkamiSmoochChat *smooch = [OkkamiSmoochChat newInstanceWithAppToken:smoochAppToken];
     self.smooch = smooch;
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.smooch smoochChatWithUser:userID];
+        [self.smooch smoochChatWithUser:userID color: color textColor: textColor];
         //[UIApplication sharedApplication].applicationIconBadgeNumber = [self.smooch getUnreadMessageCount];
     });
     /*if (self.smooch == nil) {
