@@ -613,6 +613,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
             final String INACTIVE_CHATS_STR = "INACTIVE_CHATS";
             JSONObject jsonObj = new JSONObject();
 //            JSONObject allChatJsonArray = new JSONObject();
+            ArrayList<JSONObject> okkamiChatList = new ArrayList<>();
             ArrayList<JSONObject> activeChatList = new ArrayList<>();
             ArrayList<JSONObject> inactiveChatList = new ArrayList<>();
 //            ArrayList<JSONObject> allChatList = new ArrayList<>();
@@ -649,7 +650,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
                         lastMsgText, epTime, smoochAllAppTokenArray.getString(i));
 
                 if (i == 0) {
-                    jsonObj.put(OKKAMI_CHAT_STR, new JSONArray().put(okkamiJsonObj));
+                    okkamiChatList.add(okkamiJsonObj);
                 } else if (i > 0 && unreadMsgCount > 0) {
                     activeChatList.add(okkamiJsonObj);
                 } else { // unactive chat
@@ -668,6 +669,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
 //                edit.commit();
 //            }
 
+            jsonObj.put(OKKAMI_CHAT_STR, new JSONArray(okkamiChatList));
             jsonObj.put(ACTIVE_CHATS_STR, new JSONArray(activeChatList));
             jsonObj.put(INACTIVE_CHATS_STR, new JSONArray(inactiveChatList));
 
