@@ -5,6 +5,8 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -94,8 +96,16 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
             super.onActivityResult(activity, requestCode, resultCode, data);
             Log.d(TAG, "onActivityResult: "+requestCode);
             if (requestCode != LINE_LOGIN_REQUEST_CODE) return;
-            LineLoginResult result = LineLoginApi.getLoginResultFromIntent(data);
-            String accessToken = result.getLineCredential().getAccessToken().getAccessToken();
+            LineLoginResult result;
+            String accessToken;
+            try {
+                result = LineLoginApi.getLoginResultFromIntent(data);
+                accessToken = result.getLineCredential().getAccessToken().getAccessToken();
+            } catch (Exception e) {
+                e.printStackTrace();
+                lineLoginPromise.reject("error", e.getMessage());
+                return;
+            }
 
             switch (result.getResponseCode()) {
 
@@ -150,8 +160,37 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
 
      /*-------------------------------------- Utility   --------------------------------------------------*/
 
+    // have a connection to any network
+    public boolean isNetworkConnected() {
+        ConnectivityManager cm =
+                (ConnectivityManager) this.context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    // have an internet access
+    public boolean isOnline() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int     exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+        }
+        catch (IOException e)          { e.printStackTrace(); }
+        catch (InterruptedException e) { e.printStackTrace(); }
+
+        return false;
+    }
+
     @ReactMethod
     public void lineLogin(Promise lineLoginPromise) {
+        if (!isNetworkConnected()) {
+            lineLoginPromise.reject("error", "have no network connected.");
+            return;
+        } else if (!isOnline()) {
+            lineLoginPromise.reject("error", "have no internet connection");
+            return;
+        }
         this.lineLoginPromise = lineLoginPromise;
         Intent loginIntent = LineLoginApi.getLoginIntent(this.context, "1508019538");
         getCurrentActivity().startActivityForResult(loginIntent, LINE_LOGIN_REQUEST_CODE);
