@@ -192,7 +192,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
             return;
         }
         this.lineLoginPromise = lineLoginPromise;
-        Intent loginIntent = LineLoginApi.getLoginIntent(this.context, "1508019538");
+        Intent loginIntent = LineLoginApi.getLoginIntent(this.context, "1511221881");
         getCurrentActivity().startActivityForResult(loginIntent, LINE_LOGIN_REQUEST_CODE);
     }
 
