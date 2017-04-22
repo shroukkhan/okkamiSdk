@@ -55,9 +55,12 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -682,11 +685,38 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
                 String lastMsgText = lastMsg.getText();
                 Date epTime = lastMsg.getDate();
                 Log.d(TAG, "getConversationsList: " + listMsg.toString());
+                long different = (new Date()).getTime() - epTime.getTime();
+                long secondsInMilli = 1000;
+                long minutesInMilli = secondsInMilli * 60;
+                long hoursInMilli = minutesInMilli * 60;
+                long daysInMilli = hoursInMilli * 24;
 
+                long elapsedDays = different / daysInMilli;
+                different = different % daysInMilli;
+
+                long elapsedHours = different / hoursInMilli;
+                different = different % hoursInMilli;
+
+                long elapsedMinutes = different / minutesInMilli;
+                different = different % minutesInMilli;
+
+                long elapsedSeconds = different / secondsInMilli;
+
+                String epTimeString = "n/a";
+                if (elapsedDays == 1) epTimeString = elapsedDays + " Day";
+                else if (elapsedDays > 1) epTimeString = elapsedDays + "Days";
+                else if (elapsedHours > 0) epTimeString = elapsedHours + "Hours";
+                else if (elapsedMinutes > 0) epTimeString = elapsedMinutes + "Minutes";
+                else epTimeString = elapsedSeconds + "Seconds";
+
+                TimeZone tz = TimeZone.getTimeZone("UTC");
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                df.setTimeZone(tz);
+                String lastTimeAsISO = df.format(epTime);
 
                 JSONObject okkamiJsonObj = createConversationJsonObj(unreadMsgCount,
                         iconUrl, channelName,
-                        lastMsgText, epTime, smoochAllAppTokenArray.getString(i));
+                        lastMsgText, lastTimeAsISO, epTimeString, smoochAllAppTokenArray.getString(i));
 
                 if (i == 0) {
                     okkamiChatList.add(okkamiJsonObj);
@@ -722,14 +752,14 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     }
 
     private static JSONObject createConversationJsonObj(int unreadMsgCount, String iconUrl,
-            String channelName, String lastMsgText, Date epTime, String smoochAppToken) throws JSONException {
+            String channelName, String lastMsgText, String lastTime, String epTime, String smoochAppToken) throws JSONException {
         JSONObject jsonObj = new JSONObject();
         jsonObj.put("unread_messages", unreadMsgCount);
         jsonObj.put("icon", iconUrl);
         jsonObj.put("channel_name", channelName);
         jsonObj.put("last_message", lastMsgText);
-        // TODO: 3/26/2017 AD update proper eplased time string
-        jsonObj.put("time_since_last_message", epTime.toString());
+        jsonObj.put("last_time", lastTime);
+        jsonObj.put("time_since_last_message", epTime);
         jsonObj.put("app_token", smoochAppToken);
         return jsonObj;
     }
