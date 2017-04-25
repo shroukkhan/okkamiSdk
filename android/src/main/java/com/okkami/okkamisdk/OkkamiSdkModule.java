@@ -24,6 +24,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.linecorp.linesdk.auth.LineLoginApi;
 import com.linecorp.linesdk.auth.LineLoginResult;
@@ -63,14 +64,17 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.smooch.core.InitializationStatus;
 import io.smooch.core.Message;
+import io.smooch.core.Settings;
 import io.smooch.core.Smooch;
 import io.smooch.core.SmoochConnectionStatus;
+import io.smooch.core.User;
 import io.smooch.ui.ConversationActivity;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
@@ -647,30 +651,34 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
      */
     @ReactMethod
     public void getConversationsList(ReadableArray smoochAllAppTokenArray, String userId, Promise getConversationListPromise) {
-//        Smooch.getConversation().sendMessage(new Message("Hello WWorld!"));
+
         try {
             final String ALL_CHAT_STR = "ALL_CHAT";
             final String OKKAMI_CHAT_STR = "OKKAMI_CHAT";
             final String ACTIVE_CHATS_STR = "ACTIVE_CHATS";
             final String INACTIVE_CHATS_STR = "INACTIVE_CHATS";
             JSONObject jsonObj = new JSONObject();
-//            JSONObject allChatJsonArray = new JSONObject();
             ArrayList<JSONObject> okkamiChatList = new ArrayList<>();
             ArrayList<JSONObject> activeChatList = new ArrayList<>();
             ArrayList<JSONObject> inactiveChatList = new ArrayList<>();
-//            ArrayList<JSONObject> allChatList = new ArrayList<>();
-
-//            SharedPreferences pref =
-//                    PreferenceManager.getDefaultSharedPreferences(this.context);
-//            String username = pref.getString(ALL_CHAT_STR, "n/a");
 
             for (int i = 0; i < smoochAllAppTokenArray.size(); i++) {
-                Smooch.init(this.app, smoochAllAppTokenArray.getString(i));
-                Smooch.login(userId, "");
-                Thread.sleep(1000);
+                Settings settings = new Settings(smoochAllAppTokenArray.getString(i));
+                settings.setUserId(userId);
+                Smooch.init(app, settings);
+                Smooch.login(userId, null);
+
+                // Optional for now
+                okkamiSdk.getDbModule().saveSmoochCredentials(Smooch.getSettings().getAppToken(),
+                        Smooch.getSettings().getUserId());
+
                 List<Message> listMsg = Smooch.getConversation().getMessages();
                 int unreadMsgCount = Smooch.getConversation().getUnreadCount();
-                if (listMsg.size() == 0 ) continue; // this smooch app token not start conversation yet
+
+                if (listMsg.size() == 0 ) {
+                    continue; // this smooch app token not start conversation yet
+                }
+
                 String iconUrl = "";
                 String channelName = "";
                 for (Message msg : listMsg) {
@@ -725,18 +733,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
                 } else { // unactive chat
                     inactiveChatList.add(okkamiJsonObj);
                 }
-//                allChatList.add(okkamiJsonObj);
             }
-
-//            allChatJsonArray.put(ALL_CHAT_STR, new JSONArray(allChatJsonArray));
-//
-//            if (!username.equals("n/a")) {
-//
-//            } else { // create new preference for saving all chat data
-//                SharedPreferences.Editor edit = pref.edit();
-//                edit.putString(ALL_CHAT_STR, allChatJsonArray.toString());
-//                edit.commit();
-//            }
 
             jsonObj.put(OKKAMI_CHAT_STR, new JSONArray(okkamiChatList));
             jsonObj.put(ACTIVE_CHATS_STR, new JSONArray(activeChatList));
