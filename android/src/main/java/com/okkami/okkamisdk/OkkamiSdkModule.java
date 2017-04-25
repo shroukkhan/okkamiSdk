@@ -775,7 +775,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     public void openChatWindow(String smoochAppToken, String userId, String windowHexStringColor, String titleHexStringColor, Promise openChatWindowPromise) {
         try {
             Smooch.init(app, smoochAppToken);
-            Smooch.login(userId, "");
             Intent chatWindow = new Intent(context, ConversationActivity.class);
             chatWindow.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(chatWindow);
