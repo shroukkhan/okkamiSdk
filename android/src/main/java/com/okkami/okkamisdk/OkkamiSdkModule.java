@@ -2,11 +2,13 @@ package com.okkami.okkamisdk;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -60,7 +62,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -69,10 +73,12 @@ import java.util.UUID;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.smooch.core.FcmService;
 import io.smooch.core.InitializationStatus;
 import io.smooch.core.Message;
 import io.smooch.core.Settings;
 import io.smooch.core.Smooch;
+import io.smooch.core.SmoochCallback;
 import io.smooch.core.SmoochConnectionStatus;
 import io.smooch.core.User;
 import io.smooch.ui.ConversationActivity;
@@ -669,14 +675,12 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
             ArrayList<JSONObject> inactiveChatList = new ArrayList<>();
 
             for (int i = 0; i < smoochAllAppTokenArray.size(); i++) {
-                Settings settings = new Settings(smoochAllAppTokenArray.getString(i));
-                settings.setUserId(userId);
-                Smooch.init(app, settings);
-                Smooch.login(userId, null);
 
-                // Optional for now
-                okkamiSdk.getDbModule().saveSmoochCredentials(Smooch.getSettings().getAppToken(),
-                        Smooch.getSettings().getUserId());
+                String appToken = smoochAllAppTokenArray.getString(i);
+                Settings settings = new Settings(appToken);
+                settings.setUserId(userId);
+                settings.setFirebaseCloudMessagingAutoRegistrationEnabled(true);
+                Smooch.init(app, settings);
 
                 List<Message> listMsg = Smooch.getConversation().getMessages();
                 int unreadMsgCount = Smooch.getConversation().getUnreadCount();
@@ -745,12 +749,11 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
             jsonObj.put(ACTIVE_CHATS_STR, new JSONArray(activeChatList));
             jsonObj.put(INACTIVE_CHATS_STR, new JSONArray(inactiveChatList));
 
-            Log.d(TAG, "getConversationsList: "+jsonObj.toString());
             getConversationListPromise.resolve(jsonObj.toString());
 
         } catch (Exception e) {
             getConversationListPromise.reject(e.getMessage(), e.getMessage());
-            e.printStackTrace();
+            okkamiSdk.getLoggerModule().logE("" + e);
         }
     }
 
@@ -775,18 +778,26 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
      * @param openChatWindowPromise
      */
     @ReactMethod
-    public void openChatWindow(String smoochAppToken, String userId, String windowHexStringColor, String titleHexStringColor, Promise openChatWindowPromise) {
+    public void openChatWindow(String smoochAppToken, String userId, String windowHexStringColor,
+            String titleHexStringColor, Promise openChatWindowPromise) {
         try {
-            Smooch.init(app, smoochAppToken);
-            Intent chatWindow = new Intent(context, ConversationActivity.class);
+            Settings settings = new Settings(smoochAppToken);
+            settings.setUserId(userId);
+            settings.setFirebaseCloudMessagingAutoRegistrationEnabled(true);
+            Smooch.init(app, settings);
+
+            Intent chatWindow = new Intent();
+            ComponentName cmp = new ComponentName(getReactApplicationContext().getPackageName(),
+                    "com.okkami.android.app.OkkamiConversationActivity");
+            chatWindow.setComponent(cmp);
             chatWindow.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(chatWindow);
+
             openChatWindowPromise.resolve(true);
         } catch (Exception e){
             openChatWindowPromise.reject(e);
         }
     }
-
 
     /**
      * returns the number of unread message in a channel
@@ -798,7 +809,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     @ReactMethod
     public void getUnreadMessageCount(String smoochAppToken, String userId, Promise getUnreadMessageCountPromise){
         try {
-            Smooch.init(this.app, smoochAppToken);
+            Smooch.init(app, smoochAppToken);
             getUnreadMessageCountPromise.resolve(Smooch.getConversation().getUnreadCount());
         } catch (Exception e) {
             getUnreadMessageCountPromise.reject(e.getMessage(), e.getMessage());
@@ -825,5 +836,4 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
             logoutChatWindowPromise.reject(e.getMessage(), e.getMessage());
         }
     }
-
 }
