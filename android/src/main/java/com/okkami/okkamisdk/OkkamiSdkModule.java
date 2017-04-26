@@ -24,6 +24,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.linecorp.linesdk.auth.LineLoginApi;
 import com.linecorp.linesdk.auth.LineLoginResult;
@@ -55,19 +56,25 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.smooch.core.InitializationStatus;
 import io.smooch.core.Message;
+import io.smooch.core.Settings;
 import io.smooch.core.Smooch;
 import io.smooch.core.SmoochConnectionStatus;
+import io.smooch.core.User;
 import io.smooch.ui.ConversationActivity;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
@@ -114,10 +121,16 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
                     // Do something...
                     JSONObject jObj = new JSONObject();
                     try {
+                        String picUrl;
+                        if (result.getLineProfile() != null && result.getLineProfile().getPictureUrl() != null){
+                            picUrl = result.getLineProfile().getPictureUrl().toString();
+                        } else {
+                            picUrl = "";
+                        }
                         jObj.put("accessToken", accessToken);
                         jObj.put("user_id", result.getLineProfile().getUserId());
                         jObj.put("display_name", result.getLineProfile().getDisplayName());
-                        jObj.put("picture", result.getLineProfile().getPictureUrl().toString());
+                        jObj.put("picture", picUrl);
                     } catch (JSONException e) {
                         e.printStackTrace();
                         lineLoginPromise.reject("error", e.getMessage());
@@ -192,7 +205,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
             return;
         }
         this.lineLoginPromise = lineLoginPromise;
-        Intent loginIntent = LineLoginApi.getLoginIntent(this.context, "1511221881");
+        Intent loginIntent = LineLoginApi.getLoginIntent(this.context, "1508019538");
         getCurrentActivity().startActivityForResult(loginIntent, LINE_LOGIN_REQUEST_CODE);
     }
 
@@ -644,30 +657,34 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
      */
     @ReactMethod
     public void getConversationsList(ReadableArray smoochAllAppTokenArray, String userId, Promise getConversationListPromise) {
-//        Smooch.getConversation().sendMessage(new Message("Hello WWorld!"));
+
         try {
             final String ALL_CHAT_STR = "ALL_CHAT";
             final String OKKAMI_CHAT_STR = "OKKAMI_CHAT";
             final String ACTIVE_CHATS_STR = "ACTIVE_CHATS";
             final String INACTIVE_CHATS_STR = "INACTIVE_CHATS";
             JSONObject jsonObj = new JSONObject();
-//            JSONObject allChatJsonArray = new JSONObject();
             ArrayList<JSONObject> okkamiChatList = new ArrayList<>();
             ArrayList<JSONObject> activeChatList = new ArrayList<>();
             ArrayList<JSONObject> inactiveChatList = new ArrayList<>();
-//            ArrayList<JSONObject> allChatList = new ArrayList<>();
-
-//            SharedPreferences pref =
-//                    PreferenceManager.getDefaultSharedPreferences(this.context);
-//            String username = pref.getString(ALL_CHAT_STR, "n/a");
 
             for (int i = 0; i < smoochAllAppTokenArray.size(); i++) {
-                Smooch.init(this.app, smoochAllAppTokenArray.getString(i));
-                Smooch.login(userId, "");
-                Thread.sleep(1000);
+                Settings settings = new Settings(smoochAllAppTokenArray.getString(i));
+                settings.setUserId(userId);
+                Smooch.init(app, settings);
+                Smooch.login(userId, null);
+
+                // Optional for now
+                okkamiSdk.getDbModule().saveSmoochCredentials(Smooch.getSettings().getAppToken(),
+                        Smooch.getSettings().getUserId());
+
                 List<Message> listMsg = Smooch.getConversation().getMessages();
                 int unreadMsgCount = Smooch.getConversation().getUnreadCount();
-                if (listMsg.size() == 0 ) continue; // this smooch app token not start conversation yet
+
+                if (listMsg.size() == 0 ) {
+                    continue; // this smooch app token not start conversation yet
+                }
+
                 String iconUrl = "";
                 String channelName = "";
                 for (Message msg : listMsg) {
@@ -682,11 +699,38 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
                 String lastMsgText = lastMsg.getText();
                 Date epTime = lastMsg.getDate();
                 Log.d(TAG, "getConversationsList: " + listMsg.toString());
+                long different = (new Date()).getTime() - epTime.getTime();
+                long secondsInMilli = 1000;
+                long minutesInMilli = secondsInMilli * 60;
+                long hoursInMilli = minutesInMilli * 60;
+                long daysInMilli = hoursInMilli * 24;
 
+                long elapsedDays = different / daysInMilli;
+                different = different % daysInMilli;
+
+                long elapsedHours = different / hoursInMilli;
+                different = different % hoursInMilli;
+
+                long elapsedMinutes = different / minutesInMilli;
+                different = different % minutesInMilli;
+
+                long elapsedSeconds = different / secondsInMilli;
+
+                String epTimeString = "n/a";
+                if (elapsedDays == 1) epTimeString = elapsedDays + " Day";
+                else if (elapsedDays > 1) epTimeString = elapsedDays + "Days";
+                else if (elapsedHours > 0) epTimeString = elapsedHours + "Hours";
+                else if (elapsedMinutes > 0) epTimeString = elapsedMinutes + "Minutes";
+                else epTimeString = elapsedSeconds + "Seconds";
+
+                TimeZone tz = TimeZone.getTimeZone("UTC");
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                df.setTimeZone(tz);
+                String lastTimeAsISO = df.format(epTime);
 
                 JSONObject okkamiJsonObj = createConversationJsonObj(unreadMsgCount,
                         iconUrl, channelName,
-                        lastMsgText, epTime, smoochAllAppTokenArray.getString(i));
+                        lastMsgText, lastTimeAsISO, epTimeString, smoochAllAppTokenArray.getString(i));
 
                 if (i == 0) {
                     okkamiChatList.add(okkamiJsonObj);
@@ -695,18 +739,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
                 } else { // unactive chat
                     inactiveChatList.add(okkamiJsonObj);
                 }
-//                allChatList.add(okkamiJsonObj);
             }
-
-//            allChatJsonArray.put(ALL_CHAT_STR, new JSONArray(allChatJsonArray));
-//
-//            if (!username.equals("n/a")) {
-//
-//            } else { // create new preference for saving all chat data
-//                SharedPreferences.Editor edit = pref.edit();
-//                edit.putString(ALL_CHAT_STR, allChatJsonArray.toString());
-//                edit.commit();
-//            }
 
             jsonObj.put(OKKAMI_CHAT_STR, new JSONArray(okkamiChatList));
             jsonObj.put(ACTIVE_CHATS_STR, new JSONArray(activeChatList));
@@ -722,14 +755,14 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     }
 
     private static JSONObject createConversationJsonObj(int unreadMsgCount, String iconUrl,
-            String channelName, String lastMsgText, Date epTime, String smoochAppToken) throws JSONException {
+            String channelName, String lastMsgText, String lastTime, String epTime, String smoochAppToken) throws JSONException {
         JSONObject jsonObj = new JSONObject();
         jsonObj.put("unread_messages", unreadMsgCount);
         jsonObj.put("icon", iconUrl);
         jsonObj.put("channel_name", channelName);
         jsonObj.put("last_message", lastMsgText);
-        // TODO: 3/26/2017 AD update proper eplased time string
-        jsonObj.put("time_since_last_message", epTime.toString());
+        jsonObj.put("last_time", lastTime);
+        jsonObj.put("time_since_last_message", epTime);
         jsonObj.put("app_token", smoochAppToken);
         return jsonObj;
     }
@@ -745,8 +778,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     public void openChatWindow(String smoochAppToken, String userId, String windowHexStringColor, String titleHexStringColor, Promise openChatWindowPromise) {
         try {
             Smooch.init(app, smoochAppToken);
-         //   Smooch.login(userId, "");
-
             Intent chatWindow = new Intent(context, ConversationActivity.class);
             chatWindow.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(chatWindow);
