@@ -192,7 +192,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
             return;
         }
         this.lineLoginPromise = lineLoginPromise;
-        Intent loginIntent = LineLoginApi.getLoginIntent(this.context, "1508019538");
+        Intent loginIntent = LineLoginApi.getLoginIntent(this.context, "1511221881");
         getCurrentActivity().startActivityForResult(loginIntent, LINE_LOGIN_REQUEST_CODE);
     }
 
@@ -745,7 +745,8 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     public void openChatWindow(String smoochAppToken, String userId, String windowHexStringColor, String titleHexStringColor, Promise openChatWindowPromise) {
         try {
             Smooch.init(app, smoochAppToken);
-            Smooch.login(userId, "");
+         //   Smooch.login(userId, "");
+
             Intent chatWindow = new Intent(context, ConversationActivity.class);
             chatWindow.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(chatWindow);
