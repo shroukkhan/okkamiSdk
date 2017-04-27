@@ -790,6 +790,8 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
             ComponentName cmp = new ComponentName(getReactApplicationContext().getPackageName(),
                     "com.okkami.android.app.OkkamiConversationActivity");
             chatWindow.setComponent(cmp);
+            chatWindow.putExtra("CHAT_WINDOW_COLOR", windowHexStringColor);
+            chatWindow.putExtra("CHAT_WINDOW_TITLE_COLOR", titleHexStringColor);
             chatWindow.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(chatWindow);
 
