@@ -502,6 +502,24 @@ RCT_EXPORT_METHOD(isHubConnected
 /*-------------------------------------- Smooch   --------------------------------------------------*/
 
 
+
+
+RCT_EXPORT_METHOD(convertTime
+                  
+                  :(double) time
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSLog(@"HOHOHO");
+        NSString *jsonObj = [main convertTimeWithNumber:time];
+        resolve(jsonObj);
+        //NSString *jsonObj = [smooch getConversationsListWithArray:smoochAppToken userID: userID];
+        //resolve(jsonObj);
+    });//    resolve([self.smooch getConversationsList]);
+}
 RCT_EXPORT_METHOD(getConversationsList
                   
                   :(NSArray*) smoochAppToken
@@ -512,12 +530,15 @@ RCT_EXPORT_METHOD(getConversationsList
 {
     
     
-    OkkamiSmoochChat *smooch = [OkkamiSmoochChat newInstanceWithAppToken:smoochAppToken[0]];
-    self.smooch = smooch;
+    if(!self.smooch){
+        OkkamiSmoochChat *smooch = [OkkamiSmoochChat newInstanceWithAppToken:smoochAppToken[0]];
+        self.smooch = smooch;
+    }
     dispatch_async(dispatch_get_main_queue(), ^{
         NSString *jsonObj = [self.smooch getConversationsListWithArray:smoochAppToken userID: userID];
-        //NSString *jsonObj = [NSString stringWithFormat:@"%@", dictMap];
         resolve(jsonObj);
+        //NSString *jsonObj = [smooch getConversationsListWithArray:smoochAppToken userID: userID];
+        //resolve(jsonObj);
     });//    resolve([self.smooch getConversationsList]);
 }
 
@@ -579,6 +600,17 @@ RCT_EXPORT_METHOD(logoutChatWindow
 }
 
 
+RCT_EXPORT_METHOD(loginChatWindow
+                  
+                  :(NSString *) userID
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    OkkamiSmoochChat *smooch = [OkkamiSmoochChat newInstanceWithAppToken:@"3afzpr4hogs8z5znmomda0ko5"];
+    self.smooch = smooch;
+    [self.smooch smoochLoginWithUser:userID];
+}
 
 /*-------------------------------------- Utility   --------------------------------------------------*/
 

@@ -139,8 +139,17 @@ class OkkamiSdk {
     return await OkkamiSdkManager.logoutChatWindow();
   }
 
+  /**
+   * Login the current chat window
+   * @returns {Promise}
+   */
+  async loginChatWindow(userID){
+    return await OkkamiSdkManager.loginChatWindow(userID);
+  }
 
-
+  async convertTime(time){
+    return await OkkamiSdkManager.convertTime(time);
+  }
 
 
 
