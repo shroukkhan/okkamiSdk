@@ -304,8 +304,19 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
                             @Override
                             public void onNext(Response<ResponseBody> value) {
                                 try {
-                                    String x = value.body().string();
-                                    downloadFromCorePromise.resolve(x);
+                                    if (value.raw().code() >= 400 || value.body() == null){
+                                        if (value.raw().message().contains("Not Found") && value.raw().code() == 404
+                                                && value.raw().request().url().toString().contains("messages?before")) {
+                                            String msg = "{\"error\":\"conversation not found\","
+                                                    + "\"code\":\"404\"}";
+                                            downloadFromCorePromise.resolve(msg);
+                                        } else {
+                                            downloadFromCorePromise.reject(value.raw().code()+"",value.raw().message());
+                                        }
+                                    } else {
+                                        String x = value.body().string();
+                                        downloadFromCorePromise.resolve(x);
+                                    }
                                 } catch (Exception e) {
                                     downloadFromCorePromise.reject(e);
                                     // e.printStackTrace();
