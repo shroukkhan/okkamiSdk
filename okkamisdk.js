@@ -20,7 +20,7 @@ class OkkamiSdk {
   executeCoreRESTCall (endPoint,getPost,payLoad,secret,token,force) {
 
     console.log("Attemptng to cexecuteCoreRESTCall with endpoint : " , endPoint , " method :",
-      getPost, " with payload : " , payLoad , " using secret : " , secret ,
+      getPost, " using secret : " , secret ,
       " and token : " , token , " forcing : ", force)
 
     return OkkamiSdkManager.executeCoreRESTCall(endPoint,getPost,payLoad,secret,token,force);

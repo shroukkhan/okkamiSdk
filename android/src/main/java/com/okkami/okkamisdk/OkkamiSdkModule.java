@@ -789,7 +789,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
      * @param openChatWindowPromise
      */
     @ReactMethod
-    public void openChatWindow(String smoochAppToken, String userId, String windowHexStringColor,
+    public void openChatWindow(String smoochAppToken, String userId, String windowTitle,String windowHexStringColor, //added by khan..as i can not test..it crashes!
             String titleHexStringColor, Promise openChatWindowPromise) {
         try {
             Settings settings = new Settings(smoochAppToken);
@@ -803,6 +803,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
             chatWindow.setComponent(cmp);
             chatWindow.putExtra("CHAT_WINDOW_COLOR", windowHexStringColor);
             chatWindow.putExtra("CHAT_WINDOW_TITLE_COLOR", titleHexStringColor);
+            chatWindow.putExtra("CHAT_WINDOW_TITLE", windowTitle);
             chatWindow.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(chatWindow);
 
