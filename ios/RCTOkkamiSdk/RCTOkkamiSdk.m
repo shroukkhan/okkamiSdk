@@ -547,6 +547,7 @@ RCT_EXPORT_METHOD(openChatWindow
                   
                   :(NSString *) smoochAppToken
                   :(NSString *) userID
+                  :(NSString *) hotelName
                   :(NSString*) color
                   :(NSString*) textColor
                   
