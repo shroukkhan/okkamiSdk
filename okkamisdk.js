@@ -115,10 +115,10 @@ class OkkamiSdk {
    * @param smoochAppToken
    * @returns {Promise.<void>}
    */
-  async openChatWindow(smoochAppToken, userID, color, textColor) {
+  async openChatWindow(smoochAppToken, userID, hotelName, color, textColor) {
     console.log("smoochAppToken: "+smoochAppToken);
     console.log("userID: "+userID);
-    return await OkkamiSdkManager.openChatWindow(smoochAppToken, userID, color, textColor);
+    return await OkkamiSdkManager.openChatWindow(smoochAppToken, userID, hotelName, color, textColor);
   }
 
   /**
