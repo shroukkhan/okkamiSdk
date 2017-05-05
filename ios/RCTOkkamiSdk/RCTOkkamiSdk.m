@@ -4,6 +4,7 @@
 #import "RCTBundleURLProvider.h"
 #import "RCTRootView.h"
 #import <CoreLocation/CoreLocation.h>
+
 //#import <RCTOkkamiSdkImplementation/RCTOkkamiSdkImplementation-Swift.h>
 
 @implementation OkkamiSdk
@@ -613,6 +614,73 @@ RCT_EXPORT_METHOD(loginChatWindow
     [self.smooch smoochLoginWithUser:userID];
 }
 
+
+
+RCT_EXPORT_METHOD(setFacebookEnvironment
+                  
+                  :(NSDictionary *) data
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    
+    NSString *newPath = [[NSBundle mainBundle] pathForResource:@"Info" ofType:@"plist"];
+    NSLog(@"PATH %@", newPath);
+    NSMutableDictionary *savedStock = [[NSMutableDictionary alloc] initWithContentsOfFile: newPath];
+
+    //load from savedStock example int value
+    NSString* value;
+    value = [savedStock objectForKey:@"FacebookAppID"];
+    NSLog(@"VALUE %@", value);
+    
+    NSMutableDictionary *newData = [[NSMutableDictionary alloc] initWithContentsOfFile: newPath];
+    NSMutableArray* newArray = [NSMutableArray array];
+    [newData setObject:data[@"fbAppId"] forKey:@"FacebookAppID"];
+
+    NSMutableArray* oldArray;
+    oldArray = [savedStock objectForKey:@"CFBundleURLTypes"];
+    
+    newArray[0] = oldArray[0];
+    newArray[1] = [NSMutableDictionary dictionary];
+    newArray[1][@"CFBundleURLSchemes"] = [NSMutableArray array];
+    newArray[1][@"CFBundleURLSchemes"][0] = [NSString stringWithFormat:@"fb%@", data[@"fbAppId"]];
+    
+    [newData setObject:newArray forKey:@"CFBundleURLTypes"];
+    [newData writeToFile: newPath atomically:YES];
+    
+    NSString* value2;
+    NSMutableDictionary *savedStock2 = [[NSMutableDictionary alloc] initWithContentsOfFile: newPath];
+    value2 = [savedStock2 objectForKey:@"FacebookAppID"];
+    NSLog(@"VALUE %@", value2);
+}
+
+RCT_EXPORT_METHOD(setLineEnvironment
+                  
+                  :(NSDictionary *) data
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    NSString *newPath = [[NSBundle mainBundle] pathForResource:@"Info" ofType:@"plist"];
+    NSLog(@"PATH %@", newPath);
+    NSMutableDictionary *savedStock = [[NSMutableDictionary alloc] initWithContentsOfFile: newPath];
+    
+    NSMutableDictionary* value;
+    value = [savedStock objectForKey:@"LineSDKConfig"];
+    NSLog(@"VALUE %@", value[@"ChannelID"]);
+    
+    NSMutableDictionary *newData = [[NSMutableDictionary alloc] initWithContentsOfFile: newPath];
+    NSMutableDictionary* newValue = [NSMutableDictionary dictionaryWithObjectsAndKeys:data[@"lineAppId"],@"ChannelID", nil];
+    
+    [newData setObject:newValue forKey:@"LineSDKConfig"];
+    [newData writeToFile: newPath atomically:YES];
+    
+    NSMutableDictionary* value2;
+    NSMutableDictionary *savedStock2 = [[NSMutableDictionary alloc] initWithContentsOfFile: newPath];
+    value2 = [savedStock2 objectForKey:@"LineSDKConfig"];
+    NSLog(@"VALUE %@", value2[@"ChannelID"]);
+    
+}
 /*-------------------------------------- Utility   --------------------------------------------------*/
 
 
