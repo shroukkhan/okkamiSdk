@@ -42,6 +42,14 @@ class OkkamiSdk {
     return OkkamiSdkManager.sendCommandToHub(command);
   }
 
+  setFacebookEnvironment(data){
+    return OkkamiSdkManager.setFacebookEnvironment(data);
+  }
+
+  setLineEnvironment(data){
+    return OkkamiSdkManager.setLineEnvironment(data);
+  }
+
   async isHubLoggedIn() {
     return await OkkamiSdkManager.isHubLoggedIn();
   }
