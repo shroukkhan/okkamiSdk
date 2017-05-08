@@ -652,6 +652,11 @@ RCT_EXPORT_METHOD(setFacebookEnvironment
     NSMutableDictionary *savedStock2 = [[NSMutableDictionary alloc] initWithContentsOfFile: newPath];
     value2 = [savedStock2 objectForKey:@"FacebookAppID"];
     NSLog(@"VALUE %@", value2);
+    
+    //set app id using fbsdk
+    [FBSDKSettings setAppID:data[@"fbAppId"]];
+    [FBSDKSettings setAppURLSchemeSuffix:[NSString stringWithFormat:@"fb%@", data[@"fbAppId"]]];
+    
 }
 
 RCT_EXPORT_METHOD(setLineEnvironment
