@@ -14,6 +14,8 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.facebook.FacebookSdk;
+import com.facebook.react.ReactApplication;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.BaseActivityEventListener;
@@ -90,6 +92,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     private Application app;
     private Context context;
     private static final String TAG = "OKKAMISDK";
+    private String lineLoginChannelId = "1499319131";
     private static final int LINE_LOGIN_REQUEST_CODE = 10;
     private SDK okkamiSdk;
     private Promise lineLoginPromise = null;
@@ -140,7 +143,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
                         jObj.put("picture", picUrl);
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        lineLoginPromise.reject("error", e.getMessage());
+                        lineLoginPromise.reject("error", "The login was successful. but something happened when constructed json object.");
                     }
 
                     lineLoginPromise.resolve(jObj.toString());
@@ -148,7 +151,16 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
                 case CANCEL:
                     // Login was cancelled by the user
                     // Do something...
-                    lineLoginPromise.reject("error", "error");
+                    lineLoginPromise.reject("error", "The login failed because the user canceled the login process.");
+                    break;
+                case SERVER_ERROR:
+                    lineLoginPromise.reject("error", "The login failed due to a server-side error.");
+                    break;
+                case NETWORK_ERROR:
+                    lineLoginPromise.reject("error", "The login failed because the SDK could not connect to the LINE Login servers.");
+                    break;
+                case INTERNAL_ERROR:
+                    lineLoginPromise.reject("error", "The login failed due to an unknown error.");
                     break;
                 default:
                     // Login was cancelled by the user
@@ -204,18 +216,19 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         return false;
     }
 
-
     @ReactMethod
     public void setFacebookEnvironment(ReadableMap fbConfig) {
         String fbAppId = fbConfig.getString("fbAppId");
-
+        if (FacebookSdk.isInitialized() && FacebookSdk.getApplicationId().equals(fbAppId))
+            return;
+        FacebookSdk.setApplicationId(fbAppId);
+        FacebookSdk.sdkInitialize(this.context);
     }
 
-    private String _lineId = "1508019538";
 
     @ReactMethod
     public void setLineEnvironment(ReadableMap lineConfig) {
-        this._lineId = lineConfig.getString("lineAppId");
+        this.lineLoginChannelId = lineConfig.getString("lineAppId");
     }
 
 
@@ -229,7 +242,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
             return;
         }
         this.lineLoginPromise = lineLoginPromise;
-        Intent loginIntent = LineLoginApi.getLoginIntent(this.context, this._lineId);
+        Intent loginIntent = LineLoginApi.getLoginIntent(this.context, this.lineLoginChannelId);
         getCurrentActivity().startActivityForResult(loginIntent, LINE_LOGIN_REQUEST_CODE);
     }
 

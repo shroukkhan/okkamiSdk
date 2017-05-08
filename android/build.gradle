@@ -21,6 +21,7 @@ android {
 buildscript {
     repositories {
         jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.1'
@@ -56,4 +57,6 @@ dependencies {
     // Line SDK
     compile(name:'line-sdk-4.0.0', ext:'aar')
     compile 'com.android.support:customtabs:23.2.1'
+
+    compile 'com.facebook.android:facebook-android-sdk:4.+'
 }
