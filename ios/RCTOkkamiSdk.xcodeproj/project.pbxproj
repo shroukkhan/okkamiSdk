@@ -10,6 +10,7 @@
 		5D72D2EC1C16249000E22EC1 /* RCTOkkamiSdk.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5D72D2EB1C16249000E22EC1 /* RCTOkkamiSdk.h */; };
 		5D72D2EE1C16249000E22EC1 /* RCTOkkamiSdk.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D72D2ED1C16249000E22EC1 /* RCTOkkamiSdk.m */; };
 		FA3DC2351E6D954900866C11 /* LineSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA3DC2341E6D954900866C11 /* LineSDK.framework */; };
+		FA7FD0A41EC09CAA00C7D8B9 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7FD0A31EC09CAA00C7D8B9 /* FBSDKCoreKit.framework */; };
 		FAF109061E48E2A0000B1E84 /* RCTOkkamiSdkImplementation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAF109051E48E2A0000B1E84 /* RCTOkkamiSdkImplementation.framework */; };
 		FAF109081E48E2B9000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAF109071E48E2B9000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework */; };
 /* End PBXBuildFile section */
@@ -33,6 +34,7 @@
 		5D72D2ED1C16249000E22EC1 /* RCTOkkamiSdk.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTOkkamiSdk.m; sourceTree = "<group>"; };
 		FA1C0D621E486F0200304CEB /* RCTOkkamiSdkImplementation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RCTOkkamiSdkImplementation.framework; path = "../../../../../Library/Developer/Xcode/DerivedData/OkkamiSdkTest-adkatmurlkonkheuvhkuieikzepk/Build/Products/Debug-iphonesimulator/RCTOkkamiSdkImplementation.framework"; sourceTree = "<group>"; };
 		FA3DC2341E6D954900866C11 /* LineSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = LineSDK.framework; sourceTree = "<group>"; };
+		FA7FD0A31EC09CAA00C7D8B9 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		FAAEFFC61EBC43E500914A4E /* libRCTFBSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRCTFBSDK.a; path = "../../../../../../../Library/Developer/Xcode/DerivedData/OKKAMI-gcezqwwiawdunwhjuddntnnkhtld/Build/Products/Debug-iphonesimulator/libRCTFBSDK.a"; sourceTree = "<group>"; };
 		FAC9F8F31E14F38100EEFC1B /* RCTOkkamiSdkImplementation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RCTOkkamiSdkImplementation.framework; path = "RCTOkkamiSdkImplementation/build/Debug-iphoneos/RCTOkkamiSdkImplementation.framework"; sourceTree = "<group>"; };
 		FAF109051E48E2A0000B1E84 /* RCTOkkamiSdkImplementation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RCTOkkamiSdkImplementation.framework; path = ../../../../../Desktop/RCTOkkamiSdkImplementation.framework; sourceTree = "<group>"; };
@@ -45,6 +47,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FAF109081E48E2B9000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework in Frameworks */,
+				FA7FD0A41EC09CAA00C7D8B9 /* FBSDKCoreKit.framework in Frameworks */,
 				FAF109061E48E2A0000B1E84 /* RCTOkkamiSdkImplementation.framework in Frameworks */,
 				FA3DC2351E6D954900866C11 /* LineSDK.framework in Frameworks */,
 			);
@@ -82,6 +85,7 @@
 		FAF229A71E141BE800F3C9C1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FA7FD0A31EC09CAA00C7D8B9 /* FBSDKCoreKit.framework */,
 				FAAEFFC61EBC43E500914A4E /* libRCTFBSDK.a */,
 				FA3DC2341E6D954900866C11 /* LineSDK.framework */,
 				FAF109071E48E2B9000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework */,
