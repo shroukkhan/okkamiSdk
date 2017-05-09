@@ -4,4 +4,6 @@
     <string name="Smooch_welcome">Feel free to leave us a message about anything that\'s on your mind.</string>
     <string name="Smooch_messageHint">Type a message…</string>
     <string name="Smooch_errorCouldNotConnect">Connecting...</string>
+
+    <string name="line_login_channel_id">1499319131</string>
 </resources>

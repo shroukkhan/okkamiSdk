@@ -178,6 +178,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         okkamiSdk = new SDK().init(reactContext, "https://app.develop.okkami.com"); // TODO : how do we pass the URL dynamically from react??
         initMockData();
         this.app = app;
+        this.lineLoginChannelId = reactContext.getString(R.string.line_login_channel_id);
     }
 
     /**
