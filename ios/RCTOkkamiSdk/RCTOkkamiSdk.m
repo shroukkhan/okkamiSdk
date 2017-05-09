@@ -655,7 +655,7 @@ RCT_EXPORT_METHOD(setFacebookEnvironment
     
     //set app id using fbsdk
     [FBSDKSettings setAppID:data[@"fbAppId"]];
-    [FBSDKSettings setAppURLSchemeSuffix:[NSString stringWithFormat:@"fb%@", data[@"fbAppId"]]];
+    //[FBSDKSettings setAppURLSchemeSuffix:[NSString stringWithFormat:@"fb%@", data[@"fbAppId"]]];
     
 }
 
