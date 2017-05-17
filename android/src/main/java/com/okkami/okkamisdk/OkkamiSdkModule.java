@@ -33,6 +33,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.linecorp.linesdk.auth.LineLoginApi;
 import com.linecorp.linesdk.auth.LineLoginResult;
+import com.linecorp.linesdk.auth.internal.LineAuthenticationActivity;
 import com.okkami.android.sdk.SDK;
 import com.okkami.android.sdk.config.MockConfigModule;
 import com.okkami.android.sdk.domain.legacy.NonceManagerModule;
@@ -64,6 +65,7 @@ import java.security.cert.CertificateException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -178,6 +180,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         okkamiSdk = new SDK().init(reactContext, "https://app.develop.okkami.com"); // TODO : how do we pass the URL dynamically from react??
         initMockData();
         this.app = app;
+        this.lineLoginChannelId = reactContext.getString(R.string.line_login_channel_id);
     }
 
     /**
@@ -242,7 +245,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
             return;
         }
         this.lineLoginPromise = lineLoginPromise;
-        Intent loginIntent = LineLoginApi.getLoginIntent(this.context, this.lineLoginChannelId);
+        Intent loginIntent = LineLoginAPI.getLoginIntent(this.context, this.lineLoginChannelId);
         getCurrentActivity().startActivityForResult(loginIntent, LINE_LOGIN_REQUEST_CODE);
     }
 
