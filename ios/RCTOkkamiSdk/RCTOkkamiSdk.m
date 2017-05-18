@@ -9,6 +9,10 @@
 
 @implementation OkkamiSdk
 
+// define macro
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+#define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
+
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE();
@@ -24,6 +28,9 @@ RCT_EXPORT_MODULE();
         self.locationManager.distanceFilter = kCLDistanceFilterNone;
         [self.locationManager startUpdatingLocation];
         [self.locationManager requestWhenInUseAuthorization];
+        //UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+        //center.delegate = self;
+        
         //[self.locationManager requestAlwaysAuthorization];
         
         /*if ([CLLocationManager locationServicesEnabled]){
@@ -47,6 +54,55 @@ RCT_EXPORT_MODULE();
     }
     return self;
 }
+
+#pragma mark Notif Delegate
+
+/*-(void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void
+                                                                                                                               (^)(UIBackgroundFetchResult))completionHandler
+{
+    // iOS 10 will handle notifications through other methods
+    
+    if( SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO( @"10.0" ) )
+    {
+        NSLog( @"iOS version >= 10. Let NotificationCenter handle this one." );
+        // set a member variable to tell the new delegate that this is background
+        return;
+    }
+    
+    NSLog( @"HANDLE PUSH, didReceiveRemoteNotification: %@", userInfo );
+    [self.bridge.eventDispatcher sendAppEventWithName:@"notifications" body:nil];
+    
+    // custom code to handle notification content
+    
+    if( [UIApplication sharedApplication].applicationState == UIApplicationStateInactive )
+    {
+        NSLog( @"INACTIVE" );
+        completionHandler( UIBackgroundFetchResultNewData );
+    }
+    else if( [UIApplication sharedApplication].applicationState == UIApplicationStateBackground )
+    {
+        NSLog( @"BACKGROUND" );
+        completionHandler( UIBackgroundFetchResultNewData );
+    }
+    else
+    {
+        NSLog( @"FOREGROUND" );
+        completionHandler( UIBackgroundFetchResultNewData );
+    }
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+       willPresentNotification:(UNNotification *)notification
+         withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
+{
+    NSLog( @"Handle push from foreground" );
+    
+    NSLog(@"%@", notification.request.content.userInfo);
+    [self.bridge.eventDispatcher sendAppEventWithName:@"notifications" body:nil];
+    
+    completionHandler(UNNotificationPresentationOptionSound);
+}*/
+
 #pragma mark LineSDKLoginDelegate
 
 - (void)didLogin:(LineSDKLogin *)login
@@ -551,14 +607,16 @@ RCT_EXPORT_METHOD(openChatWindow
                   :(NSString *) hotelName
                   :(NSString*) color
                   :(NSString*) textColor
-                  
+                  :(BOOL) rgbColor
+                  :(BOOL) rgbTextColor
+                                    
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
     OkkamiSmoochChat *smooch = [OkkamiSmoochChat newInstanceWithAppToken:smoochAppToken];
     self.smooch = smooch;
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.smooch smoochChatWithUser:userID color: color textColor: textColor];
+        [self.smooch smoochChatWithUser:userID color: color textColor: textColor rgbColor: rgbColor rgbTextColor: rgbTextColor];
         //[UIApplication sharedApplication].applicationIconBadgeNumber = [self.smooch getUnreadMessageCount];
     });
     /*if (self.smooch == nil) {

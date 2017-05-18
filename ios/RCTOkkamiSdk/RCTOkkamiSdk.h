@@ -1,11 +1,12 @@
 #import "RCTBridge.h"
+#import <UserNotifications/UserNotifications.h>
 #import <LineSDK/LineSDK.h>
 #import "RCTBridgeModule.h"
 #import <CoreLocation/CoreLocation.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 @import RCTokkamiiossdk;
 
-@interface OkkamiSdk : NSObject <RCTBridgeModule, LineSDKLoginDelegate, CLLocationManagerDelegate>
+@interface OkkamiSdk : NSObject <RCTBridgeModule, LineSDKLoginDelegate, CLLocationManagerDelegate,UNUserNotificationCenterDelegate, UIApplicationDelegate>
 @property (nonatomic, copy)NSString * accessToken;
 @property (nonatomic, copy)NSString * userId;
 @property (nonatomic, copy)NSString * displayName;
