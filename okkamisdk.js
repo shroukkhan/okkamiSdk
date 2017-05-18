@@ -129,35 +129,44 @@ class OkkamiSdk {
     console.log("userID: "+userID);
     var newColor = color
     var newTextColor = textColor
-    if(color != ""){
-      if(!color.includes("#")){
-        var colorsOnly = color.substring(color.indexOf('(') + 1, color.lastIndexOf(')')).split(/,\s*/)
-        var red = parseFloat(colorsOnly[0])
-        var green = parseFloat(colorsOnly[1])
-        var blue = parseFloat(colorsOnly[2])
-        var opacity = parseFloat(colorsOnly[3])
-
-        console.log("r g b a: ",red,green,blue,opacity);
-
-        newColor = convertRgbaToHex(red, green, blue, opacity)
-        newColor = newColor.substring(0,6)
-      }
+    var rgbColor = false
+    var rgbTextColor = false
+    if(!color.includes("#")){
+      rgbColor = true
     }
-    if(textColor != ""){
-      if(!textColor.includes("#")){
-        var colorsOnly = textColor.substring(textColor.indexOf('(') + 1, textColor.lastIndexOf(')')).split(/,\s*/)
-        var red = colorsOnly[0]
-        var green = colorsOnly[1]
-        var blue = colorsOnly[2]
-        var opacity = colorsOnly[3]
-        newTextColor = convertRgbaToHex(red, green, blue, opacity)
-        newTextColor = newTextColor.substring(0,6)
-        console.log("r g b a: ",red,green,blue,opacity);
-      }
+    if(!textColor.includes("#")){
+      rgbTextColor = true
     }
-    console.log("newColor: "+newColor);
-    console.log("newTextColor: "+newTextColor);
-    return await OkkamiSdkManager.openChatWindow(smoochAppToken, userID, hotelName, newColor, newTextColor);
+
+    // if(color != ""){
+    //   if(!color.includes("#")){
+    //     var colorsOnly = color.substring(color.indexOf('(') + 1, color.lastIndexOf(')')).split(/,\s*/)
+    //     var red = parseFloat(colorsOnly[0])
+    //     var green = parseFloat(colorsOnly[1])
+    //     var blue = parseFloat(colorsOnly[2])
+    //     var opacity = parseFloat(colorsOnly[3])
+    //
+    //     console.log("r g b a: ",red,green,blue,opacity);
+    //
+    //     newColor = convertRgbaToHex(red, green, blue, opacity)
+    //     newColor = newColor.substring(0,6)
+    //   }
+    // }
+    // if(textColor != ""){
+    //   if(!textColor.includes("#")){
+    //     var colorsOnly = textColor.substring(textColor.indexOf('(') + 1, textColor.lastIndexOf(')')).split(/,\s*/)
+    //     var red = colorsOnly[0]
+    //     var green = colorsOnly[1]
+    //     var blue = colorsOnly[2]
+    //     var opacity = colorsOnly[3]
+    //     newTextColor = convertRgbaToHex(red, green, blue, opacity)
+    //     newTextColor = newTextColor.substring(0,6)
+    //     console.log("r g b a: ",red,green,blue,opacity);
+    //   }
+    // }
+    //console.log("newColor: "+newColor);
+    //console.log("newTextColor: "+newTextColor);
+    return await OkkamiSdkManager.openChatWindow(smoochAppToken, userID, hotelName, newColor, newTextColor, rgbColor, rgbTextColor);
   }
 
   /**
