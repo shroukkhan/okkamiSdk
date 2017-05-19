@@ -191,8 +191,8 @@ class OkkamiSdk {
    * Login the current chat window
    * @returns {Promise}
    */
-  async loginChatWindow(userID){
-    return await OkkamiSdkManager.loginChatWindow(userID);
+  async loginChatWindow(userID, appToken){
+    return await OkkamiSdkManager.loginChatWindow(userID, appToken);
   }
 
   async convertTime(time){

@@ -615,6 +615,9 @@ RCT_EXPORT_METHOD(openChatWindow
 {
     OkkamiSmoochChat *smooch = [OkkamiSmoochChat newInstanceWithAppToken:smoochAppToken];
     self.smooch = smooch;
+    NSNotificationCenter *defaultNotif = [NSNotificationCenter defaultCenter];
+    [defaultNotif addObserver:self selector:@selector(listenerOkkami:) name:self.smooch.notificationName object:nil];
+    [self.smooch addNotifWithNotif: defaultNotif];
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.smooch smoochChatWithUser:userID color: color textColor: textColor rgbColor: rgbColor rgbTextColor: rgbTextColor];
         //[UIApplication sharedApplication].applicationIconBadgeNumber = [self.smooch getUnreadMessageCount];
@@ -663,12 +666,16 @@ RCT_EXPORT_METHOD(logoutChatWindow
 RCT_EXPORT_METHOD(loginChatWindow
                   
                   :(NSString *) userID
+                  :(NSString *) appToken
                   
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    OkkamiSmoochChat *smooch = [OkkamiSmoochChat newInstanceWithAppToken:@"3afzpr4hogs8z5znmomda0ko5"];
+    OkkamiSmoochChat *smooch = [OkkamiSmoochChat newInstanceWithAppToken:appToken];
     self.smooch = smooch;
+    NSNotificationCenter *defaultNotif = [NSNotificationCenter defaultCenter];
+    [defaultNotif addObserver:self selector:@selector(listenerOkkami:) name:self.smooch.notificationName object:nil];
+    [self.smooch addNotifWithNotif: defaultNotif];
     [self.smooch smoochLoginWithUser:userID];
 }
 
