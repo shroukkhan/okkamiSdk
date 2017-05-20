@@ -5,8 +5,10 @@ import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -54,7 +56,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     private final NonceManagerModule nonce = new NonceManagerModule();
     private final CommandSerializerModule cmdSerializer = new CommandSerializerModule();
     private final NumberFormatterModule numberFormatter = new NumberFormatterModule();
-    private Application app;
+    private Application mApp;
     private Context context;
     private String lineLoginChannelId = "1499319131";
     private SDK okkamiSdk;
@@ -132,9 +134,9 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         this.context = reactContext;
         Log.d(TAG, "OkkamiSdkModule: " + app);
         reactContext.addActivityEventListener(mActivityEventListener);
-        okkamiSdk = new SDK().init(reactContext, "https://app.develop.okkami.com"); // TODO : how do we pass the URL dynamically from react??
+        okkamiSdk = new SDK().init(reactContext, "https://mApp.develop.okkami.com"); // TODO : how do we pass the URL dynamically from react??
         initMockData();
-        this.app = app;
+        mApp = app;
         this.lineLoginChannelId = reactContext.getString(R.string.line_login_channel_id);
     }
 
@@ -206,8 +208,8 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     //      also causing compilation to fail on android because SDK does not have them .
 
 //    /**
-//     * Set new the Smooch app token to Okkami SDK for switching channel to let user talk to different hotels
-//     * @param appToken - an app token provided by Smooch
+//     * Set new the Smooch mApp token to Okkami SDK for switching channel to let user talk to different hotels
+//     * @param appToken - an mApp token provided by Smooch
 //     */
 //    @ReactMethod
 //     public void setSmoochAppToken(String appToken){
@@ -685,13 +687,13 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
                 Settings settings = new Settings(appToken);
                 settings.setUserId(userId);
                 Smooch.getSettings().setFirebaseCloudMessagingAutoRegistrationEnabled(false);
-                Smooch.init(app, settings);
+                Smooch.init(mApp, settings);
 
                 List<Message> listMsg = Smooch.getConversation().getMessages();
                 int unreadMsgCount = Smooch.getConversation().getUnreadCount();
 
                 if (listMsg.size() == 0) {
-                    continue; // this smooch app token not start conversation yet
+                    continue; // this smooch mApp token not start conversation yet
                 }
 
                 String iconUrl = "";
@@ -781,7 +783,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         try {
             Settings settings = new Settings(smoochAppToken);
             settings.setUserId(userId);
-            Smooch.init(app, settings);
+            Smooch.init(mApp, settings);
 
             Intent chatWindow = new Intent();
             ComponentName cmp = new ComponentName(getReactApplicationContext().getPackageName(),
@@ -798,6 +800,29 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         }
     }
 
+    // React native calling as looping with different appTokens
+    @ReactMethod
+    public void loginChatWindow(String userId, String appToken) {
+        Settings settings = new Settings(appToken);
+        settings.setUserId(userId);
+        Smooch.init(mApp, settings);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mApp);
+        prefs.edit().putString("USER_ID", userId);
+        prefs.edit().commit();
+
+        if (!hasRunOnce) {
+            startPushNotiInitSignal();
+        }
+    }
+
+    private boolean hasRunOnce;
+    private void startPushNotiInitSignal() {
+        hasRunOnce = true;
+        Intent signal = new Intent("SHOULD_BEGIN_INIT_NOTIFICATION");
+        mApp.sendBroadcast(signal);
+    }
+
     /**
      * returns the number of unread message in a channel
      * getUnreadMessageCountPromise.resolve(Int) on success
@@ -809,7 +834,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     @ReactMethod
     public void getUnreadMessageCount(String smoochAppToken, String userId, Promise getUnreadMessageCountPromise) {
         try {
-            Smooch.init(app, smoochAppToken);
+            Smooch.init(mApp, smoochAppToken);
             getUnreadMessageCountPromise.resolve(Smooch.getConversation().getUnreadCount());
         } catch (Exception e) {
             getUnreadMessageCountPromise.reject(e.getMessage(), e.getMessage());
