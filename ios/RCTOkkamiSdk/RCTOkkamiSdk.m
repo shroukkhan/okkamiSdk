@@ -751,6 +751,20 @@ RCT_EXPORT_METHOD(setLineEnvironment
     NSLog(@"VALUE %@", value2[@"ChannelID"]);
     
 }
+
+
+
+
+RCT_EXPORT_METHOD(setUserId
+                  
+                  :(NSString *) userId
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    
+}
+
 /*-------------------------------------- Utility   --------------------------------------------------*/
 
 

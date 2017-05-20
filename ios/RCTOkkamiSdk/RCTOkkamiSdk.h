@@ -4,6 +4,7 @@
 #import "RCTBridgeModule.h"
 #import <CoreLocation/CoreLocation.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
+
 @import RCTokkamiiossdk;
 
 @interface OkkamiSdk : NSObject <RCTBridgeModule, LineSDKLoginDelegate, CLLocationManagerDelegate,UNUserNotificationCenterDelegate, UIApplicationDelegate>

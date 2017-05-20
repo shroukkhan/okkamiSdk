@@ -51,6 +51,9 @@ class OkkamiSdk {
     return OkkamiSdkManager.setLineEnvironment(data);
   }
 
+  setUserId(userId){
+    return OkkamiSdkManager.setUserId(userId);
+  }
   async isHubLoggedIn() {
     return await OkkamiSdkManager.isHubLoggedIn();
   }
@@ -198,6 +201,7 @@ class OkkamiSdk {
   async convertTime(time){
     return await OkkamiSdkManager.convertTime(time);
   }
+
 
 
 
