@@ -8,38 +8,19 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.facebook.FacebookSdk;
-import com.facebook.react.ReactApplication;
-import com.facebook.react.bridge.ActivityEventListener;
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.BaseActivityEventListener;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.Promise;
-
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.linecorp.linesdk.auth.LineLoginApi;
 import com.linecorp.linesdk.auth.LineLoginResult;
-import com.linecorp.linesdk.auth.internal.LineAuthenticationActivity;
 import com.okkami.android.sdk.SDK;
 import com.okkami.android.sdk.config.MockConfigModule;
 import com.okkami.android.sdk.domain.legacy.NonceManagerModule;
 import com.okkami.android.sdk.domain.legacy.NumberFormatterModule;
-import com.okkami.android.sdk.domain.response.ConnectResponse;
-import com.okkami.android.sdk.domain.response.PreConnectResponse;
 import com.okkami.android.sdk.helper.CommonUtil;
 import com.okkami.android.sdk.hub.Command;
 import com.okkami.android.sdk.hub.CommandFactoryModule;
@@ -49,64 +30,37 @@ import com.okkami.android.sdk.model.BaseAuthentication;
 import com.okkami.android.sdk.model.CompanyAuth;
 import com.okkami.android.sdk.model.DeviceAuth;
 import com.okkami.android.sdk.module.HubModule;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.net.URL;
-import java.security.InvalidKeyException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
-
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.smooch.core.FcmService;
-import io.smooch.core.InitializationStatus;
-import io.smooch.core.Message;
-import io.smooch.core.Settings;
-import io.smooch.core.Smooch;
-import io.smooch.core.SmoochCallback;
-import io.smooch.core.SmoochConnectionStatus;
-import io.smooch.core.User;
+import io.smooch.core.*;
 import io.smooch.ui.ConversationActivity;
 import okhttp3.ResponseBody;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import retrofit2.Response;
 
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
+
 class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommandReceivedListener {
-    private Application app;
-    private Context context;
     private static final String TAG = "OKKAMISDK";
-    private String lineLoginChannelId = "1499319131";
     private static final int LINE_LOGIN_REQUEST_CODE = 10;
-    private SDK okkamiSdk;
-    private Promise lineLoginPromise = null;
-    private MockConfigModule mock;
-    private DeviceAuth mDeviceAuth;
     private static HubModule hubModule;
     private final NonceManagerModule nonce = new NonceManagerModule();
     private final CommandSerializerModule cmdSerializer = new CommandSerializerModule();
     private final NumberFormatterModule numberFormatter = new NumberFormatterModule();
-    private CommandFactoryModule mCmdFactory;
-
-
+    private Application mApp;
+    private Context context;
+    private String lineLoginChannelId = "1499319131";
+    private SDK okkamiSdk;
+    private Promise lineLoginPromise = null;
     private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
 
         @Override
@@ -171,17 +125,36 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         }
 
     };
+    private MockConfigModule mock;
+    private DeviceAuth mDeviceAuth;
+    private CommandFactoryModule mCmdFactory;
 
     public OkkamiSdkModule(ReactApplicationContext reactContext, Application app) {
         super(reactContext);
         this.context = reactContext;
         Log.d(TAG, "OkkamiSdkModule: " + app);
         reactContext.addActivityEventListener(mActivityEventListener);
-        okkamiSdk = new SDK().init(reactContext, "https://app.develop.okkami.com"); // TODO : how do we pass the URL dynamically from react??
+        okkamiSdk = new SDK().init(reactContext, "https://mApp.develop.okkami.com"); // TODO : how do we pass the URL dynamically from react??
         initMockData();
-        this.app = app;
+        mApp = app;
         this.lineLoginChannelId = reactContext.getString(R.string.line_login_channel_id);
     }
+
+    private static JSONObject createConversationJsonObj(int unreadMsgCount, String iconUrl,
+                                                        String channelName, String lastMsgText, String lastTime, String epTime, String smoochAppToken) throws JSONException {
+        JSONObject jsonObj = new JSONObject();
+        jsonObj.put("unread_messages", unreadMsgCount);
+        jsonObj.put("icon", iconUrl);
+        jsonObj.put("channel_name", channelName);
+        jsonObj.put("last_message", lastMsgText);
+        jsonObj.put("last_time", lastTime);
+        jsonObj.put("time_since_last_message", epTime);
+        jsonObj.put("app_token", smoochAppToken);
+        return jsonObj;
+    }
+
+
+     /*-------------------------------------- Utility   --------------------------------------------------*/
 
     /**
      * @return the name of this module. This will be the name used to {@code require()} this module
@@ -191,9 +164,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     public String getName() {
         return "OkkamiSdk";
     }
-
-
-     /*-------------------------------------- Utility   --------------------------------------------------*/
 
     // have a connection to any network
     public boolean isNetworkConnected() {
@@ -228,12 +198,31 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         FacebookSdk.sdkInitialize(this.context);
     }
 
-
     @ReactMethod
     public void setLineEnvironment(ReadableMap lineConfig) {
         this.lineLoginChannelId = lineConfig.getString("lineAppId");
     }
 
+
+    //NOTE: commented out by KHAN. it seems the following methods dont exist in ios and also not being called from js anywhere?
+    //      also causing compilation to fail on android because SDK does not have them .
+
+//    /**
+//     * Set new the Smooch mApp token to Okkami SDK for switching channel to let user talk to different hotels
+//     * @param appToken - an mApp token provided by Smooch
+//     */
+//    @ReactMethod
+//     public void setSmoochAppToken(String appToken){
+//        okkamiSdk.setSmoochAppToken(appToken);
+//     }
+//
+//     @ReactMethod
+//     public void showSmoochUI(){
+//         okkamiSdk.showSmoochUI();
+//     }
+
+
+     /*---------------------------Core------------------------------------------------------------------------*/
 
     @ReactMethod
     public void lineLogin(Promise lineLoginPromise) {
@@ -249,26 +238,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         getCurrentActivity().startActivityForResult(loginIntent, LINE_LOGIN_REQUEST_CODE);
     }
 
-
-    //NOTE: commented out by KHAN. it seems the following methods dont exist in ios and also not being called from js anywhere?
-    //      also causing compilation to fail on android because SDK does not have them .
-
-//    /**
-//     * Set new the Smooch app token to Okkami SDK for switching channel to let user talk to different hotels
-//     * @param appToken - an app token provided by Smooch
-//     */
-//    @ReactMethod
-//     public void setSmoochAppToken(String appToken){
-//        okkamiSdk.setSmoochAppToken(appToken);
-//     }
-//
-//     @ReactMethod
-//     public void showSmoochUI(){
-//         okkamiSdk.showSmoochUI();
-//     }
-
-
-     /*---------------------------Core------------------------------------------------------------------------*/
+    /*-------------------------------------- Hub -------------------------------------------------*/
 
     /**
      * The purpose of this method is to provide general purpose way to call any core endpoint.
@@ -416,8 +386,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
 
     }
 
-    /*-------------------------------------- Hub -------------------------------------------------*/
-
     private void initMockData() {
         try {
             mock = new MockConfigModule(this.context, CommonUtil.loadProperty(this.context));
@@ -446,7 +414,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
 
         return hubModule;
     }
-
 
     private CommandFactoryModule getCmdFactotry(
             String deviceId, BaseAuthentication auth) {
@@ -553,7 +520,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         }
     }
 
-
     /**
      * if hub is currently connected + logged in :
      * hubLoggedPromise.resolve(true);
@@ -569,24 +535,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
             sendEvent((ReactContext) this.context, "onHubLoggedIn", null);
         } catch (Exception e) {
             hubLoggedPromise.reject(e);
-        }
-    }
-
-    /**
-     * if hub is currently connected ( regardless of logged in ) :
-     * hubConnectedPromise.resolve(true);
-     * else
-     * hubConnectedPromise.resolve(false);
-     *
-     * @param hubConnectedPromise
-     */
-    @ReactMethod
-    public void isHubConnected(Promise hubConnectedPromise) {
-        try {
-            boolean isConnected = hubModule.isHubConnected();
-            hubConnectedPromise.resolve(isConnected);
-        } catch (Exception e) {
-            hubConnectedPromise.reject(e);
         }
     }
 
@@ -607,6 +555,23 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     *            this.sendEventToJs("onHubDisconnected", map);
     * */
 
+    /**
+     * if hub is currently connected ( regardless of logged in ) :
+     * hubConnectedPromise.resolve(true);
+     * else
+     * hubConnectedPromise.resolve(false);
+     *
+     * @param hubConnectedPromise
+     */
+    @ReactMethod
+    public void isHubConnected(Promise hubConnectedPromise) {
+        try {
+            boolean isConnected = hubModule.isHubConnected();
+            hubConnectedPromise.resolve(isConnected);
+        } catch (Exception e) {
+            hubConnectedPromise.reject(e);
+        }
+    }
 
     @Override
     public void onCommandReceived(Command cmd) {
@@ -642,6 +607,9 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         return false;
     }
 
+
+    /*---------------------------------------------------------------------------------------------------*/
+
     private void sendEvent(ReactContext reactContext,
                            String eventName,
                            @Nullable WritableMap params) {
@@ -649,10 +617,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                 .emit(eventName, params);
     }
-
-
-    /*---------------------------------------------------------------------------------------------------*/
-
 
     /**
      * Returns the list of conversations as shown in : https://projects.invisionapp.com/share/2XAK26Y4G#/screens/223142641
@@ -722,14 +686,14 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
                 String appToken = smoochAllAppTokenArray.getString(i);
                 Settings settings = new Settings(appToken);
                 settings.setUserId(userId);
-                settings.setFirebaseCloudMessagingAutoRegistrationEnabled(true);
-                Smooch.init(app, settings);
+                Smooch.getSettings().setFirebaseCloudMessagingAutoRegistrationEnabled(false);
+                Smooch.init(mApp, settings);
 
                 List<Message> listMsg = Smooch.getConversation().getMessages();
                 int unreadMsgCount = Smooch.getConversation().getUnreadCount();
 
                 if (listMsg.size() == 0) {
-                    continue; // this smooch app token not start conversation yet
+                    continue; // this smooch mApp token not start conversation yet
                 }
 
                 String iconUrl = "";
@@ -800,19 +764,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         }
     }
 
-    private static JSONObject createConversationJsonObj(int unreadMsgCount, String iconUrl,
-                                                        String channelName, String lastMsgText, String lastTime, String epTime, String smoochAppToken) throws JSONException {
-        JSONObject jsonObj = new JSONObject();
-        jsonObj.put("unread_messages", unreadMsgCount);
-        jsonObj.put("icon", iconUrl);
-        jsonObj.put("channel_name", channelName);
-        jsonObj.put("last_message", lastMsgText);
-        jsonObj.put("last_time", lastTime);
-        jsonObj.put("time_since_last_message", epTime);
-        jsonObj.put("app_token", smoochAppToken);
-        return jsonObj;
-    }
-
     /**
      * Open the smooch chat window for a particular channel
      * openChatWindowPromise.resolve(true) on success
@@ -822,28 +773,51 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
      * @param openChatWindowPromise
      */
     @ReactMethod
-    public void openChatWindow(String smoochAppToken, String userId, String windowTitle, String windowHexStringColor, //added by khan..as i can not test..it crashes!
-                               String titleHexStringColor, Promise openChatWindowPromise) {
+    public void openChatWindow(String smoochAppToken,
+                               String userId,
+                               String windowTitle,
+                               String windowHexStringColor,
+                               String titleHexStringColor,
+                               boolean windowInRgb,
+                               boolean titleInRgb) {
         try {
             Settings settings = new Settings(smoochAppToken);
             settings.setUserId(userId);
-            settings.setFirebaseCloudMessagingAutoRegistrationEnabled(true);
-            Smooch.init(app, settings);
+            Smooch.init(mApp, settings);
 
             Intent chatWindow = new Intent();
             ComponentName cmp = new ComponentName(getReactApplicationContext().getPackageName(),
                     "com.okkami.android.app.OkkamiConversationActivity");
             chatWindow.setComponent(cmp);
+            chatWindow.putExtra("USER_ID", userId);
             chatWindow.putExtra("CHAT_WINDOW_COLOR", windowHexStringColor);
             chatWindow.putExtra("CHAT_WINDOW_TITLE_COLOR", titleHexStringColor);
             chatWindow.putExtra("CHAT_WINDOW_TITLE", windowTitle);
             chatWindow.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(chatWindow);
-
-            openChatWindowPromise.resolve(true);
         } catch (Exception e) {
-            openChatWindowPromise.reject(e);
+            Log.e(TAG, "" + e);
         }
+    }
+
+    @ReactMethod
+    public void setUserId(String... params) {
+        if (params == null || TextUtils.isEmpty(params[0])) {
+            throw new IllegalArgumentException("Required at least one not empty String paramerter to set in");
+        }
+
+        String userId = params[0];
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mApp);
+        prefs.edit().putString("USER_ID", userId);
+        prefs.edit().commit();
+    }
+
+    // React native calling as looping with different appTokens
+    @ReactMethod
+    public void loginChatWindow(String userId, String appToken) {
+        Settings settings = new Settings(appToken);
+        settings.setUserId(userId);
+        Smooch.init(mApp, settings);
     }
 
     /**
@@ -857,7 +831,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     @ReactMethod
     public void getUnreadMessageCount(String smoochAppToken, String userId, Promise getUnreadMessageCountPromise) {
         try {
-            Smooch.init(app, smoochAppToken);
+            Smooch.init(mApp, smoochAppToken);
             getUnreadMessageCountPromise.resolve(Smooch.getConversation().getUnreadCount());
         } catch (Exception e) {
             getUnreadMessageCountPromise.reject(e.getMessage(), e.getMessage());
