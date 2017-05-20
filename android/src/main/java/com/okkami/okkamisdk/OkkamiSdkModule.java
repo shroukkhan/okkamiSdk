@@ -801,7 +801,12 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     }
 
     @ReactMethod
-    public void setUserId(String userId) {
+    public void setUserId(String... params) {
+        if (params == null || TextUtils.isEmpty(params[0])) {
+            throw new IllegalArgumentException("Required at least one not empty String paramerter to set in");
+        }
+
+        String userId = params[0];
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mApp);
         prefs.edit().putString("USER_ID", userId);
         prefs.edit().commit();
