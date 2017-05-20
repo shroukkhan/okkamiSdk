@@ -800,27 +800,19 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         }
     }
 
+    @ReactMethod
+    public void setUserId(String userId) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mApp);
+        prefs.edit().putString("USER_ID", userId);
+        prefs.edit().commit();
+    }
+
     // React native calling as looping with different appTokens
     @ReactMethod
     public void loginChatWindow(String userId, String appToken) {
         Settings settings = new Settings(appToken);
         settings.setUserId(userId);
         Smooch.init(mApp, settings);
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mApp);
-        prefs.edit().putString("USER_ID", userId);
-        prefs.edit().commit();
-
-        if (!hasRunOnce) {
-            startPushNotiInitSignal();
-        }
-    }
-
-    private boolean hasRunOnce;
-    private void startPushNotiInitSignal() {
-        hasRunOnce = true;
-        Intent signal = new Intent("SHOULD_BEGIN_INIT_NOTIFICATION");
-        mApp.sendBroadcast(signal);
     }
 
     /**
