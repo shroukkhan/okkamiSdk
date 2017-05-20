@@ -750,7 +750,7 @@ RCT_EXPORT_METHOD(setUserId
 {
     id appDelegate = [[UIApplication sharedApplication] delegate];
     NSString *channelName = [NSString stringWithFormat:@"private_mobile_user_%@", userId];
-    [appDelegate subscribeToChannelNamed:channelName];
+    //[appDelegate subscribeToChannelNamed:channelName];
 }
 
 /*-------------------------------------- Utility   --------------------------------------------------*/
