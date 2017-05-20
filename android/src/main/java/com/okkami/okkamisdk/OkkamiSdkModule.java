@@ -13,6 +13,8 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import com.facebook.FacebookSdk;
+import com.facebook.react.ReactApplication;
+import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.linecorp.linesdk.auth.LineLoginApi;
@@ -42,6 +44,8 @@ import org.json.JSONObject;
 import retrofit2.Response;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,7 +53,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommandReceivedListener {
+public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
+        OnHubCommandReceivedListener {
+
+    public interface MethodInvokeListener {
+        public void invoke(String methodName, String arg);
+    }
+    private MethodInvokeListener mMethodInvoker;
+
     private static final String TAG = "OKKAMISDK";
     private static final int LINE_LOGIN_REQUEST_CODE = 10;
     private static HubModule hubModule;
@@ -57,10 +68,16 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     private final CommandSerializerModule cmdSerializer = new CommandSerializerModule();
     private final NumberFormatterModule numberFormatter = new NumberFormatterModule();
     private Application mApp;
-    private Context context;
+    private Context mContext;
     private String lineLoginChannelId = "1499319131";
     private SDK okkamiSdk;
     private Promise lineLoginPromise = null;
+
+    private static String userId;
+    public static String getUserId () {
+        return userId;
+    }
+
     private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
 
         @Override
@@ -129,15 +146,17 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     private DeviceAuth mDeviceAuth;
     private CommandFactoryModule mCmdFactory;
 
-    public OkkamiSdkModule(ReactApplicationContext reactContext, Application app) {
+    public OkkamiSdkModule(ReactApplicationContext reactContext, Application app,
+            MethodInvokeListener invoker) {
         super(reactContext);
-        this.context = reactContext;
-        Log.d(TAG, "OkkamiSdkModule: " + app);
-        reactContext.addActivityEventListener(mActivityEventListener);
-        okkamiSdk = new SDK().init(reactContext, "https://mApp.develop.okkami.com"); // TODO : how do we pass the URL dynamically from react??
-        initMockData();
+
+        mMethodInvoker = invoker;
         mApp = app;
-        this.lineLoginChannelId = reactContext.getString(R.string.line_login_channel_id);
+        mContext = reactContext;
+        reactContext.addActivityEventListener(mActivityEventListener);
+        okkamiSdk = new SDK().init(reactContext, "https://app.develop.okkami.com");
+        initMockData();
+        lineLoginChannelId = reactContext.getString(R.string.line_login_channel_id);
     }
 
     private static JSONObject createConversationJsonObj(int unreadMsgCount, String iconUrl,
@@ -153,9 +172,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         return jsonObj;
     }
 
-
-     /*-------------------------------------- Utility   --------------------------------------------------*/
-
+/*-------------------------------------- Utility   --------------------------------------------------*/
     /**
      * @return the name of this module. This will be the name used to {@code require()} this module
      * from javascript.
@@ -168,7 +185,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     // have a connection to any network
     public boolean isNetworkConnected() {
         ConnectivityManager cm =
-                (ConnectivityManager) this.context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
@@ -195,51 +212,34 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         if (FacebookSdk.isInitialized() && FacebookSdk.getApplicationId().equals(fbAppId))
             return;
         FacebookSdk.setApplicationId(fbAppId);
-        FacebookSdk.sdkInitialize(this.context);
+        FacebookSdk.sdkInitialize(mContext);
     }
 
     @ReactMethod
     public void setLineEnvironment(ReadableMap lineConfig) {
-        this.lineLoginChannelId = lineConfig.getString("lineAppId");
+        lineLoginChannelId = lineConfig.getString("lineAppId");
     }
 
-
-    //NOTE: commented out by KHAN. it seems the following methods dont exist in ios and also not being called from js anywhere?
-    //      also causing compilation to fail on android because SDK does not have them .
-
-//    /**
-//     * Set new the Smooch mApp token to Okkami SDK for switching channel to let user talk to different hotels
-//     * @param appToken - an mApp token provided by Smooch
-//     */
-//    @ReactMethod
-//     public void setSmoochAppToken(String appToken){
-//        okkamiSdk.setSmoochAppToken(appToken);
-//     }
-//
-//     @ReactMethod
-//     public void showSmoochUI(){
-//         okkamiSdk.showSmoochUI();
-//     }
-
-
-     /*---------------------------Core------------------------------------------------------------------------*/
-
+/*---------------------------Core------------------------------------------------------------------------*/
     @ReactMethod
     public void lineLogin(Promise lineLoginPromise) {
+
         if (!isNetworkConnected()) {
             lineLoginPromise.reject("error", "have no network connected.");
             return;
-        } else if (!isOnline()) {
+        }
+
+        if (!isOnline()) {
             lineLoginPromise.reject("error", "have no internet connection");
             return;
         }
+
         this.lineLoginPromise = lineLoginPromise;
-        Intent loginIntent = LineLoginAPI.getLoginIntent(this.context, this.lineLoginChannelId);
+        Intent loginIntent = LineLoginAPI.getLoginIntent(mContext, lineLoginChannelId);
         getCurrentActivity().startActivityForResult(loginIntent, LINE_LOGIN_REQUEST_CODE);
     }
 
-    /*-------------------------------------- Hub -------------------------------------------------*/
-
+/*-------------------------------------- Hub -------------------------------------------------*/
     /**
      * The purpose of this method is to provide general purpose way to call any core endpoint.
      * Internally, the downloadPresets,downloadRoomInfo,connectToRoom all of them should use this method.
@@ -254,8 +254,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     @ReactMethod
     public void executeCoreRESTCall(String endPoint, String getPost, String payload, String secret, String token, Boolean force, final Promise downloadFromCorePromise) {
         try {
-//            URL u = new URL(endPoint);
-//            String path = u.getPath();
             BaseAuthentication b = new CompanyAuth(token, secret);
             if (getPost.compareTo("POST") == 0) {
 
@@ -279,7 +277,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
                                     }
                                 } catch (Exception e) {
                                     downloadFromCorePromise.reject(e);
-                                    // e.printStackTrace();
                                 }
                             }
 
@@ -290,8 +287,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
 
                             @Override
                             public void onComplete() {
-
-
                                 // Nothing for now.
                             }
                         });
@@ -323,7 +318,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
                                     }
                                 } catch (Exception e) {
                                     downloadFromCorePromise.reject(e);
-                                    // e.printStackTrace();
                                 }
                             }
 
@@ -334,8 +328,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
 
                             @Override
                             public void onComplete() {
-
-
                                 // Nothing for now.
                             }
                         });
@@ -361,7 +353,6 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
                                     }
                                 } catch (Exception e) {
                                     downloadFromCorePromise.reject(e);
-                                    // e.printStackTrace();
                                 }
                             }
 
@@ -373,22 +364,17 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
                             @Override
                             public void onComplete() {
 
-
-                                // Nothing for now.
                             }
                         });
             }
         } catch (Exception e) {
             downloadFromCorePromise.reject(e);
-
-
         }
-
     }
 
     private void initMockData() {
         try {
-            mock = new MockConfigModule(this.context, CommonUtil.loadProperty(this.context));
+            mock = new MockConfigModule(mContext, CommonUtil.loadProperty(mContext));
         } catch (IOException e) {
             Log.e("ERR", "Couldn't load mock config...");
         }
@@ -405,7 +391,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         mock.setHubDnsName(hubDnsName);
         mock.setHubSslPort(hubSslPort);
         hubModule = new HubModule(
-                context,
+                mContext,
                 mock,
                 mCmdFactory,
                 okkamiSdk.getLoggerModule(),
@@ -452,7 +438,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
             initHub(uid, hubUrl, Integer.parseInt(hubPort), auth);
             hubModule.connect();
             hubConnectionPromise.resolve(true);
-            sendEvent((ReactContext) this.context, "onHubConnected", null);
+            sendEvent((ReactContext) mContext, "onHubConnected", null);
         } catch (Exception e) {
             hubConnectionPromise.reject(e);
         }
@@ -471,7 +457,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         try {
             hubModule.disconnect();
             hubDisconnectionPromise.resolve(true);
-            sendEvent((ReactContext) this.context, "onHubDisconnected", null);
+            sendEvent((ReactContext) mContext, "onHubDisconnected", null);
         } catch (Exception e) {
             hubDisconnectionPromise.reject(e);
         }
@@ -494,7 +480,7 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
             return;
         }
         hubReconnectionPromise.resolve(true);
-        sendEvent((ReactContext) this.context, "onHubConnected", null);
+        sendEvent((ReactContext) mContext, "onHubConnected", null);
     }
 
     /**
@@ -532,28 +518,11 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     public void isHubLoggedIn(Promise hubLoggedPromise) {
         try {
             hubLoggedPromise.resolve(hubModule.isHubConnected() && hubModule.isCheckedIn());
-            sendEvent((ReactContext) this.context, "onHubLoggedIn", null);
+            sendEvent((ReactContext) mContext, "onHubLoggedIn", null);
         } catch (Exception e) {
             hubLoggedPromise.reject(e);
         }
     }
-
-
-    //Events emission
-    /*
-    *  onHubCommand
-    *            WritableMap map = Arguments.createMap();
-    *            map.putString("command", "1234 2311 Default | POWER light-1 ON");
-    *            this.sendEventToJs("onHubCommand", map);
-    *  onHubConnected
-    *             this.sendEventToJs("onHubConnected", null);
-    *  onHubLoggedIn ( when IDENTIFIED is received )
-    *             this.sendEventToJs("onHubLoggedIn", null);
-    *  onHubDisconnected
-    *            WritableMap map = Arguments.createMap();
-    *            map.putString("command", "DISCONNECT_REASON");
-    *            this.sendEventToJs("onHubDisconnected", map);
-    * */
 
     /**
      * if hub is currently connected ( regardless of logged in ) :
@@ -577,14 +546,14 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
     public void onCommandReceived(Command cmd) {
         WritableMap params = Arguments.createMap();
         params.putString("command", cmd.toString());
-        sendEvent((ReactContext) this.context, "onHubCommand", params);
+        sendEvent((ReactContext) mContext, "onHubCommand", params);
     }
 
     @Override
     public void onCommandReceived(boolean isPong, Command cmd) {
         WritableMap params = Arguments.createMap();
         params.putString("command", cmd.toString());
-        sendEvent((ReactContext) this.context, "onHubCommand", params);
+        sendEvent((ReactContext) mContext, "onHubCommand", params);
     }
 
     @Override
@@ -607,67 +576,12 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
         return false;
     }
 
-
-    /*---------------------------------------------------------------------------------------------------*/
-
-    private void sendEvent(ReactContext reactContext,
-                           String eventName,
-                           @Nullable WritableMap params) {
+    private void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
         reactContext
                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                 .emit(eventName, params);
     }
 
-    /**
-     * Returns the list of conversations as shown in : https://projects.invisionapp.com/share/2XAK26Y4G#/screens/223142641
-     * returns a Promise which resolves to a json like this:
-     * <p>
-     * {
-     * "OKKAMI_CHAT": [
-     * {
-     * "unread_messages": "2",
-     * "icon": "http://orig15.deviantart.net/4679/f/2009/042/f/8/test_by_kaitoukat.png",
-     * "channel_name": "OKKAMI Concierge",
-     * "last_message": "We'll be happy to help your find good activities to do tonight",
-     * "time_since_last_message": "5 min"
-     * }
-     * ],
-     * "ACTIVE_CHATS": [
-     * {
-     * "unread_messages": "1",
-     * "icon": "http://www.vieuxmontreal.ca/wp-content/uploads/2015/07/Intercontinental_logo_233X2331.png",
-     * "channel_name": "Intercontinental Montreal",
-     * "last_message": "Your room upgrade can be purchased using the link below",
-     * "time_since_last_message": "1 hr 10 min"
-     * },
-     * {
-     * "unread_messages": "3",
-     * "icon": "http://orig15.deviantart.net/4679/f/2009/042/f/8/test_by_kaitoukat.png",
-     * "channel_name": "Aloft Bangkok",
-     * "last_message": "Food and wine at XYZ Bar",
-     * "time_since_last_message": "5 hr"
-     * }
-     * ],
-     * "INACTIVE_CHATS": [
-     * {
-     * "unread_messages": "0",
-     * "icon": "http://www.vieuxmontreal.ca/wp-content/uploads/2015/07/Intercontinental_logo_233X2331.png",
-     * "channel_name": "Grand President Hotel",
-     * "last_message": "",
-     * "time_since_last_message": ""
-     * },
-     * {
-     * "unread_messages": "0",
-     * "icon": "http://orig15.deviantart.net/4679/f/2009/042/f/8/test_by_kaitoukat.png",
-     * "channel_name": "Ambassador Bangkok",
-     * "last_message": "",
-     * "time_since_last_message": ""
-     * }
-     * ]
-     * }
-     *
-     * @param getConversationListPromise
-     */
     @ReactMethod
     public void getConversationsList(ReadableArray smoochAllAppTokenArray, String userId, Promise getConversationListPromise) {
 
@@ -766,11 +680,8 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
 
     /**
      * Open the smooch chat window for a particular channel
-     * openChatWindowPromise.resolve(true) on success
-     * openChatWindowPromise.reject(Exception) on failure
      *
      * @param smoochAppToken
-     * @param openChatWindowPromise
      */
     @ReactMethod
     public void openChatWindow(String smoochAppToken,
@@ -794,22 +705,26 @@ class OkkamiSdkModule extends ReactContextBaseJavaModule implements OnHubCommand
             chatWindow.putExtra("CHAT_WINDOW_TITLE_COLOR", titleHexStringColor);
             chatWindow.putExtra("CHAT_WINDOW_TITLE", windowTitle);
             chatWindow.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(chatWindow);
+            mContext.startActivity(chatWindow);
         } catch (Exception e) {
             Log.e(TAG, "" + e);
         }
     }
 
+    // React native layer will call this function upon user
+    // login and|or application starts up event
     @ReactMethod
-    public void setUserId(String... params) {
-        if (params == null || TextUtils.isEmpty(params[0])) {
-            throw new IllegalArgumentException("Required at least one not empty String paramerter to set in");
-        }
-
-        String userId = params[0];
+    public void setUserId(String id) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mApp);
         prefs.edit().putString("USER_ID", userId);
         prefs.edit().commit();
+        userId = id;
+
+        invokeInitPushNoti();
+    }
+
+    private void invokeInitPushNoti() {
+        mMethodInvoker.invoke("initFirebase", userId);
     }
 
     // React native calling as looping with different appTokens

@@ -12,9 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
-
-
 public class OkkamiSdkPackage implements ReactPackage {
     private final Application app;
 
@@ -25,8 +22,7 @@ public class OkkamiSdkPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-        modules.add(new OkkamiSdkModule(reactContext, this.app));
-
+        modules.add(new OkkamiSdkModule(reactContext, app, mMethodInvoker));
         return modules;
     }
 
@@ -51,7 +47,9 @@ public class OkkamiSdkPackage implements ReactPackage {
         return Collections.emptyList();
     }
 
-    public OkkamiSdkPackage(Application app) {
+    private OkkamiSdkModule.MethodInvokeListener mMethodInvoker;
+    public OkkamiSdkPackage(Application app, OkkamiSdkModule.MethodInvokeListener invoker) {
         this.app = app;
+        mMethodInvoker = invoker;
     }
 }
