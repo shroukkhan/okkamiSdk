@@ -55,6 +55,7 @@ RCT_EXPORT_MODULE();
     return self;
 }
 
+
 #pragma mark Notif Delegate
 
 /*-(void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void
@@ -594,9 +595,7 @@ RCT_EXPORT_METHOD(getConversationsList
     dispatch_async(dispatch_get_main_queue(), ^{
         NSString *jsonObj = [self.smooch getConversationsListWithArray:smoochAppToken userID: userID];
         resolve(jsonObj);
-        //NSString *jsonObj = [smooch getConversationsListWithArray:smoochAppToken userID: userID];
-        //resolve(jsonObj);
-    });//    resolve([self.smooch getConversationsList]);
+    });
 }
 
 
@@ -622,19 +621,6 @@ RCT_EXPORT_METHOD(openChatWindow
         [self.smooch smoochChatWithUser:userID color: color textColor: textColor rgbColor: rgbColor rgbTextColor: rgbTextColor];
         //[UIApplication sharedApplication].applicationIconBadgeNumber = [self.smooch getUnreadMessageCount];
     });
-    /*if (self.smooch == nil) {
-        OkkamiSmoochChat *smooch = [OkkamiSmoochChat newInstanceWithAppToken:smoochAppToken];
-        self.smooch = smooch;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.smooch smoochChatWithUser:userID];
-            [UIApplication sharedApplication].applicationIconBadgeNumber = [self.smooch getUnreadMessageCount];
-        });
-    }else{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.smooch smoochChatWithUser:userID];
-            [UIApplication sharedApplication].applicationIconBadgeNumber = [self.smooch getUnreadMessageCount];
-        });
-    }*/
 }
 
 
@@ -751,6 +737,22 @@ RCT_EXPORT_METHOD(setLineEnvironment
     NSLog(@"VALUE %@", value2[@"ChannelID"]);
     
 }
+
+
+
+
+RCT_EXPORT_METHOD(setUserId
+                  
+                  :(NSString *) userId
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    id appDelegate = [[UIApplication sharedApplication] delegate];
+    NSString *channelName = [NSString stringWithFormat:@"private_mobile_user_%@", userId];
+    //[appDelegate subscribeToChannelNamed:channelName];
+}
+
 /*-------------------------------------- Utility   --------------------------------------------------*/
 
 
