@@ -4,8 +4,8 @@
 #import "RCTBundleURLProvider.h"
 #import "RCTRootView.h"
 #import <CoreLocation/CoreLocation.h>
-
-//#import <RCTOkkamiSdkImplementation/RCTOkkamiSdkImplementation-Swift.h>
+#import <Smooch/Smooch.h>
+//#import "AppDelegate.h"
 
 @implementation OkkamiSdk
 
@@ -19,38 +19,14 @@ RCT_EXPORT_MODULE();
 
 -(id)init {
     if ( self = [super init] ) {
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            
-//        });
         self.locationManager = [[CLLocationManager alloc] init];
         self.locationManager.delegate = self;
         self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
         self.locationManager.distanceFilter = kCLDistanceFilterNone;
         [self.locationManager startUpdatingLocation];
         [self.locationManager requestWhenInUseAuthorization];
-        //UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-        //center.delegate = self;
-        
-        //[self.locationManager requestAlwaysAuthorization];
-        
-        /*if ([CLLocationManager locationServicesEnabled]){
-            CLGeocoder *reverseGeocoder = [[CLGeocoder alloc] init];
-            
-            [reverseGeocoder reverseGeocodeLocation:self.locationManager.location completionHandler:^(NSArray *placemarks, NSError *error)
-             {
-                 if (error){
-                     return;
-                 }
-                 CLPlacemark *myPlacemark = [placemarks objectAtIndex:0];
-                 
-                 NSString *countryCode = myPlacemark.ISOcountryCode;
-                 
-                 NSString *latitude = [NSString stringWithFormat:@"%f",myPlacemark.location.coordinate.latitude];
-                 NSString *longitude = [NSString stringWithFormat:@"%f",myPlacemark.location.coordinate.longitude];
-                 
-                 //[locationManager stopUpdatingLocation];
-             }];
-        }*/
+        UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+        center.delegate = self;
     }
     return self;
 }
@@ -58,38 +34,94 @@ RCT_EXPORT_MODULE();
 
 #pragma mark Notif Delegate
 
-/*-(void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void
+-(void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error{
+    NSLog(@"ERROR REGISTER: %@", error);
+}
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    NSLog(@"DID REGISTER REMOTE ???");
+    [Smooch logout];
+    [Smooch destroy];
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    self.appdel = appDelegate;
+    [[self.appdel.pusher nativePusher] registerWithDeviceToken:deviceToken];
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    [Smooch logout];
+    [Smooch destroy];
+    NSLog(@"DID RECEIVE REMOTE ?");
+    [self application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:^(UIBackgroundFetchResult result) {
+    }];
+}
+
+-(void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void
                                                                                                                                (^)(UIBackgroundFetchResult))completionHandler
 {
     // iOS 10 will handle notifications through other methods
     
+    NSLog( @"HANDLE PUSH, didReceiveRemoteNotification: %@", userInfo );
+    [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:userInfo[@"data"]];
+    
     if( SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO( @"10.0" ) )
     {
         NSLog( @"iOS version >= 10. Let NotificationCenter handle this one." );
-        // set a member variable to tell the new delegate that this is background
         return;
     }
-    
-    NSLog( @"HANDLE PUSH, didReceiveRemoteNotification: %@", userInfo );
-    [self.bridge.eventDispatcher sendAppEventWithName:@"notifications" body:nil];
-    
+    ;
     // custom code to handle notification content
     
     if( [UIApplication sharedApplication].applicationState == UIApplicationStateInactive )
     {
         NSLog( @"INACTIVE" );
+        [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:userInfo[@"data"]];
+        SKTSettings *settings = [SKTSettings settingsWithAppToken:userInfo[@"data"][@"property_smooch_app_token"]];
+        settings.enableAppDelegateSwizzling = NO;
+        settings.enableUserNotificationCenterDelegateOverride = NO;
+        [Smooch initWithSettings:settings];
+        [Smooch login:self.smoochUserId jwt:nil];
+        [Smooch show];
         completionHandler( UIBackgroundFetchResultNewData );
     }
     else if( [UIApplication sharedApplication].applicationState == UIApplicationStateBackground )
     {
         NSLog( @"BACKGROUND" );
+        [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:userInfo[@"data"]];
         completionHandler( UIBackgroundFetchResultNewData );
     }
     else
     {
         NSLog( @"FOREGROUND" );
+        
+        UNMutableNotificationContent *content = [UNMutableNotificationContent new];
+        content.body = userInfo[@"aps"][@"alert"][@"body"];
+        content.sound = [UNNotificationSound defaultSound];
+        UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:2
+                                                                                                        repeats:NO];
+        NSString *identifier = @"OkkamiLocalNotification";
+        UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier
+                                                                              content:content trigger:trigger];
+        // Objective-C
+        UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+        center.delegate = self;
+        [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
+            if (error != nil) {
+                NSLog(@"Something went wrong: %@",error);
+            }
+        }];
         completionHandler( UIBackgroundFetchResultNewData );
     }
+}
+-(void)conversation:(SKTConversation *)conversation didDismissViewController:(UIViewController *)viewController{
+    NSLog(@"DID DISMISS VIEW CONTROLLER");
+    [Smooch logout];
+    [Smooch destroy];
+}
+-(void)conversation:(SKTConversation *)conversation willDismissViewController:(UIViewController *)viewController{
+    NSLog(@"DISMISS VIEW CONTROLLER");
+    [Smooch logout];
+    [Smooch destroy];
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
@@ -97,13 +129,52 @@ RCT_EXPORT_MODULE();
          withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
     NSLog( @"Handle push from foreground" );
-    
     NSLog(@"%@", notification.request.content.userInfo);
-    [self.bridge.eventDispatcher sendAppEventWithName:@"notifications" body:nil];
-    
-    completionHandler(UNNotificationPresentationOptionSound);
-}*/
+    if(notification.request.content.userInfo[@"SmoochNotification"]){
+        completionHandler(UIUserNotificationTypeNone  | UIUserNotificationTypeBadge);
+    }else{
+        self.status = @"foreground";
+        [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
+        completionHandler(UIUserNotificationTypeSound |    UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
+    }
+}
 
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler{
+    NSLog( @"Handle push from background or closed" );
+
+    [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
+    [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:nil];
+
+    NSLog(@"%@", response.notification.request.content.userInfo);
+    NSLog(@"PROPERTY SMOOCH TOKEN-%@",response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"]);
+    NSLog(@"PROPERTY NAME%@",response.notification.request.content.userInfo[@"aps"][@"alert"][@"title"]);
+    [Smooch destroy];
+    SKTSettings *settings = [SKTSettings settingsWithAppToken:response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"]];
+    settings.enableAppDelegateSwizzling = NO;
+    settings.enableUserNotificationCenterDelegateOverride = NO;
+    [Smooch initWithSettings:settings];
+    [Smooch login:self.smoochUserId jwt:nil];
+    [Smooch show];
+    [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
+    /*if(![response.notification.request.content.userInfo[@"aps"][@"alert"][@"title"]  isEqual: @""]){
+        SKTSettings *settings = [SKTSettings settingsWithAppToken:response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"]];
+        settings.enableAppDelegateSwizzling = NO;
+        settings.enableUserNotificationCenterDelegateOverride = NO;
+        [Smooch initWithSettings:settings];
+        [Smooch login:self.smoochUserId jwt:nil];
+        [Smooch show];
+        [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
+    }else{
+        SKTSettings *settings = [SKTSettings settingsWithAppToken:@"3afzpr4hogs8z5znmomda0ko5"];
+        settings.enableAppDelegateSwizzling = NO;
+        settings.enableUserNotificationCenterDelegateOverride = NO;
+        [Smooch initWithSettings:settings];
+        [Smooch login:self.smoochUserId jwt:nil];
+        [Smooch show];
+        [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
+    }*/
+    completionHandler();
+}
 #pragma mark LineSDKLoginDelegate
 
 - (void)didLogin:(LineSDKLogin *)login
@@ -220,66 +291,6 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
             
         }];
     });
-    /*
-    if ([endPoint containsString:@"location_services"]) {
-        
-        if (![CLLocationManager locationServicesEnabled]) {
-            NSMutableDictionary* details = [NSMutableDictionary dictionary];
-            [details setValue:@"Please Turn On Your Location Services" forKey:NSLocalizedDescriptionKey];
-            // populate the error object with the details
-            NSError *error = [NSError errorWithDomain:@"OkkamiLocationOFF" code:1001 userInfo:details];
-            reject([NSString stringWithFormat:@"%ld", error.code],error.userInfo[@"NSLocalizedFailureReason"], error);
-        }
-        RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
-        NSString *newEndPoint =[NSString stringWithFormat:@"%@lat=%.7f&lng=%.7f",endPoint,self.deviceLat,self.deviceLong];
-        
-        //use below only for testing using simulator
-        //NSString *newEndPoint =[NSString stringWithFormat:@"%@lat=13.7441961&lng=100.5568176", endPoint];
-        NSLog(@"%@",newEndPoint);
-        [main executeCoreRESTCallWithApicore:newEndPoint apifunc:getPost payload:payLoad secret:secret token:token force:force completion:^(NSString* callback, NSError* error) {
-            
-            NSLog(@"callback %@", callback);
-            NSLog(@"error %@", error);
-            
-            if (error == NULL) {
-                resolve(callback);
-                [self.bridge.eventDispatcher sendAppEventWithName:@"executeCoreRESTCall" body:callback];
-            }else{
-                reject([NSString stringWithFormat:@"%ld", error.code],error.userInfo[@"NSLocalizedFailureReason"], error);
-            }
-            
-        }];
-        
-    } else {
-        RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
-        [main executeCoreRESTCallWithApicore:endPoint apifunc:getPost payload:payLoad secret:secret token:token force:force completion:^(NSString* callback, NSError* error) {
-            
-            NSLog(@"callback %@", callback);
-            NSLog(@"error %@", error);
-            
-            if (error == NULL) {
-                resolve(callback);
-                [self.bridge.eventDispatcher sendAppEventWithName:@"executeCoreRESTCall" body:callback];
-            }else{
-                reject([NSString stringWithFormat:@"%ld", error.code],error.userInfo[@"NSLocalizedFailureReason"], error);
-            }
-            
-        }];
-    }*/
-    
-    /*if([getPost isEqualToString:@"LINE"]){
-        [LineSDKLogin sharedInstance].delegate = self;
-        NSLog(@"equal to line");
-        [[LineSDKLogin sharedInstance] startLogin];
-        self.loginResolver = resolve;
-        self.loginRejecter = reject;
-    }else{
-        
-    }*/
-    /*[self.bridge.eventDispatcher sendAppEventWithName:@"executeCoreRESTCall" body:nil];
-    //ok xxx
-    resolve(@YES);
-    */
 }
 
 /**
@@ -294,7 +305,12 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
  * @param hubConnectionPromise
  */
 
-
+-(void)sendAnEvent:(NSString*)eventName :(NSDictionary*)userInfo{
+    NSString *event = eventName;
+    NSString *appToken = userInfo[@"data"][@"property_smooch_app_token"];
+    [self.bridge.eventDispatcher sendAppEventWithName:event body:@{@"apptoken": appToken}];
+    
+}
 - (void)listenerOkkami:(NSNotification *)note {
     NSDictionary *theData = [note userInfo];
     if (theData != nil) {
@@ -338,37 +354,6 @@ RCT_EXPORT_METHOD(connectToHub
             reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
         }
     }];
-    /*[self.main connectToHubWithUid:uid secret:secret token:token hubUrl:hubUrl hubPort:portNumber completion:^(NSError * error) {
-        
-        if (error == nil) {
-            resolve(@YES);
-        }else{
-            reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
-            
-            /*[main disconnectFromHubWithCompletion:^(NSError * errorDisc) {
-                if (errorDisc == nil) {
-                    reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
-                }
-            }];
-        }*/
-        /*if (error == nil) {
-            [self.bridge.eventDispatcher sendAppEventWithName:@"onHubConnected" body:nil];
-            [main identifyDeviceIdWithCompletion:^(NSError * error) {
-                if (error==nil) {
-                    
-                    
-                    //[self.bridge.eventDispatcher sendAppEventWithName:@"onHubLoggedIn" body:nil];
-                    //ok
-                    //resolve(@YES);
-                }else{
-                    reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
-                }
-            }];
-        }else{
-            reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
-        }
-    }];*/
-    
 }
 
 
@@ -612,7 +597,7 @@ RCT_EXPORT_METHOD(openChatWindow
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    OkkamiSmoochChat *smooch = [OkkamiSmoochChat newInstanceWithAppToken:smoochAppToken];
+    /*OkkamiSmoochChat *smooch = [OkkamiSmoochChat newInstanceWithAppToken:smoochAppToken];
     self.smooch = smooch;
     NSNotificationCenter *defaultNotif = [NSNotificationCenter defaultCenter];
     [defaultNotif addObserver:self selector:@selector(listenerOkkami:) name:self.smooch.notificationName object:nil];
@@ -620,7 +605,15 @@ RCT_EXPORT_METHOD(openChatWindow
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.smooch smoochChatWithUser:userID color: color textColor: textColor rgbColor: rgbColor rgbTextColor: rgbTextColor];
         //[UIApplication sharedApplication].applicationIconBadgeNumber = [self.smooch getUnreadMessageCount];
-    });
+    });*/
+    [Smooch destroy];
+    SKTSettings *settings = [SKTSettings settingsWithAppToken:smoochAppToken];
+    settings.enableAppDelegateSwizzling = NO;
+    settings.enableUserNotificationCenterDelegateOverride = NO;
+    [Smooch initWithSettings:settings];
+    [Smooch login:self.smoochUserId jwt:nil];
+    [Smooch show];
+    [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber - 1;
 }
 
 
@@ -639,12 +632,21 @@ RCT_EXPORT_METHOD(getUnreadMessageCount
 }
 
 
+RCT_EXPORT_METHOD(setAppBadgeIcon :(NSInteger)badgeIcon
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    [UIApplication sharedApplication].applicationIconBadgeNumber = badgeIcon;
+}
+
 RCT_EXPORT_METHOD(logoutChatWindow
                   
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
     [self.smooch okkamiLogout];
+    [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.channel_name];
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
 }
 
@@ -748,9 +750,21 @@ RCT_EXPORT_METHOD(setUserId
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    id appDelegate = [[UIApplication sharedApplication] delegate];
-    NSString *channelName = [NSString stringWithFormat:@"private_mobile_user_%@", userId];
-    //[appDelegate subscribeToChannelNamed:channelName];
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    self.appdel = appDelegate;
+    NSString *channelName = [NSString stringWithFormat:@"mobile_user_%@", userId];
+    self.smoochUserId = userId;
+    [self.appdel setUser_id:userId];
+    [self.appdel setChannel_name:channelName];
+    [[self.appdel.pusher nativePusher] subscribe:channelName];
+    // subscribe to channel and bind to event
+    PTPusherChannel *channel = [self.appdel.pusher  subscribeToChannelNamed:channelName];
+    [channel bindToEventNamed:@"new-message" handleWithBlock:^(PTPusherEvent *channelEvent) {
+        // channelEvent.data is a NSDictianary of the JSON object received
+        NSString *message = [channelEvent.data objectForKey:@"message"];
+        NSLog(@"message received: %@", message);
+    }];
+    [self.appdel.pusher connect];
 }
 
 /*-------------------------------------- Utility   --------------------------------------------------*/
@@ -779,23 +793,6 @@ RCT_EXPORT_METHOD(start
     RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
     NSString* udid = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
     NSString* payload = [NSString stringWithFormat:@"{\"uid\":\"%@\"}", udid];
-    
-    /*[main executeCoreRESTCallWithApicore:@"https://api.fingi-staging.com/v1/preconnect" apifunc:@"POST" payload:payload secret:@"92865cbcd9be8a19d0563006f8b81c73" token:@"32361e1a5a496e0c" force:1 completion:^(id callback) {
-        resolve(callback);
-        [self.bridge.eventDispatcher sendAppEventWithName:@"onStart" body:@{@"command": @"On Start"}];
-    }];*/
-    /*RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
-    NSString* udid = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
-    NSString* payload = [NSString stringWithFormat:@"{\"uid\":\"%@\"}", udid];
-    [main executeCoreRESTCallWithApicore:@"https://api.fingi-staging.com/v1/preconnect" apifunc:@"POST" payload:payload secret:@"" token:@"" completion:^(id callback) {
-//        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:callback options:NSJSONWritingPrettyPrinted error:nil];
-//        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-        resolve(callback);
-        [self.bridge.eventDispatcher sendAppEventWithName:@"onStart" body:@{@"command": @"On Start"}];
-        
-    }];*/
-    //[main executeCoreRESTCallWithApicore:@"https://api.fingi-staging.com/v1/preconnect" apifunc:@"POST" payload:payload];
-    
 }
 
 /**

@@ -51,7 +51,11 @@ class OkkamiSdk {
     return OkkamiSdkManager.setLineEnvironment(data);
   }
 
+  setAppBadgeIcon(number){
+    return OkkamiSdkManager.setAppBadgeIcon(number);
+  }
   setUserId(userId){
+    console.log("SET USER ID ? ", userId)
     return OkkamiSdkManager.setUserId(userId);
   }
   async isHubLoggedIn() {
