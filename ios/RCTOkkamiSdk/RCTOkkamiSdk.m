@@ -606,14 +606,17 @@ RCT_EXPORT_METHOD(openChatWindow
         [self.smooch smoochChatWithUser:userID color: color textColor: textColor rgbColor: rgbColor rgbTextColor: rgbTextColor];
         //[UIApplication sharedApplication].applicationIconBadgeNumber = [self.smooch getUnreadMessageCount];
     });*/
-    [Smooch destroy];
-    SKTSettings *settings = [SKTSettings settingsWithAppToken:smoochAppToken];
-    settings.enableAppDelegateSwizzling = NO;
-    settings.enableUserNotificationCenterDelegateOverride = NO;
-    [Smooch initWithSettings:settings];
-    [Smooch login:self.smoochUserId jwt:nil];
-    [Smooch show];
-    [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber - 1;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [Smooch destroy];
+        SKTSettings *settings = [SKTSettings settingsWithAppToken:smoochAppToken];
+        settings.enableAppDelegateSwizzling = NO;
+        settings.enableUserNotificationCenterDelegateOverride = NO;
+        [Smooch initWithSettings:settings];
+        [Smooch login:self.smoochUserId jwt:nil];
+        [Smooch show];
+        [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
+        [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber - 1;
+    });
 }
 
 
@@ -757,14 +760,15 @@ RCT_EXPORT_METHOD(setUserId
     [self.appdel setUser_id:userId];
     [self.appdel setChannel_name:channelName];
     [[self.appdel.pusher nativePusher] subscribe:channelName];
+
     // subscribe to channel and bind to event
-    PTPusherChannel *channel = [self.appdel.pusher  subscribeToChannelNamed:channelName];
-    [channel bindToEventNamed:@"new-message" handleWithBlock:^(PTPusherEvent *channelEvent) {
+    //PTPusherChannel *channel = [self.appdel.pusher  subscribeToChannelNamed:channelName];
+    /*[channel bindToEventNamed:@"new-message" handleWithBlock:^(PTPusherEvent *channelEvent) {
         // channelEvent.data is a NSDictianary of the JSON object received
         NSString *message = [channelEvent.data objectForKey:@"message"];
         NSLog(@"message received: %@", message);
     }];
-    [self.appdel.pusher connect];
+    [self.appdel.pusher connect];*/
 }
 
 /*-------------------------------------- Utility   --------------------------------------------------*/
