@@ -12,6 +12,19 @@
 		6589563C1ECFF9F00080F354 /* Pusher.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6589563B1ECFF9F00080F354 /* Pusher.framework */; };
 		6589563E1ECFF9F70080F354 /* SocketRocket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6589563D1ECFF9F70080F354 /* SocketRocket.framework */; };
 		658956401ECFFAB30080F354 /* Pods_OKKAMI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6589563F1ECFFAB30080F354 /* Pods_OKKAMI.framework */; };
+		65F9CF3E1ED2941D00315693 /* Smooch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65F9CF3D1ED2941C00315693 /* Smooch.framework */; };
+		65F9CF401ED2945100315693 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65F9CF3F1ED2945100315693 /* OpenGLES.framework */; };
+		65F9CF421ED2945700315693 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65F9CF411ED2945700315693 /* UIKit.framework */; };
+		65F9CF441ED2945E00315693 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65F9CF431ED2945E00315693 /* SystemConfiguration.framework */; };
+		65F9CF461ED2946200315693 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65F9CF451ED2946200315693 /* QuartzCore.framework */; };
+		65F9CF491ED2946F00315693 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65F9CF471ED2946F00315693 /* CoreTelephony.framework */; };
+		65F9CF4A1ED2946F00315693 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65F9CF481ED2946F00315693 /* Photos.framework */; };
+		65F9CF4C1ED2948500315693 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65F9CF4B1ED2948500315693 /* Foundation.framework */; };
+		65F9CF4E1ED2948D00315693 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65F9CF4D1ED2948D00315693 /* CoreText.framework */; };
+		65F9CF501ED2949300315693 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65F9CF4F1ED2949300315693 /* CoreGraphics.framework */; };
+		65F9CF521ED2949900315693 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65F9CF511ED2949900315693 /* CFNetwork.framework */; };
+		65F9CF541ED2949E00315693 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65F9CF531ED2949E00315693 /* AVFoundation.framework */; };
+		65F9CF561ED294A300315693 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65F9CF551ED294A300315693 /* AssetsLibrary.framework */; };
 		FA3DC2351E6D954900866C11 /* LineSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA3DC2341E6D954900866C11 /* LineSDK.framework */; };
 		FA7FD0A41EC09CAA00C7D8B9 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7FD0A31EC09CAA00C7D8B9 /* FBSDKCoreKit.framework */; };
 		FAF109061E48E2A0000B1E84 /* RCTOkkamiSdkImplementation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAF109051E48E2A0000B1E84 /* RCTOkkamiSdkImplementation.framework */; };
@@ -86,6 +99,19 @@
 		658956951ECFFF4B0080F354 /* SocketRocket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SocketRocket.h; sourceTree = "<group>"; };
 		658956961ECFFF4B0080F354 /* SRWebSocket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SRWebSocket.h; sourceTree = "<group>"; };
 		658956971ECFFF4B0080F354 /* SRWebSocket.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SRWebSocket.m; sourceTree = "<group>"; };
+		65F9CF3D1ED2941C00315693 /* Smooch.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Smooch.framework; path = "okkami-ios-sdk/Smooch.framework"; sourceTree = "<group>"; };
+		65F9CF3F1ED2945100315693 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		65F9CF411ED2945700315693 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		65F9CF431ED2945E00315693 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		65F9CF451ED2946200315693 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		65F9CF471ED2946F00315693 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		65F9CF481ED2946F00315693 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
+		65F9CF4B1ED2948500315693 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		65F9CF4D1ED2948D00315693 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		65F9CF4F1ED2949300315693 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		65F9CF511ED2949900315693 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		65F9CF531ED2949E00315693 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		65F9CF551ED294A300315693 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		FA1C0D621E486F0200304CEB /* RCTOkkamiSdkImplementation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RCTOkkamiSdkImplementation.framework; path = "../../../../../Library/Developer/Xcode/DerivedData/OkkamiSdkTest-adkatmurlkonkheuvhkuieikzepk/Build/Products/Debug-iphonesimulator/RCTOkkamiSdkImplementation.framework"; sourceTree = "<group>"; };
 		FA3DC2341E6D954900866C11 /* LineSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = LineSDK.framework; sourceTree = "<group>"; };
 		FA7FD0A31EC09CAA00C7D8B9 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
@@ -100,11 +126,24 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				65F9CF561ED294A300315693 /* AssetsLibrary.framework in Frameworks */,
+				65F9CF541ED2949E00315693 /* AVFoundation.framework in Frameworks */,
+				65F9CF521ED2949900315693 /* CFNetwork.framework in Frameworks */,
+				65F9CF501ED2949300315693 /* CoreGraphics.framework in Frameworks */,
+				65F9CF4E1ED2948D00315693 /* CoreText.framework in Frameworks */,
+				65F9CF4C1ED2948500315693 /* Foundation.framework in Frameworks */,
+				65F9CF491ED2946F00315693 /* CoreTelephony.framework in Frameworks */,
+				65F9CF4A1ED2946F00315693 /* Photos.framework in Frameworks */,
+				65F9CF461ED2946200315693 /* QuartzCore.framework in Frameworks */,
+				65F9CF441ED2945E00315693 /* SystemConfiguration.framework in Frameworks */,
+				65F9CF421ED2945700315693 /* UIKit.framework in Frameworks */,
+				65F9CF401ED2945100315693 /* OpenGLES.framework in Frameworks */,
 				658956401ECFFAB30080F354 /* Pods_OKKAMI.framework in Frameworks */,
 				6589563E1ECFF9F70080F354 /* SocketRocket.framework in Frameworks */,
 				6589563C1ECFF9F00080F354 /* Pusher.framework in Frameworks */,
 				FAF109081E48E2B9000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework in Frameworks */,
 				FA7FD0A41EC09CAA00C7D8B9 /* FBSDKCoreKit.framework in Frameworks */,
+				65F9CF3E1ED2941D00315693 /* Smooch.framework in Frameworks */,
 				FAF109061E48E2A0000B1E84 /* RCTOkkamiSdkImplementation.framework in Frameworks */,
 				FA3DC2351E6D954900866C11 /* LineSDK.framework in Frameworks */,
 			);
@@ -230,6 +269,19 @@
 		FAF229A71E141BE800F3C9C1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				65F9CF551ED294A300315693 /* AssetsLibrary.framework */,
+				65F9CF531ED2949E00315693 /* AVFoundation.framework */,
+				65F9CF511ED2949900315693 /* CFNetwork.framework */,
+				65F9CF4F1ED2949300315693 /* CoreGraphics.framework */,
+				65F9CF4D1ED2948D00315693 /* CoreText.framework */,
+				65F9CF4B1ED2948500315693 /* Foundation.framework */,
+				65F9CF471ED2946F00315693 /* CoreTelephony.framework */,
+				65F9CF481ED2946F00315693 /* Photos.framework */,
+				65F9CF451ED2946200315693 /* QuartzCore.framework */,
+				65F9CF431ED2945E00315693 /* SystemConfiguration.framework */,
+				65F9CF411ED2945700315693 /* UIKit.framework */,
+				65F9CF3F1ED2945100315693 /* OpenGLES.framework */,
+				65F9CF3D1ED2941C00315693 /* Smooch.framework */,
 				6589563F1ECFFAB30080F354 /* Pods_OKKAMI.framework */,
 				6589563D1ECFF9F70080F354 /* SocketRocket.framework */,
 				6589563B1ECFF9F00080F354 /* Pusher.framework */,
@@ -401,12 +453,15 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/RCTOkkamiSdkImplementation/build/Debug-iphoneos",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/okkami-ios-sdk",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../node_modules/react-native/React/**",
+					"$(SRCROOT)/../../ios/Pods/**",
+					"$(SRCROOT)/../../ios/OKKAMI/**",
 				);
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = "-ObjC";
@@ -423,12 +478,15 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/RCTOkkamiSdkImplementation/build/Debug-iphoneos",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/okkami-ios-sdk",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../node_modules/react-native/React/**",
+					"$(SRCROOT)/../../ios/Pods/**",
+					"$(SRCROOT)/../../ios/OKKAMI/**",
 				);
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = "-ObjC";
