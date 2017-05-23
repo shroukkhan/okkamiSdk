@@ -57,7 +57,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         OnHubCommandReceivedListener {
 
     public interface MethodInvokeListener {
-        public void invoke(String methodName, String arg);
+        void invoke(String methodName, String arg);
     }
     private MethodInvokeListener mMethodInvoker;
 
@@ -724,7 +724,8 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     }
 
     private void invokeInitPushNoti() {
-        mMethodInvoker.invoke("initFirebase", userId);
+        // Method name is currently optional.
+        mMethodInvoker.invoke("initPusherFcmService", userId);
     }
 
     // React native calling as looping with different appTokens
