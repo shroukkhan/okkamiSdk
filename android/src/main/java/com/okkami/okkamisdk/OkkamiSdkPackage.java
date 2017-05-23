@@ -1,5 +1,7 @@
 package com.okkami.okkamisdk;
 
+import android.app.Application;
+
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
@@ -11,6 +13,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class OkkamiSdkPackage implements ReactPackage {
+    private final Application app;
+
     /**
      * @param reactContext react application context that can be used to create modules
      * @return list of native modules to register with the newly created catalyst instance
@@ -18,8 +22,7 @@ public class OkkamiSdkPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-        modules.add(new OkkamiSdkModule(reactContext));
-
+        modules.add(new OkkamiSdkModule(reactContext, app, mMethodInvoker));
         return modules;
     }
 
@@ -42,5 +45,11 @@ public class OkkamiSdkPackage implements ReactPackage {
     @Override
     public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
         return Collections.emptyList();
+    }
+
+    private OkkamiSdkModule.MethodInvokeListener mMethodInvoker;
+    public OkkamiSdkPackage(Application app, OkkamiSdkModule.MethodInvokeListener invoker) {
+        this.app = app;
+        mMethodInvoker = invoker;
     }
 }

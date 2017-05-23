@@ -9,6 +9,13 @@
 /* Begin PBXBuildFile section */
 		5D72D2EC1C16249000E22EC1 /* RCTOkkamiSdk.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5D72D2EB1C16249000E22EC1 /* RCTOkkamiSdk.h */; };
 		5D72D2EE1C16249000E22EC1 /* RCTOkkamiSdk.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D72D2ED1C16249000E22EC1 /* RCTOkkamiSdk.m */; };
+		6589563C1ECFF9F00080F354 /* Pusher.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6589563B1ECFF9F00080F354 /* Pusher.framework */; };
+		6589563E1ECFF9F70080F354 /* SocketRocket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6589563D1ECFF9F70080F354 /* SocketRocket.framework */; };
+		658956401ECFFAB30080F354 /* Pods_OKKAMI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6589563F1ECFFAB30080F354 /* Pods_OKKAMI.framework */; };
+		FA3DC2351E6D954900866C11 /* LineSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA3DC2341E6D954900866C11 /* LineSDK.framework */; };
+		FA7FD0A41EC09CAA00C7D8B9 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7FD0A31EC09CAA00C7D8B9 /* FBSDKCoreKit.framework */; };
+		FAF109061E48E2A0000B1E84 /* RCTOkkamiSdkImplementation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAF109051E48E2A0000B1E84 /* RCTOkkamiSdkImplementation.framework */; };
+		FAF109081E48E2B9000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAF109071E48E2B9000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +35,64 @@
 		5D72D2E81C16249000E22EC1 /* libRCTOkkamiSdk.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTOkkamiSdk.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D72D2EB1C16249000E22EC1 /* RCTOkkamiSdk.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTOkkamiSdk.h; sourceTree = "<group>"; };
 		5D72D2ED1C16249000E22EC1 /* RCTOkkamiSdk.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTOkkamiSdk.m; sourceTree = "<group>"; };
+		6589563B1ECFF9F00080F354 /* Pusher.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pusher.framework; path = "/Users/macbook/Documents/ios/react/OKKAMI-NEW/OKKAMI/ios/Pods/../build/Debug-iphoneos/libPusher/Pusher.framework"; sourceTree = "<absolute>"; };
+		6589563D1ECFF9F70080F354 /* SocketRocket.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SocketRocket.framework; path = "/Users/macbook/Documents/ios/react/OKKAMI-NEW/OKKAMI/ios/Pods/../build/Debug-iphoneos/SocketRocket/SocketRocket.framework"; sourceTree = "<absolute>"; };
+		6589563F1ECFFAB30080F354 /* Pods_OKKAMI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_OKKAMI.framework; path = "../../../../../../../Library/Developer/Xcode/DerivedData/OKKAMI-gcezqwwiawdunwhjuddntnnkhtld/Build/Products/Debug-iphoneos/Pods_OKKAMI.framework"; sourceTree = "<group>"; };
+		658956651ECFFF410080F354 /* NSDictionary+QueryString.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+QueryString.m"; sourceTree = "<group>"; };
+		658956661ECFFF410080F354 /* NSDictionary+StringValue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+StringValue.m"; sourceTree = "<group>"; };
+		658956671ECFFF410080F354 /* NSString+Hashing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+Hashing.m"; sourceTree = "<group>"; };
+		658956691ECFFF410080F354 /* NSDictionary+QueryString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+QueryString.h"; sourceTree = "<group>"; };
+		6589566A1ECFFF410080F354 /* NSDictionary+StringValue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+StringValue.h"; sourceTree = "<group>"; };
+		6589566B1ECFFF410080F354 /* NSString+Hashing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+Hashing.h"; sourceTree = "<group>"; };
+		6589566C1ECFFF410080F354 /* PTBlockEventListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTBlockEventListener.h; sourceTree = "<group>"; };
+		6589566D1ECFFF410080F354 /* PTJSON.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTJSON.h; sourceTree = "<group>"; };
+		6589566E1ECFFF410080F354 /* PTPusherChannel_Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTPusherChannel_Private.h; sourceTree = "<group>"; };
+		6589566F1ECFFF410080F354 /* PTTargetActionEventListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTTargetActionEventListener.h; sourceTree = "<group>"; };
+		658956701ECFFF410080F354 /* PTBlockEventListener.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PTBlockEventListener.m; sourceTree = "<group>"; };
+		658956711ECFFF410080F354 /* PTEventListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTEventListener.h; sourceTree = "<group>"; };
+		658956721ECFFF410080F354 /* PTJSON.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PTJSON.m; sourceTree = "<group>"; };
+		658956731ECFFF410080F354 /* PTNativePusher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTNativePusher.h; sourceTree = "<group>"; };
+		658956741ECFFF410080F354 /* PTNativePusher.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PTNativePusher.m; sourceTree = "<group>"; };
+		658956751ECFFF410080F354 /* PTPusher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTPusher.h; sourceTree = "<group>"; };
+		658956761ECFFF410080F354 /* PTPusher.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PTPusher.m; sourceTree = "<group>"; };
+		658956771ECFFF410080F354 /* PTPusherAPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTPusherAPI.h; sourceTree = "<group>"; };
+		658956781ECFFF410080F354 /* PTPusherAPI.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PTPusherAPI.m; sourceTree = "<group>"; };
+		658956791ECFFF410080F354 /* PTPusherChannel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTPusherChannel.h; sourceTree = "<group>"; };
+		6589567A1ECFFF410080F354 /* PTPusherChannel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PTPusherChannel.m; sourceTree = "<group>"; };
+		6589567B1ECFFF410080F354 /* PTPusherChannelAuthorizationDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTPusherChannelAuthorizationDelegate.h; sourceTree = "<group>"; };
+		6589567C1ECFFF410080F354 /* PTPusherChannelServerBasedAuthorization.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTPusherChannelServerBasedAuthorization.h; sourceTree = "<group>"; };
+		6589567D1ECFFF410080F354 /* PTPusherChannelServerBasedAuthorization.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PTPusherChannelServerBasedAuthorization.m; sourceTree = "<group>"; };
+		6589567E1ECFFF410080F354 /* PTPusherConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTPusherConnection.h; sourceTree = "<group>"; };
+		6589567F1ECFFF410080F354 /* PTPusherConnection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PTPusherConnection.m; sourceTree = "<group>"; };
+		658956801ECFFF410080F354 /* PTPusherDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTPusherDelegate.h; sourceTree = "<group>"; };
+		658956811ECFFF410080F354 /* PTPusherErrors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTPusherErrors.h; sourceTree = "<group>"; };
+		658956821ECFFF410080F354 /* PTPusherEvent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTPusherEvent.h; sourceTree = "<group>"; };
+		658956831ECFFF410080F354 /* PTPusherEvent.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PTPusherEvent.m; sourceTree = "<group>"; };
+		658956841ECFFF410080F354 /* PTPusherEventDispatcher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTPusherEventDispatcher.h; sourceTree = "<group>"; };
+		658956851ECFFF410080F354 /* PTPusherEventDispatcher.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PTPusherEventDispatcher.m; sourceTree = "<group>"; };
+		658956861ECFFF410080F354 /* PTPusherEventPublisher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTPusherEventPublisher.h; sourceTree = "<group>"; };
+		658956871ECFFF410080F354 /* PTPusherMacros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTPusherMacros.h; sourceTree = "<group>"; };
+		658956881ECFFF410080F354 /* PTPusherMockConnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTPusherMockConnection.h; sourceTree = "<group>"; };
+		658956891ECFFF410080F354 /* PTPusherMockConnection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PTPusherMockConnection.m; sourceTree = "<group>"; };
+		6589568A1ECFFF410080F354 /* PTPusherPresenceChannelDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTPusherPresenceChannelDelegate.h; sourceTree = "<group>"; };
+		6589568B1ECFFF410080F354 /* PTTargetActionEventListener.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PTTargetActionEventListener.m; sourceTree = "<group>"; };
+		6589568C1ECFFF410080F354 /* PTURLRequestOperation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PTURLRequestOperation.h; sourceTree = "<group>"; };
+		6589568D1ECFFF410080F354 /* PTURLRequestOperation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PTURLRequestOperation.m; sourceTree = "<group>"; };
+		6589568E1ECFFF410080F354 /* Pusher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Pusher.h; sourceTree = "<group>"; };
+		6589568F1ECFFF410080F354 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		658956901ECFFF410080F354 /* README-DIST.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "README-DIST.txt"; sourceTree = "<group>"; };
+		658956921ECFFF4B0080F354 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		658956931ECFFF4B0080F354 /* README.rst */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.rst; sourceTree = "<group>"; };
+		658956951ECFFF4B0080F354 /* SocketRocket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SocketRocket.h; sourceTree = "<group>"; };
+		658956961ECFFF4B0080F354 /* SRWebSocket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SRWebSocket.h; sourceTree = "<group>"; };
+		658956971ECFFF4B0080F354 /* SRWebSocket.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SRWebSocket.m; sourceTree = "<group>"; };
+		FA1C0D621E486F0200304CEB /* RCTOkkamiSdkImplementation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RCTOkkamiSdkImplementation.framework; path = "../../../../../Library/Developer/Xcode/DerivedData/OkkamiSdkTest-adkatmurlkonkheuvhkuieikzepk/Build/Products/Debug-iphonesimulator/RCTOkkamiSdkImplementation.framework"; sourceTree = "<group>"; };
+		FA3DC2341E6D954900866C11 /* LineSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = LineSDK.framework; sourceTree = "<group>"; };
+		FA7FD0A31EC09CAA00C7D8B9 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
+		FAAEFFC61EBC43E500914A4E /* libRCTFBSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRCTFBSDK.a; path = "../../../../../../../Library/Developer/Xcode/DerivedData/OKKAMI-gcezqwwiawdunwhjuddntnnkhtld/Build/Products/Debug-iphonesimulator/libRCTFBSDK.a"; sourceTree = "<group>"; };
+		FAC9F8F31E14F38100EEFC1B /* RCTOkkamiSdkImplementation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RCTOkkamiSdkImplementation.framework; path = "RCTOkkamiSdkImplementation/build/Debug-iphoneos/RCTOkkamiSdkImplementation.framework"; sourceTree = "<group>"; };
+		FAF109051E48E2A0000B1E84 /* RCTOkkamiSdkImplementation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RCTOkkamiSdkImplementation.framework; path = ../../../../../Desktop/RCTOkkamiSdkImplementation.framework; sourceTree = "<group>"; };
+		FAF109071E48E2B9000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_RCTOkkamiSdkImplementation.framework; path = ../../../../../Desktop/Pods_RCTOkkamiSdkImplementation.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +100,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				658956401ECFFAB30080F354 /* Pods_OKKAMI.framework in Frameworks */,
+				6589563E1ECFF9F70080F354 /* SocketRocket.framework in Frameworks */,
+				6589563C1ECFF9F00080F354 /* Pusher.framework in Frameworks */,
+				FAF109081E48E2B9000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework in Frameworks */,
+				FA7FD0A41EC09CAA00C7D8B9 /* FBSDKCoreKit.framework in Frameworks */,
+				FAF109061E48E2A0000B1E84 /* RCTOkkamiSdkImplementation.framework in Frameworks */,
+				FA3DC2351E6D954900866C11 /* LineSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,8 +116,11 @@
 		5D72D2DF1C16249000E22EC1 = {
 			isa = PBXGroup;
 			children = (
+				658956911ECFFF4B0080F354 /* SocketRocket */,
+				658956631ECFFF410080F354 /* libPusher */,
 				5D72D2EA1C16249000E22EC1 /* RCTOkkamiSdk */,
 				5D72D2E91C16249000E22EC1 /* Products */,
+				FAF229A71E141BE800F3C9C1 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -64,6 +139,109 @@
 				5D72D2ED1C16249000E22EC1 /* RCTOkkamiSdk.m */,
 			);
 			path = RCTOkkamiSdk;
+			sourceTree = "<group>";
+		};
+		658956631ECFFF410080F354 /* libPusher */ = {
+			isa = PBXGroup;
+			children = (
+				658956641ECFFF410080F354 /* Library */,
+				6589568F1ECFFF410080F354 /* LICENSE */,
+				658956901ECFFF410080F354 /* README-DIST.txt */,
+			);
+			path = libPusher;
+			sourceTree = "<group>";
+		};
+		658956641ECFFF410080F354 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				658956651ECFFF410080F354 /* NSDictionary+QueryString.m */,
+				658956661ECFFF410080F354 /* NSDictionary+StringValue.m */,
+				658956671ECFFF410080F354 /* NSString+Hashing.m */,
+				658956681ECFFF410080F354 /* Private Headers */,
+				658956701ECFFF410080F354 /* PTBlockEventListener.m */,
+				658956711ECFFF410080F354 /* PTEventListener.h */,
+				658956721ECFFF410080F354 /* PTJSON.m */,
+				658956731ECFFF410080F354 /* PTNativePusher.h */,
+				658956741ECFFF410080F354 /* PTNativePusher.m */,
+				658956751ECFFF410080F354 /* PTPusher.h */,
+				658956761ECFFF410080F354 /* PTPusher.m */,
+				658956771ECFFF410080F354 /* PTPusherAPI.h */,
+				658956781ECFFF410080F354 /* PTPusherAPI.m */,
+				658956791ECFFF410080F354 /* PTPusherChannel.h */,
+				6589567A1ECFFF410080F354 /* PTPusherChannel.m */,
+				6589567B1ECFFF410080F354 /* PTPusherChannelAuthorizationDelegate.h */,
+				6589567C1ECFFF410080F354 /* PTPusherChannelServerBasedAuthorization.h */,
+				6589567D1ECFFF410080F354 /* PTPusherChannelServerBasedAuthorization.m */,
+				6589567E1ECFFF410080F354 /* PTPusherConnection.h */,
+				6589567F1ECFFF410080F354 /* PTPusherConnection.m */,
+				658956801ECFFF410080F354 /* PTPusherDelegate.h */,
+				658956811ECFFF410080F354 /* PTPusherErrors.h */,
+				658956821ECFFF410080F354 /* PTPusherEvent.h */,
+				658956831ECFFF410080F354 /* PTPusherEvent.m */,
+				658956841ECFFF410080F354 /* PTPusherEventDispatcher.h */,
+				658956851ECFFF410080F354 /* PTPusherEventDispatcher.m */,
+				658956861ECFFF410080F354 /* PTPusherEventPublisher.h */,
+				658956871ECFFF410080F354 /* PTPusherMacros.h */,
+				658956881ECFFF410080F354 /* PTPusherMockConnection.h */,
+				658956891ECFFF410080F354 /* PTPusherMockConnection.m */,
+				6589568A1ECFFF410080F354 /* PTPusherPresenceChannelDelegate.h */,
+				6589568B1ECFFF410080F354 /* PTTargetActionEventListener.m */,
+				6589568C1ECFFF410080F354 /* PTURLRequestOperation.h */,
+				6589568D1ECFFF410080F354 /* PTURLRequestOperation.m */,
+				6589568E1ECFFF410080F354 /* Pusher.h */,
+			);
+			path = Library;
+			sourceTree = "<group>";
+		};
+		658956681ECFFF410080F354 /* Private Headers */ = {
+			isa = PBXGroup;
+			children = (
+				658956691ECFFF410080F354 /* NSDictionary+QueryString.h */,
+				6589566A1ECFFF410080F354 /* NSDictionary+StringValue.h */,
+				6589566B1ECFFF410080F354 /* NSString+Hashing.h */,
+				6589566C1ECFFF410080F354 /* PTBlockEventListener.h */,
+				6589566D1ECFFF410080F354 /* PTJSON.h */,
+				6589566E1ECFFF410080F354 /* PTPusherChannel_Private.h */,
+				6589566F1ECFFF410080F354 /* PTTargetActionEventListener.h */,
+			);
+			path = "Private Headers";
+			sourceTree = "<group>";
+		};
+		658956911ECFFF4B0080F354 /* SocketRocket */ = {
+			isa = PBXGroup;
+			children = (
+				658956921ECFFF4B0080F354 /* LICENSE */,
+				658956931ECFFF4B0080F354 /* README.rst */,
+				658956941ECFFF4B0080F354 /* SocketRocket */,
+			);
+			path = SocketRocket;
+			sourceTree = "<group>";
+		};
+		658956941ECFFF4B0080F354 /* SocketRocket */ = {
+			isa = PBXGroup;
+			children = (
+				658956951ECFFF4B0080F354 /* SocketRocket.h */,
+				658956961ECFFF4B0080F354 /* SRWebSocket.h */,
+				658956971ECFFF4B0080F354 /* SRWebSocket.m */,
+			);
+			path = SocketRocket;
+			sourceTree = "<group>";
+		};
+		FAF229A71E141BE800F3C9C1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6589563F1ECFFAB30080F354 /* Pods_OKKAMI.framework */,
+				6589563D1ECFF9F70080F354 /* SocketRocket.framework */,
+				6589563B1ECFF9F00080F354 /* Pusher.framework */,
+				FA7FD0A31EC09CAA00C7D8B9 /* FBSDKCoreKit.framework */,
+				FAAEFFC61EBC43E500914A4E /* libRCTFBSDK.a */,
+				FA3DC2341E6D954900866C11 /* LineSDK.framework */,
+				FAF109071E48E2B9000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework */,
+				FAF109051E48E2A0000B1E84 /* RCTOkkamiSdkImplementation.framework */,
+				FA1C0D621E486F0200304CEB /* RCTOkkamiSdkImplementation.framework */,
+				FAC9F8F31E14F38100EEFC1B /* RCTOkkamiSdkImplementation.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -132,7 +310,9 @@
 		5D72D2EF1C16249000E22EC1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -149,6 +329,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -175,7 +356,9 @@
 		5D72D2F01C16249000E22EC1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -192,6 +375,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -212,13 +396,19 @@
 		5D72D2F21C16249000E22EC1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/RCTOkkamiSdkImplementation/build/Debug-iphoneos",
+					"$(PROJECT_DIR)",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../react-native/React/**",
-					"$(SRCROOT)/node_modules/react-native/React",
-					"$(SRCROOT)/../../React/**",
+					"$(SRCROOT)/../node_modules/react-native/React/**",
+					"$(SRCROOT)/../../node_modules/react-native/React/**",
 				);
+				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -228,13 +418,19 @@
 		5D72D2F31C16249000E22EC1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/RCTOkkamiSdkImplementation/build/Debug-iphoneos",
+					"$(PROJECT_DIR)",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../React/**",
-					"$(SRCROOT)/../../react-native/React/**",
-					"$(SRCROOT)/node_modules/react-native/React/**",
+					"$(SRCROOT)/../node_modules/react-native/React/**",
+					"$(SRCROOT)/../../node_modules/react-native/React/**",
 				);
+				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
