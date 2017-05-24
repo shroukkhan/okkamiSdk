@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		5D72D2EC1C16249000E22EC1 /* RCTOkkamiSdk.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5D72D2EB1C16249000E22EC1 /* RCTOkkamiSdk.h */; };
 		5D72D2EE1C16249000E22EC1 /* RCTOkkamiSdk.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D72D2ED1C16249000E22EC1 /* RCTOkkamiSdk.m */; };
+		657817CE1ED573790079B076 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 657817CC1ED573780079B076 /* UserNotifications.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		657817CF1ED573790079B076 /* UserNotificationsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 657817CD1ED573780079B076 /* UserNotificationsUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		6589563C1ECFF9F00080F354 /* Pusher.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6589563B1ECFF9F00080F354 /* Pusher.framework */; };
 		6589563E1ECFF9F70080F354 /* SocketRocket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6589563D1ECFF9F70080F354 /* SocketRocket.framework */; };
 		658956401ECFFAB30080F354 /* Pods_OKKAMI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6589563F1ECFFAB30080F354 /* Pods_OKKAMI.framework */; };
@@ -48,6 +50,8 @@
 		5D72D2E81C16249000E22EC1 /* libRCTOkkamiSdk.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTOkkamiSdk.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D72D2EB1C16249000E22EC1 /* RCTOkkamiSdk.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTOkkamiSdk.h; sourceTree = "<group>"; };
 		5D72D2ED1C16249000E22EC1 /* RCTOkkamiSdk.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTOkkamiSdk.m; sourceTree = "<group>"; };
+		657817CC1ED573780079B076 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
+		657817CD1ED573780079B076 /* UserNotificationsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotificationsUI.framework; path = System/Library/Frameworks/UserNotificationsUI.framework; sourceTree = SDKROOT; };
 		6589563B1ECFF9F00080F354 /* Pusher.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pusher.framework; path = "/Users/macbook/Documents/ios/react/OKKAMI-NEW/OKKAMI/ios/Pods/../build/Debug-iphoneos/libPusher/Pusher.framework"; sourceTree = "<absolute>"; };
 		6589563D1ECFF9F70080F354 /* SocketRocket.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SocketRocket.framework; path = "/Users/macbook/Documents/ios/react/OKKAMI-NEW/OKKAMI/ios/Pods/../build/Debug-iphoneos/SocketRocket/SocketRocket.framework"; sourceTree = "<absolute>"; };
 		6589563F1ECFFAB30080F354 /* Pods_OKKAMI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_OKKAMI.framework; path = "../../../../../../../Library/Developer/Xcode/DerivedData/OKKAMI-gcezqwwiawdunwhjuddntnnkhtld/Build/Products/Debug-iphoneos/Pods_OKKAMI.framework"; sourceTree = "<group>"; };
@@ -126,16 +130,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				65F9CF4C1ED2948500315693 /* Foundation.framework in Frameworks */,
 				65F9CF561ED294A300315693 /* AssetsLibrary.framework in Frameworks */,
 				65F9CF541ED2949E00315693 /* AVFoundation.framework in Frameworks */,
 				65F9CF521ED2949900315693 /* CFNetwork.framework in Frameworks */,
 				65F9CF501ED2949300315693 /* CoreGraphics.framework in Frameworks */,
 				65F9CF4E1ED2948D00315693 /* CoreText.framework in Frameworks */,
-				65F9CF4C1ED2948500315693 /* Foundation.framework in Frameworks */,
 				65F9CF491ED2946F00315693 /* CoreTelephony.framework in Frameworks */,
 				65F9CF4A1ED2946F00315693 /* Photos.framework in Frameworks */,
 				65F9CF461ED2946200315693 /* QuartzCore.framework in Frameworks */,
 				65F9CF441ED2945E00315693 /* SystemConfiguration.framework in Frameworks */,
+				657817CE1ED573790079B076 /* UserNotifications.framework in Frameworks */,
+				657817CF1ED573790079B076 /* UserNotificationsUI.framework in Frameworks */,
 				65F9CF421ED2945700315693 /* UIKit.framework in Frameworks */,
 				65F9CF401ED2945100315693 /* OpenGLES.framework in Frameworks */,
 				658956401ECFFAB30080F354 /* Pods_OKKAMI.framework in Frameworks */,
@@ -269,6 +275,8 @@
 		FAF229A71E141BE800F3C9C1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				657817CC1ED573780079B076 /* UserNotifications.framework */,
+				657817CD1ED573780079B076 /* UserNotificationsUI.framework */,
 				65F9CF551ED294A300315693 /* AssetsLibrary.framework */,
 				65F9CF531ED2949E00315693 /* AVFoundation.framework */,
 				65F9CF511ED2949900315693 /* CFNetwork.framework */,
