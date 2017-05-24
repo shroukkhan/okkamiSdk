@@ -10,7 +10,7 @@
 
 @import RCTokkamiiossdk;
 
-@interface OkkamiSdk : NSObject <RCTBridgeModule, LineSDKLoginDelegate, CLLocationManagerDelegate,UNUserNotificationCenterDelegate, UIApplicationDelegate, SKTConversationDelegate>
+@interface OkkamiSdk : NSObject <RCTBridgeModule, LineSDKLoginDelegate, CLLocationManagerDelegate,UNUserNotificationCenterDelegate, UIApplicationDelegate, SKTConversationDelegate, PTPusherDelegate>
 @property (nonatomic, copy)NSString * accessToken;
 @property (nonatomic, copy)NSString * userId;
 @property (nonatomic, copy)NSString * displayName;
