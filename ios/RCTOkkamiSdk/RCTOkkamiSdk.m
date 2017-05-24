@@ -32,6 +32,30 @@ RCT_EXPORT_MODULE();
 }
 
 
+#pragma mark Smooch Delegate
+
+-(BOOL)conversation:(SKTConversation *)conversation shouldShowInAppNotificationForMessage:(SKTMessage *)message{
+    return NO;
+}
+
+#pragma mark Pusher Delegate
+-(void) pusher:(PTPusher *)pusher didSubscribeToChannel:(PTPusherChannel *)channel{
+    NSLog(@"didSubscribeToChannel : %@", channel);
+}
+-(void) pusher:(PTPusher *)pusher didUnsubscribeFromChannel:(PTPusherChannel *)channel{
+    NSLog(@"didUnsubscribeFromChannel : %@", channel);
+}
+-(void) nativePusher:(PTNativePusher *)nativePusher didRegisterForPushNotificationsWithClientId:(NSString *)clientId{
+    NSLog(@"didRegisterForPushNotificationsWithClientId : %@", clientId);
+}
+-(void) nativePusher:(PTNativePusher *)nativePusher didSubscribeToInterest:(NSString *)interestName{
+    NSLog(@"didSubscribeToInterest : %@", interestName);
+}
+-(void) nativePusher:(PTNativePusher *)nativePusher didUnsubscribeFromInterest:(NSString *)interestName{
+    NSLog(@"didUnsubscribeFromInterest : %@", interestName);
+}
+
+
 #pragma mark Notif Delegate
 
 -(void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error{
@@ -649,6 +673,7 @@ RCT_EXPORT_METHOD(logoutChatWindow
                   :(RCTPromiseRejectBlock)reject)
 {
     [self.smooch okkamiLogout];
+    NSLog(@"UNSUBSCRIBE TO %@", self.appdel.channel_name);
     [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.channel_name];
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
 }
@@ -757,6 +782,7 @@ RCT_EXPORT_METHOD(setUserId
     self.appdel = appDelegate;
     NSString *channelName = [NSString stringWithFormat:@"mobile_user_%@", userId];
     self.smoochUserId = userId;
+    NSLog(@"===SET USER ID====%@", channelName);
     [self.appdel setUser_id:userId];
     [self.appdel setChannel_name:channelName];
     [[self.appdel.pusher nativePusher] subscribe:channelName];
@@ -767,8 +793,8 @@ RCT_EXPORT_METHOD(setUserId
         // channelEvent.data is a NSDictianary of the JSON object received
         NSString *message = [channelEvent.data objectForKey:@"message"];
         NSLog(@"message received: %@", message);
-    }];
-    [self.appdel.pusher connect];*/
+    }];*/
+    [self.appdel.pusher connect];
 }
 
 /*-------------------------------------- Utility   --------------------------------------------------*/
