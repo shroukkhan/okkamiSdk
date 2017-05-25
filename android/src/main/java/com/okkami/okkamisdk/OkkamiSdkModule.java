@@ -699,7 +699,10 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
             Intent chatWindow = new Intent();
             ComponentName cmp = new ComponentName(getReactApplicationContext().getPackageName(),
                     "com.okkami.android.app.OkkamiConversationActivity");
+
             chatWindow.setComponent(cmp);
+            chatWindow.putExtra("SMOOCH_SDK_INITIALIZED", true);
+            chatWindow.putExtra("SMOOCH_APP_TOKEN", smoochAppToken);
             chatWindow.putExtra("USER_ID", userId);
             chatWindow.putExtra("CHAT_WINDOW_COLOR", windowHexStringColor);
             chatWindow.putExtra("CHAT_WINDOW_TITLE_COLOR", titleHexStringColor);
