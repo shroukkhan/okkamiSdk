@@ -37,6 +37,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.smooch.core.*;
 import io.smooch.ui.ConversationActivity;
+import me.leolin.shortcutbadger.ShortcutBadger;
 import okhttp3.ResponseBody;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -218,6 +219,25 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void setLineEnvironment(ReadableMap lineConfig) {
         lineLoginChannelId = lineConfig.getString("lineAppId");
+    }
+
+    /**
+     * Set the badge app icon with provided number
+     * @param unreadMsgNumber - the number to be show in badge app icon
+     */
+    @ReactMethod
+    public void setAppBadgeIcon(int unreadMsgNumber) {
+        if (this.mContext == null) {
+            Log.e(TAG, "setAppBadgeIcon: this.mContext is null");
+            return;
+        }
+        if (this.mContext != null && unreadMsgNumber > 0) {
+            ShortcutBadger.applyCount(this.mContext, unreadMsgNumber);
+        } else if (this.mContext != null && unreadMsgNumber < 0) {
+            ShortcutBadger.removeCount(this.mContext);
+        } else {
+            Log.e(TAG, "setAppBadgeIcon: something went wrong");
+        }
     }
 
 /*---------------------------Core------------------------------------------------------------------------*/
