@@ -5,7 +5,6 @@
 #import "RCTRootView.h"
 #import <CoreLocation/CoreLocation.h>
 #import <Smooch/Smooch.h>
-//#import "AppDelegate.h"
 
 @implementation OkkamiSdk
 
@@ -31,6 +30,49 @@ RCT_EXPORT_MODULE();
     return self;
 }
 
+- (void)deletePList: (NSString*)plistname {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *path = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.plist", plistname]];
+        NSError *error;
+    if(![[NSFileManager defaultManager] removeItemAtPath:path error:&error])
+    {
+        //TODO: Handle/Log error
+    }
+}
+
+
+RCT_EXPORT_METHOD(checkNotif
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    NSError *error;
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *plistPath = [documentsDirectory stringByAppendingPathComponent:@"Notifications.plist"];
+    NSString *userPath = [documentsDirectory stringByAppendingPathComponent:@"UserInfo.plist"];
+    NSMutableDictionary *notification = [[NSMutableDictionary alloc] initWithContentsOfFile: plistPath];
+    NSDictionary *userInfo = [[NSDictionary alloc] initWithContentsOfFile: userPath];
+    //NSLog(@"USER ID %@", [userInfo objectForKey:@"userId"]);
+    //NSLog(@"USER Info %@", userInfo);
+    //NSLog(@"NOTIFICATIONS %@", notification);
+    if(notification){
+        if(notification[@"data"][@"property_smooch_app_token"]){
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [Smooch destroy];
+                SKTSettings *settings = [SKTSettings settingsWithAppToken:notification[@"data"][@"property_smooch_app_token"]];
+                settings.enableAppDelegateSwizzling = NO;
+                settings.enableUserNotificationCenterDelegateOverride = NO;
+                [Smooch initWithSettings:settings];
+                [Smooch login:[userInfo objectForKey:@"userId"] jwt:nil];
+                [Smooch show];
+                [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
+                [self deletePList:@"Notifications"];
+            });
+        }
+    }
+}
 
 #pragma mark Smooch Delegate
 
@@ -110,15 +152,12 @@ RCT_EXPORT_MODULE();
     }
     else if( [UIApplication sharedApplication].applicationState == UIApplicationStateBackground )
     {
-        NSLog( @"BACKGROUND" );
         [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:userInfo[@"data"]];
         completionHandler( UIBackgroundFetchResultNewData );
     }
     else
     {
-        NSLog( @"FOREGROUND" );
-        
-        UNMutableNotificationContent *content = [UNMutableNotificationContent new];
+        /*UNMutableNotificationContent *content = [UNMutableNotificationContent new];
         content.body = userInfo[@"aps"][@"alert"][@"body"];
         content.sound = [UNNotificationSound defaultSound];
         UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:2
@@ -133,17 +172,49 @@ RCT_EXPORT_MODULE();
             if (error != nil) {
                 NSLog(@"Something went wrong: %@",error);
             }
-        }];
+        }];*/
+        UIUserNotificationType types = UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
+        UIUserNotificationSettings *mySettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+        [[UIApplication sharedApplication] registerUserNotificationSettings:mySettings];
+        
+        UILocalNotification *notification = [[UILocalNotification alloc] init];
+        if (notification)
+        {
+            notification.fireDate = [[NSDate date] dateByAddingTimeInterval:2];
+            notification.alertBody = userInfo[@"aps"][@"alert"][@"body"];
+            notification.soundName = UILocalNotificationDefaultSoundName;
+        }
+        [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
         completionHandler( UIBackgroundFetchResultNewData );
     }
 }
+
+/*- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+    if( SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO( @"10.0" ) )
+    {
+        return;
+    }else{
+        if(notification.userInfo[@"data"][@"property_smooch_app_token"]){
+            [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
+            [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:nil];
+            [Smooch destroy];
+            SKTSettings *settings = [SKTSettings settingsWithAppToken:notification.userInfo[@"data"][@"property_smooch_app_token"]];
+            settings.enableAppDelegateSwizzling = NO;
+            settings.enableUserNotificationCenterDelegateOverride = NO;
+            [Smooch initWithSettings:settings];
+            [Smooch login:self.smoochUserId jwt:nil];
+            [Smooch show];
+            [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
+        }
+    }
+}*/
+
 -(void)conversation:(SKTConversation *)conversation didDismissViewController:(UIViewController *)viewController{
-    NSLog(@"DID DISMISS VIEW CONTROLLER");
     [Smooch logout];
     [Smooch destroy];
 }
 -(void)conversation:(SKTConversation *)conversation willDismissViewController:(UIViewController *)viewController{
-    NSLog(@"DISMISS VIEW CONTROLLER");
     [Smooch logout];
     [Smooch destroy];
 }
@@ -158,29 +229,24 @@ RCT_EXPORT_MODULE();
         completionHandler(UIUserNotificationTypeNone  | UIUserNotificationTypeBadge);
     }else{
         self.status = @"foreground";
-        [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
+        if(notification.request.content.userInfo[@"data"][@"command"]){
+            [self.bridge.eventDispatcher sendAppEventWithName:notification.request.content.userInfo[@"data"][@"command"] body:nil];
+        }else{
+            [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
+        }
         completionHandler(UIUserNotificationTypeSound |    UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
     }
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler{
     NSLog( @"Handle push from background or closed" );
-
-    [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
-    [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:nil];
-
-    NSLog(@"%@", response.notification.request.content.userInfo);
-    NSLog(@"PROPERTY SMOOCH TOKEN-%@",response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"]);
-    NSLog(@"PROPERTY NAME%@",response.notification.request.content.userInfo[@"aps"][@"alert"][@"title"]);
-    [Smooch destroy];
-    SKTSettings *settings = [SKTSettings settingsWithAppToken:response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"]];
-    settings.enableAppDelegateSwizzling = NO;
-    settings.enableUserNotificationCenterDelegateOverride = NO;
-    [Smooch initWithSettings:settings];
-    [Smooch login:self.smoochUserId jwt:nil];
-    [Smooch show];
-    [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
-    /*if(![response.notification.request.content.userInfo[@"aps"][@"alert"][@"title"]  isEqual: @""]){
+    //NSLog(@"%@", response.notification.request.content.userInfo);
+    //NSLog(@"PROPERTY SMOOCH TOKEN-%@",response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"]);
+    //NSLog(@"PROPERTY NAME%@",response.notification.request.content.userInfo[@"aps"][@"alert"][@"title"]);
+    if(response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"]){
+        [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
+        [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:nil];
+        [Smooch destroy];
         SKTSettings *settings = [SKTSettings settingsWithAppToken:response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"]];
         settings.enableAppDelegateSwizzling = NO;
         settings.enableUserNotificationCenterDelegateOverride = NO;
@@ -188,15 +254,7 @@ RCT_EXPORT_MODULE();
         [Smooch login:self.smoochUserId jwt:nil];
         [Smooch show];
         [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
-    }else{
-        SKTSettings *settings = [SKTSettings settingsWithAppToken:@"3afzpr4hogs8z5znmomda0ko5"];
-        settings.enableAppDelegateSwizzling = NO;
-        settings.enableUserNotificationCenterDelegateOverride = NO;
-        [Smooch initWithSettings:settings];
-        [Smooch login:self.smoochUserId jwt:nil];
-        [Smooch show];
-        [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
-    }*/
+    }
     completionHandler();
 }
 #pragma mark LineSDKLoginDelegate
@@ -675,6 +733,8 @@ RCT_EXPORT_METHOD(logoutChatWindow
     [self.smooch okkamiLogout];
     NSLog(@"UNSUBSCRIBE TO %@", self.appdel.channel_name);
     [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.channel_name];
+    [self deletePList:@"UserInfo"];
+    [self deletePList:@"Notifications"];
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
 }
 
@@ -787,6 +847,20 @@ RCT_EXPORT_METHOD(setUserId
     [self.appdel setChannel_name:channelName];
     [[self.appdel.pusher nativePusher] subscribe:channelName];
 
+    NSError *error;
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *plistPath = [documentsDirectory stringByAppendingPathComponent:@"UserInfo.plist"];
+    if (![[NSFileManager defaultManager] fileExistsAtPath: plistPath])
+    {
+        NSString *bundle = [[NSBundle mainBundle] pathForResource:@"UserInfo" ofType:@"plist"];
+        [[NSFileManager defaultManager] copyItemAtPath:bundle toPath:plistPath error:&error];
+    }
+    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:userId,@"userId",
+                          nil];
+    NSLog(@"===PLIST PATH====%@", plistPath);
+    [dict writeToFile:plistPath atomically: YES];
+    
     // subscribe to channel and bind to event
     //PTPusherChannel *channel = [self.appdel.pusher  subscribeToChannelNamed:channelName];
     /*[channel bindToEventNamed:@"new-message" handleWithBlock:^(PTPusherEvent *channelEvent) {
@@ -794,6 +868,7 @@ RCT_EXPORT_METHOD(setUserId
         NSString *message = [channelEvent.data objectForKey:@"message"];
         NSLog(@"message received: %@", message);
     }];*/
+
     [self.appdel.pusher connect];
 }
 

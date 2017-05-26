@@ -54,10 +54,12 @@ class OkkamiSdk {
   setAppBadgeIcon(number){
     return OkkamiSdkManager.setAppBadgeIcon(number);
   }
+
   setUserId(userId){
     console.log("SET USER ID ? ", userId)
     return OkkamiSdkManager.setUserId(userId);
   }
+
   async isHubLoggedIn() {
     return await OkkamiSdkManager.isHubLoggedIn();
   }
@@ -66,6 +68,9 @@ class OkkamiSdk {
     return await OkkamiSdkManager.isHubConnected();
   }
 
+  checkNotif(){
+    return OkkamiSdkManager.checkNotif();
+  }
   /*---------------------------------------------------------------------------------------------------*/
 
   /*-------------------------------------- SMOOCH --------------------------------------------*/
@@ -205,7 +210,6 @@ class OkkamiSdk {
   async convertTime(time){
     return await OkkamiSdkManager.convertTime(time);
   }
-
 
 
 
