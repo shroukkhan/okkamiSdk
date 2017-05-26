@@ -58,19 +58,20 @@ RCT_EXPORT_METHOD(checkNotif
     //NSLog(@"USER Info %@", userInfo);
     //NSLog(@"NOTIFICATIONS %@", notification);
     if(notification){
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [Smooch destroy];
-            SKTSettings *settings = [SKTSettings settingsWithAppToken:notification[@"data"][@"property_smooch_app_token"]];
-            settings.enableAppDelegateSwizzling = NO;
-            settings.enableUserNotificationCenterDelegateOverride = NO;
-            [Smooch initWithSettings:settings];
-            [Smooch login:[userInfo objectForKey:@"userId"] jwt:nil];
-            [Smooch show];
-            [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
-            [self deletePList:@"Notifications"];
-        });
+        if(notification[@"data"][@"property_smooch_app_token"]){
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [Smooch destroy];
+                SKTSettings *settings = [SKTSettings settingsWithAppToken:notification[@"data"][@"property_smooch_app_token"]];
+                settings.enableAppDelegateSwizzling = NO;
+                settings.enableUserNotificationCenterDelegateOverride = NO;
+                [Smooch initWithSettings:settings];
+                [Smooch login:[userInfo objectForKey:@"userId"] jwt:nil];
+                [Smooch show];
+                [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
+                [self deletePList:@"Notifications"];
+            });
+        }
     }
-    
 }
 
 #pragma mark Smooch Delegate
