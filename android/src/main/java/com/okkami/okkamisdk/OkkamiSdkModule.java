@@ -12,10 +12,19 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
+
 import com.facebook.FacebookSdk;
-import com.facebook.react.ReactApplication;
-import com.facebook.react.ReactPackage;
-import com.facebook.react.bridge.*;
+import com.facebook.react.bridge.ActivityEventListener;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.BaseActivityEventListener;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.linecorp.linesdk.auth.LineLoginApi;
 import com.linecorp.linesdk.auth.LineLoginResult;
@@ -32,27 +41,31 @@ import com.okkami.android.sdk.model.BaseAuthentication;
 import com.okkami.android.sdk.model.CompanyAuth;
 import com.okkami.android.sdk.model.DeviceAuth;
 import com.okkami.android.sdk.module.HubModule;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.smooch.core.*;
-import io.smooch.ui.ConversationActivity;
-import me.leolin.shortcutbadger.ShortcutBadger;
-import okhttp3.ResponseBody;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import retrofit2.Response;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.smooch.core.InitializationStatus;
+import io.smooch.core.Message;
+import io.smooch.core.Settings;
+import io.smooch.core.Smooch;
+import io.smooch.core.SmoochConnectionStatus;
+import io.smooch.ui.ConversationActivity;
+import me.leolin.shortcutbadger.ShortcutBadger;
+import okhttp3.ResponseBody;
+import retrofit2.Response;
 
 public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         OnHubCommandReceivedListener {
@@ -147,8 +160,8 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     private DeviceAuth mDeviceAuth;
     private CommandFactoryModule mCmdFactory;
 
-    public OkkamiSdkModule(ReactApplicationContext reactContext, Application app,
-            MethodInvokeListener invoker) {
+    public OkkamiSdkModule(ReactApplicationContext reactContext, Application app, MethodInvokeListener invoker) {
+
         super(reactContext);
 
         mMethodInvoker = invoker;
@@ -209,16 +222,26 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
 
     @ReactMethod
     public void setFacebookEnvironment(ReadableMap fbConfig) {
-        String fbAppId = fbConfig.getString("fbAppId");
-        if (FacebookSdk.isInitialized() && FacebookSdk.getApplicationId().equals(fbAppId))
-            return;
+
+//        String fbAppId = fbConfig.getString("fbAppId");
+
+        String fbAppId = (String) BuildConfigUtil.getBuildConfigValue(getReactApplicationContext(), "FB_APP_ID");
+        Log.d(TAG, "fbAppId=" + fbAppId);
+
+        if (FacebookSdk.isInitialized() && FacebookSdk.getApplicationId().equals(fbAppId)) {
+          return;
+        }
+
         FacebookSdk.setApplicationId(fbAppId);
         FacebookSdk.sdkInitialize(mContext);
     }
 
     @ReactMethod
     public void setLineEnvironment(ReadableMap lineConfig) {
-        lineLoginChannelId = lineConfig.getString("lineAppId");
+//        lineLoginChannelId = lineConfig.getString("lineAppId");
+        lineLoginChannelId = (String) BuildConfigUtil.getBuildConfigValue(getReactApplicationContext(), "LINE_APP_ID");
+        Log.d(TAG, "lineLoginChannelId=" + lineLoginChannelId);
+        System.out.println("lineLoginChannelId=" + lineLoginChannelId);
     }
 
     /**
@@ -227,16 +250,15 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
      */
     @ReactMethod
     public void setAppBadgeIcon(int unreadMsgNumber) {
-        if (this.mContext == null) {
-            Log.e(TAG, "setAppBadgeIcon: this.mContext is null");
-            return;
+        if (mContext == null) {
+            throw new IllegalArgumentException( "mContext can't be null" );
         }
-        if (this.mContext != null && unreadMsgNumber > 0) {
-            ShortcutBadger.applyCount(this.mContext, unreadMsgNumber);
-        } else if (this.mContext != null && unreadMsgNumber < 0) {
-            ShortcutBadger.removeCount(this.mContext);
+
+        if (unreadMsgNumber > 0) {
+            ShortcutBadger.applyCount(mContext, unreadMsgNumber);
         } else {
-            Log.e(TAG, "setAppBadgeIcon: something went wrong");
+            //  same as: (unreadMsgNumber <= 0)
+            ShortcutBadger.removeCount(this.mContext);
         }
     }
 
@@ -712,6 +734,10 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
                                boolean windowInRgb,
                                boolean titleInRgb) {
         try {
+
+            Log.d(TAG, "smoochAppToken=" + smoochAppToken);
+            Log.d(TAG, "userId=" + userId);
+
             Settings settings = new Settings(smoochAppToken);
             settings.setUserId(userId);
             Smooch.init(mApp, settings);
