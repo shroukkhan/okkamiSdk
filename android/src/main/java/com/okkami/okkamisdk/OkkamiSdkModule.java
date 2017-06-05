@@ -168,9 +168,16 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         mApp = app;
         mContext = reactContext;
         reactContext.addActivityEventListener(mActivityEventListener);
-        okkamiSdk = new SDK().init(reactContext, "https://app.develop.okkami.com");
+
+        String baseUrl = (String) BuildConfigUtil.getBuildConfigValue(getReactApplicationContext(), "BASE_URL");
+        Log.d(TAG, "baseUrl=" + baseUrl);
+
+        okkamiSdk = new SDK().init(reactContext, baseUrl);
         initMockData();
-        lineLoginChannelId = reactContext.getString(R.string.line_login_channel_id);
+
+//        lineLoginChannelId = reactContext.getString(R.string.line_login_channel_id);
+        lineLoginChannelId = (String) BuildConfigUtil.getBuildConfigValue(getReactApplicationContext(), "LINE_APP_ID");
+        Log.d(TAG, "lineLoginChannelId=" + lineLoginChannelId);
     }
 
     private static JSONObject createConversationJsonObj(int unreadMsgCount, String iconUrl,
@@ -241,7 +248,6 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
 //        lineLoginChannelId = lineConfig.getString("lineAppId");
         lineLoginChannelId = (String) BuildConfigUtil.getBuildConfigValue(getReactApplicationContext(), "LINE_APP_ID");
         Log.d(TAG, "lineLoginChannelId=" + lineLoginChannelId);
-        System.out.println("lineLoginChannelId=" + lineLoginChannelId);
     }
 
     /**
