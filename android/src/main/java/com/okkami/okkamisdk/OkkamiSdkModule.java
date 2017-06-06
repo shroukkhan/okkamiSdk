@@ -414,6 +414,41 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
 
                             }
                         });
+            } else if (getPost.compareTo("DELETE") == 0){
+
+                okkamiSdk.getBACKEND_SERVICE_MODULE().doCoreDeleteCall(endPoint, "DELETE", payload, b)
+                        .subscribeOn(io.reactivex.schedulers.Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<Response<ResponseBody>>() {
+                            @Override
+                            public void onSubscribe(Disposable d) {
+                                System.out.println("Disposable method.");
+                            }
+
+                            @Override
+                            public void onNext(Response<ResponseBody> value) {
+                                try {
+                                    if (value.raw().code() >= 400 || value.body() == null) {
+                                        downloadFromCorePromise.reject(value.raw().code() + "", value.raw().message());
+                                    } else {
+                                        String x = value.body().string();
+                                        downloadFromCorePromise.resolve(x);
+                                    }
+                                } catch (Exception e) {
+                                    downloadFromCorePromise.reject(e);
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                downloadFromCorePromise.reject(e);
+                            }
+
+                            @Override
+                            public void onComplete() {
+
+                            }
+                        });
             }
         } catch (Exception e) {
             downloadFromCorePromise.reject(e);
@@ -479,12 +514,12 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
      * @param hubConnectionPromise
      */
     @ReactMethod
-    public void connectToHub(String uid, String secret, String token, String hubUrl, String hubPort, Promise hubConnectionPromise) {
+    public void connectToHub(String userId, String secret, String token, String hubUrl, String hubPort, Promise hubConnectionPromise) {
 
         BaseAuthentication auth = new DeviceAuth(token, secret);
         try {
-            initHub(uid, hubUrl, Integer.parseInt(hubPort), auth);
-            hubModule.connect();
+            initHub(userId, hubUrl, Integer.parseInt(hubPort), auth);
+            hubModule.connect(userId);
             hubConnectionPromise.resolve(true);
             sendEvent((ReactContext) mContext, "onHubConnected", null);
         } catch (Exception e) {
@@ -520,9 +555,9 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
      * @param hubReconnectionPromise
      */
     @ReactMethod
-    public void reconnectToHub(Promise hubReconnectionPromise) {
+    public void reconnectToHub(String userId, Promise hubReconnectionPromise) {
         try {
-            hubModule.connect();
+            hubModule.connect(userId);
         } catch (Exception e) {
             hubReconnectionPromise.reject(e);
             return;

@@ -68,6 +68,7 @@ RCT_EXPORT_METHOD(checkNotif
                 [Smooch login:[userInfo objectForKey:@"userId"] jwt:nil];
                 [Smooch show];
                 [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
+                [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:notification[@"data"]];
                 [self deletePList:@"Notifications"];
             });
         }
@@ -245,7 +246,7 @@ RCT_EXPORT_METHOD(checkNotif
     //NSLog(@"PROPERTY NAME%@",response.notification.request.content.userInfo[@"aps"][@"alert"][@"title"]);
     if(response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"]){
         [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
-        [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:nil];
+        [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:response.notification.request.content.userInfo[@"data"]];
         [Smooch destroy];
         SKTSettings *settings = [SKTSettings settingsWithAppToken:response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"]];
         settings.enableAppDelegateSwizzling = NO;

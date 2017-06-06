@@ -35,8 +35,8 @@ class OkkamiSdk {
     return OkkamiSdkManager.disconnectFromHub();
   }
 
-  reconnectToHub() {
-    return OkkamiSdkManager.reconnectToHub();
+  reconnectToHub(userId) {
+    return OkkamiSdkManager.reconnectToHub(userId);
   }
 
   sendCommandToHub(command) {
