@@ -466,6 +466,9 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     private HubModule initHub(String deviceId, String hubDnsName, int hubSslPort,
                               BaseAuthentication auth) {
 
+        Log.d(TAG, "deviceId=" + deviceId);
+        Log.d(TAG, "this.userId=" + getUserId());
+
         if (TextUtils.isEmpty(deviceId) || auth == null || TextUtils.isEmpty(hubDnsName)) {
             throw new IllegalArgumentException("deviceId and authentication can not be null");
         }
@@ -515,6 +518,9 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
      */
     @ReactMethod
     public void connectToHub(String userId, String secret, String token, String hubUrl, String hubPort, Promise hubConnectionPromise) {
+
+        Log.d(TAG, "this.userId=" + this.userId);
+        Log.d(TAG, "userId=" + userId);
 
         BaseAuthentication auth = new DeviceAuth(token, secret);
         try {
