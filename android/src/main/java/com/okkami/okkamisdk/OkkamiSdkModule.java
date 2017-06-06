@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -542,14 +543,24 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
      * @param hubDisconnectionPromise
      */
     @ReactMethod
-    public void disconnectFromHub(Promise hubDisconnectionPromise) {
-        try {
-            hubModule.disconnect();
-            hubDisconnectionPromise.resolve(true);
-            sendEvent((ReactContext) mContext, "onHubDisconnected", null);
-        } catch (Exception e) {
-            hubDisconnectionPromise.reject(e);
-        }
+    public void disconnectFromHub(final Promise hubDisconnectionPromise) {
+
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+
+                try {
+                    hubModule.disconnect();
+                    hubDisconnectionPromise.resolve(true);
+                    sendEvent((ReactContext) mContext, "onHubDisconnected", null);
+                } catch (Exception e) {
+                    hubDisconnectionPromise.reject(e);
+                }
+
+                return null;
+            }
+        }.execute();
     }
 
     /**
@@ -561,15 +572,22 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
      * @param hubReconnectionPromise
      */
     @ReactMethod
-    public void reconnectToHub(String userId, Promise hubReconnectionPromise) {
-        try {
-            hubModule.connect(userId);
-        } catch (Exception e) {
-            hubReconnectionPromise.reject(e);
-            return;
-        }
-        hubReconnectionPromise.resolve(true);
-        sendEvent((ReactContext) mContext, "onHubConnected", null);
+    public void reconnectToHub(final String userId, final Promise hubReconnectionPromise) {
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    hubModule.connect(userId);
+                } catch (Exception e) {
+                    hubReconnectionPromise.reject(e);
+                }
+                hubReconnectionPromise.resolve(true);
+                sendEvent((ReactContext) mContext, "onHubConnected", null);
+
+                return null;
+            }
+        }.execute();
     }
 
     /**
