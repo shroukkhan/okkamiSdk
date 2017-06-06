@@ -479,12 +479,12 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
      * @param hubConnectionPromise
      */
     @ReactMethod
-    public void connectToHub(String uid, String secret, String token, String hubUrl, String hubPort, Promise hubConnectionPromise) {
+    public void connectToHub(String userId, String secret, String token, String hubUrl, String hubPort, Promise hubConnectionPromise) {
 
         BaseAuthentication auth = new DeviceAuth(token, secret);
         try {
-            initHub(uid, hubUrl, Integer.parseInt(hubPort), auth);
-            hubModule.connect();
+            initHub(userId, hubUrl, Integer.parseInt(hubPort), auth);
+            hubModule.connect(userId);
             hubConnectionPromise.resolve(true);
             sendEvent((ReactContext) mContext, "onHubConnected", null);
         } catch (Exception e) {
@@ -520,9 +520,9 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
      * @param hubReconnectionPromise
      */
     @ReactMethod
-    public void reconnectToHub(Promise hubReconnectionPromise) {
+    public void reconnectToHub(String userId, Promise hubReconnectionPromise) {
         try {
-            hubModule.connect();
+            hubModule.connect(userId);
         } catch (Exception e) {
             hubReconnectionPromise.reject(e);
             return;
