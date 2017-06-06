@@ -414,6 +414,41 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
 
                             }
                         });
+            } else if (getPost.compareTo("DELETE") == 0){
+
+                okkamiSdk.getBACKEND_SERVICE_MODULE().doCoreDeleteCall(endPoint, "DELETE", payload, b)
+                        .subscribeOn(io.reactivex.schedulers.Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<Response<ResponseBody>>() {
+                            @Override
+                            public void onSubscribe(Disposable d) {
+                                System.out.println("Disposable method.");
+                            }
+
+                            @Override
+                            public void onNext(Response<ResponseBody> value) {
+                                try {
+                                    if (value.raw().code() >= 400 || value.body() == null) {
+                                        downloadFromCorePromise.reject(value.raw().code() + "", value.raw().message());
+                                    } else {
+                                        String x = value.body().string();
+                                        downloadFromCorePromise.resolve(x);
+                                    }
+                                } catch (Exception e) {
+                                    downloadFromCorePromise.reject(e);
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                downloadFromCorePromise.reject(e);
+                            }
+
+                            @Override
+                            public void onComplete() {
+
+                            }
+                        });
             }
         } catch (Exception e) {
             downloadFromCorePromise.reject(e);
