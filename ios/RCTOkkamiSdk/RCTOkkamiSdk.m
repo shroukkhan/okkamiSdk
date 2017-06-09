@@ -5,6 +5,7 @@
 #import "RCTRootView.h"
 #import <CoreLocation/CoreLocation.h>
 #import <Smooch/Smooch.h>
+#import "ReactNativeConfig.h"
 
 @implementation OkkamiSdk
 
@@ -246,7 +247,16 @@ RCT_EXPORT_METHOD(checkNotif
     //NSLog(@"PROPERTY NAME%@",response.notification.request.content.userInfo[@"aps"][@"alert"][@"title"]);
     if(response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"]){
         [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
-        [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:response.notification.request.content.userInfo[@"data"]];
+        if([response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"] isEqualToString:[ReactNativeConfig envFor:@"OKKAMI_SMOOCH"]]){
+            NSMutableDictionary *newNotif = [[NSMutableDictionary alloc] init];
+            NSMutableDictionary *insideNewNotif = [[NSMutableDictionary alloc] init];
+            [insideNewNotif setObject:[ReactNativeConfig envFor:@"OKKAMI_SMOOCH"] forKey:@"property_smooch_app_token"];
+            [newNotif setObject:insideNewNotif forKey:@"data"];
+            [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:newNotif[@"data"]];
+        }else{
+            [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:response.notification.request.content.userInfo[@"data"]];
+        }
+
         [Smooch destroy];
         SKTSettings *settings = [SKTSettings settingsWithAppToken:response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"]];
         settings.enableAppDelegateSwizzling = NO;

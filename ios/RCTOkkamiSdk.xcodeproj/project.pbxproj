@@ -52,6 +52,7 @@
 		5D72D2EB1C16249000E22EC1 /* RCTOkkamiSdk.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTOkkamiSdk.h; sourceTree = "<group>"; };
 		5D72D2ED1C16249000E22EC1 /* RCTOkkamiSdk.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTOkkamiSdk.m; sourceTree = "<group>"; };
 		651237361EE48026004CD7F1 /* RCTokkamiiossdk.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RCTokkamiiossdk.framework; path = "okkami-ios-sdk/build/Release-iphoneos/RCTokkamiiossdk.framework"; sourceTree = "<group>"; };
+		652ED7D51EE9A4960036635E /* libReactNativeConfig.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libReactNativeConfig.a; path = "../../node_modules/react-native-config/ios/build/Debug-iphoneos/libReactNativeConfig.a"; sourceTree = "<group>"; };
 		657817CC1ED573780079B076 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		657817CD1ED573780079B076 /* UserNotificationsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotificationsUI.framework; path = System/Library/Frameworks/UserNotificationsUI.framework; sourceTree = SDKROOT; };
 		6589563B1ECFF9F00080F354 /* Pusher.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pusher.framework; path = "/Users/macbook/Documents/ios/react/OKKAMI-NEW/OKKAMI/ios/Pods/../build/Debug-iphoneos/libPusher/Pusher.framework"; sourceTree = "<absolute>"; };
@@ -278,6 +279,7 @@
 		FAF229A71E141BE800F3C9C1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				652ED7D51EE9A4960036635E /* libReactNativeConfig.a */,
 				651237361EE48026004CD7F1 /* RCTokkamiiossdk.framework */,
 				657817CC1ED573780079B076 /* UserNotifications.framework */,
 				657817CD1ED573780079B076 /* UserNotificationsUI.framework */,
@@ -475,6 +477,7 @@
 					"$(SRCROOT)/../../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../ios/Pods/**",
 					"$(SRCROOT)/../../ios/OKKAMI/**",
+					"$(SRCROOT)/../../node_modules/react-native-config/**",
 				);
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = "-ObjC";
@@ -501,6 +504,7 @@
 					"$(SRCROOT)/../../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../ios/Pods/**",
 					"$(SRCROOT)/../../ios/OKKAMI/**",
+					"$(SRCROOT)/../../node_modules/react-native-config/**",
 				);
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = "-ObjC";
