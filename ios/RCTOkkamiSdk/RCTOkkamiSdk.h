@@ -11,6 +11,7 @@
 @import RCTokkamiiossdk;
 
 @interface OkkamiSdk : NSObject <RCTBridgeModule, LineSDKLoginDelegate, CLLocationManagerDelegate,UNUserNotificationCenterDelegate, UIApplicationDelegate, SKTConversationDelegate, PTPusherDelegate>
+
 @property (nonatomic, copy)NSString * accessToken;
 @property (nonatomic, copy)NSString * userId;
 @property (nonatomic, copy)NSString * displayName;
@@ -26,4 +27,5 @@
 @property (strong, nonatomic) RCTEventDispatcher* event;
 @property (strong, nonatomic) OkkamiSmoochChat* smooch;
 @property (strong, nonatomic) AppDelegate* appdel;
+@property (nonatomic, assign)BOOL isSmoochShow;
 @end
