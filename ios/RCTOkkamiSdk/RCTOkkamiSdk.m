@@ -23,6 +23,7 @@ RCT_EXPORT_MODULE();
         self.locationManager.delegate = self;
         self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
         self.locationManager.distanceFilter = kCLDistanceFilterNone;
+        self.isSmoochShow = NO;
         [self.locationManager startUpdatingLocation];
         [self.locationManager requestWhenInUseAuthorization];
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
@@ -55,9 +56,7 @@ RCT_EXPORT_METHOD(checkNotif
     NSString *userPath = [documentsDirectory stringByAppendingPathComponent:@"UserInfo.plist"];
     NSMutableDictionary *notification = [[NSMutableDictionary alloc] initWithContentsOfFile: plistPath];
     NSDictionary *userInfo = [[NSDictionary alloc] initWithContentsOfFile: userPath];
-    //NSLog(@"USER ID %@", [userInfo objectForKey:@"userId"]);
-    //NSLog(@"USER Info %@", userInfo);
-    //NSLog(@"NOTIFICATIONS %@", notification);
+
     if(notification){
         if(notification[@"data"][@"property_smooch_app_token"]){
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -66,6 +65,7 @@ RCT_EXPORT_METHOD(checkNotif
                 settings.enableAppDelegateSwizzling = NO;
                 settings.enableUserNotificationCenterDelegateOverride = NO;
                 [Smooch initWithSettings:settings];
+                [[Smooch conversation] setDelegate:self];
                 [Smooch login:[userInfo objectForKey:@"userId"] jwt:nil];
                 [Smooch show];
                 [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
@@ -80,6 +80,14 @@ RCT_EXPORT_METHOD(checkNotif
 
 -(BOOL)conversation:(SKTConversation *)conversation shouldShowInAppNotificationForMessage:(SKTMessage *)message{
     return NO;
+}
+
+-(void)conversation:(SKTConversation *)conversation willShowViewController:(UIViewController *)viewController{
+    self.isSmoochShow = YES;
+}
+
+-(void)conversation:(SKTConversation *)conversation willDismissViewController:(UIViewController *)viewController{
+    self.isSmoochShow = NO;
 }
 
 #pragma mark Pusher Delegate
@@ -148,6 +156,7 @@ RCT_EXPORT_METHOD(checkNotif
         settings.enableAppDelegateSwizzling = NO;
         settings.enableUserNotificationCenterDelegateOverride = NO;
         [Smooch initWithSettings:settings];
+        [[Smooch conversation] setDelegate:self];
         [Smooch login:self.smoochUserId jwt:nil];
         [Smooch show];
         completionHandler( UIBackgroundFetchResultNewData );
@@ -159,34 +168,22 @@ RCT_EXPORT_METHOD(checkNotif
     }
     else
     {
-        /*UNMutableNotificationContent *content = [UNMutableNotificationContent new];
-        content.body = userInfo[@"aps"][@"alert"][@"body"];
-        content.sound = [UNNotificationSound defaultSound];
-        UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:2
-                                                                                                        repeats:NO];
-        NSString *identifier = @"OkkamiLocalNotification";
-        UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier
-                                                                              content:content trigger:trigger];
-        // Objective-C
-        UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-        center.delegate = self;
-        [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
-            if (error != nil) {
-                NSLog(@"Something went wrong: %@",error);
+        if(self.isSmoochShow){
+            
+        }else{
+            UIUserNotificationType types = UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
+            UIUserNotificationSettings *mySettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+            [[UIApplication sharedApplication] registerUserNotificationSettings:mySettings];
+            
+            UILocalNotification *notification = [[UILocalNotification alloc] init];
+            if (notification)
+            {
+                notification.fireDate = [[NSDate date] dateByAddingTimeInterval:2];
+                notification.alertBody = userInfo[@"aps"][@"alert"][@"body"];
+                notification.soundName = UILocalNotificationDefaultSoundName;
             }
-        }];*/
-        UIUserNotificationType types = UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
-        UIUserNotificationSettings *mySettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
-        [[UIApplication sharedApplication] registerUserNotificationSettings:mySettings];
-        
-        UILocalNotification *notification = [[UILocalNotification alloc] init];
-        if (notification)
-        {
-            notification.fireDate = [[NSDate date] dateByAddingTimeInterval:2];
-            notification.alertBody = userInfo[@"aps"][@"alert"][@"body"];
-            notification.soundName = UILocalNotificationDefaultSoundName;
+            [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
         }
-        [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
         completionHandler( UIBackgroundFetchResultNewData );
     }
 }
@@ -212,14 +209,6 @@ RCT_EXPORT_METHOD(checkNotif
     }
 }*/
 
--(void)conversation:(SKTConversation *)conversation didDismissViewController:(UIViewController *)viewController{
-    [Smooch logout];
-    [Smooch destroy];
-}
--(void)conversation:(SKTConversation *)conversation willDismissViewController:(UIViewController *)viewController{
-    [Smooch logout];
-    [Smooch destroy];
-}
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
        willPresentNotification:(UNNotification *)notification
@@ -236,15 +225,17 @@ RCT_EXPORT_METHOD(checkNotif
         }else{
             [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
         }
-        completionHandler(UIUserNotificationTypeSound |    UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
+        
+        if(self.isSmoochShow){
+            completionHandler(UIUserNotificationTypeNone  | UIUserNotificationTypeBadge);
+        }else{
+            completionHandler(UIUserNotificationTypeSound |    UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
+        }
     }
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler{
     NSLog( @"Handle push from background or closed" );
-    //NSLog(@"%@", response.notification.request.content.userInfo);
-    //NSLog(@"PROPERTY SMOOCH TOKEN-%@",response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"]);
-    //NSLog(@"PROPERTY NAME%@",response.notification.request.content.userInfo[@"aps"][@"alert"][@"title"]);
     if(response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"]){
         [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
         if([response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"] isEqualToString:[ReactNativeConfig envFor:@"OKKAMI_SMOOCH"]]){
@@ -262,6 +253,7 @@ RCT_EXPORT_METHOD(checkNotif
         settings.enableAppDelegateSwizzling = NO;
         settings.enableUserNotificationCenterDelegateOverride = NO;
         [Smooch initWithSettings:settings];
+        [[Smooch conversation] setDelegate:self];
         [Smooch login:self.smoochUserId jwt:nil];
         [Smooch show];
         [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
@@ -342,7 +334,7 @@ RCT_EXPORT_METHOD(lineLogin
 // Wait for location callbacks
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
-    //NSLog(@"tess");
+    
 }
 
 - (CLLocationDegrees)deviceLat
@@ -654,9 +646,7 @@ RCT_EXPORT_METHOD(convertTime
         NSLog(@"HOHOHO");
         NSString *jsonObj = [main convertTimeWithNumber:time];
         resolve(jsonObj);
-        //NSString *jsonObj = [smooch getConversationsListWithArray:smoochAppToken userID: userID];
-        //resolve(jsonObj);
-    });//    resolve([self.smooch getConversationsList]);
+    });
 }
 RCT_EXPORT_METHOD(getConversationsList
                   
@@ -666,7 +656,6 @@ RCT_EXPORT_METHOD(getConversationsList
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    
     
     if(!self.smooch){
         OkkamiSmoochChat *smooch = [OkkamiSmoochChat newInstanceWithAppToken:smoochAppToken[0]];
@@ -692,21 +681,14 @@ RCT_EXPORT_METHOD(openChatWindow
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    /*OkkamiSmoochChat *smooch = [OkkamiSmoochChat newInstanceWithAppToken:smoochAppToken];
-    self.smooch = smooch;
-    NSNotificationCenter *defaultNotif = [NSNotificationCenter defaultCenter];
-    [defaultNotif addObserver:self selector:@selector(listenerOkkami:) name:self.smooch.notificationName object:nil];
-    [self.smooch addNotifWithNotif: defaultNotif];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.smooch smoochChatWithUser:userID color: color textColor: textColor rgbColor: rgbColor rgbTextColor: rgbTextColor];
-        //[UIApplication sharedApplication].applicationIconBadgeNumber = [self.smooch getUnreadMessageCount];
-    });*/
+    
     dispatch_async(dispatch_get_main_queue(), ^{
         [Smooch destroy];
         SKTSettings *settings = [SKTSettings settingsWithAppToken:smoochAppToken];
         settings.enableAppDelegateSwizzling = NO;
         settings.enableUserNotificationCenterDelegateOverride = NO;
         [Smooch initWithSettings:settings];
+        [[Smooch conversation] setDelegate:self];
         [Smooch login:self.smoochUserId jwt:nil];
         [Smooch show];
         [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
@@ -785,7 +767,6 @@ RCT_EXPORT_METHOD(setFacebookEnvironment
     //load from savedStock example int value
     NSString* value;
     value = [savedStock objectForKey:@"FacebookAppID"];
-    NSLog(@"VALUE %@", value);
     
     NSMutableDictionary *newData = [[NSMutableDictionary alloc] initWithContentsOfFile: newPath];
     NSMutableArray* newArray = [NSMutableArray array];
@@ -805,11 +786,9 @@ RCT_EXPORT_METHOD(setFacebookEnvironment
     NSString* value2;
     NSMutableDictionary *savedStock2 = [[NSMutableDictionary alloc] initWithContentsOfFile: newPath];
     value2 = [savedStock2 objectForKey:@"FacebookAppID"];
-    NSLog(@"VALUE %@", value2);
     
     //set app id using fbsdk
     [FBSDKSettings setAppID:data[@"fbAppId"]];
-    //[FBSDKSettings setAppURLSchemeSuffix:[NSString stringWithFormat:@"fb%@", data[@"fbAppId"]]];
     
 }
 
@@ -821,12 +800,11 @@ RCT_EXPORT_METHOD(setLineEnvironment
                   :(RCTPromiseRejectBlock)reject)
 {
     NSString *newPath = [[NSBundle mainBundle] pathForResource:@"Info" ofType:@"plist"];
-    NSLog(@"PATH %@", newPath);
+
     NSMutableDictionary *savedStock = [[NSMutableDictionary alloc] initWithContentsOfFile: newPath];
     
     NSMutableDictionary* value;
     value = [savedStock objectForKey:@"LineSDKConfig"];
-    NSLog(@"VALUE %@", value[@"ChannelID"]);
     
     NSMutableDictionary *newData = [[NSMutableDictionary alloc] initWithContentsOfFile: newPath];
     NSMutableDictionary* newValue = [NSMutableDictionary dictionaryWithObjectsAndKeys:data[@"lineAppId"],@"ChannelID", nil];
@@ -837,12 +815,8 @@ RCT_EXPORT_METHOD(setLineEnvironment
     NSMutableDictionary* value2;
     NSMutableDictionary *savedStock2 = [[NSMutableDictionary alloc] initWithContentsOfFile: newPath];
     value2 = [savedStock2 objectForKey:@"LineSDKConfig"];
-    NSLog(@"VALUE %@", value2[@"ChannelID"]);
     
 }
-
-
-
 
 RCT_EXPORT_METHOD(setUserId
                   
@@ -874,447 +848,18 @@ RCT_EXPORT_METHOD(setUserId
     NSLog(@"===PLIST PATH====%@", plistPath);
     [dict writeToFile:plistPath atomically: YES];
     
-    // subscribe to channel and bind to event
-    //PTPusherChannel *channel = [self.appdel.pusher  subscribeToChannelNamed:channelName];
-    /*[channel bindToEventNamed:@"new-message" handleWithBlock:^(PTPusherEvent *channelEvent) {
-        // channelEvent.data is a NSDictianary of the JSON object received
-        NSString *message = [channelEvent.data objectForKey:@"message"];
-        NSLog(@"message received: %@", message);
-    }];*/
-
     [self.appdel.pusher connect];
 }
 
-/*-------------------------------------- Utility   --------------------------------------------------*/
-
-
-/**
- * Delete stored information of the user
- */
-
-/*RCT_EXPORT_METHOD(wipeUserData
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
-    
-}*/
-
-/**
- * Entry point of the native sdk
- */
-
-
-RCT_EXPORT_METHOD(start
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
-    RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
-    NSString* udid = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
-    NSString* payload = [NSString stringWithFormat:@"{\"uid\":\"%@\"}", udid];
-}
-
-/**
- * restart the native sdk,
- * basically stop and call the entry point of the sdk
- */
-
-/*
-RCT_EXPORT_METHOD(restart
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
-    
-    
-}*/
-
-/*---------------------------------------------------------------------------------------------------*/
-
-
-/*-------------------------------------- Hub & Core -------------------------------------------------*/
-
-/**
- * Connect to room. Applicable to downloadable apps
- * on success: resolve(NSString* coreResponseJSONString )
- * on failure: reject(@"xxx", @"xxx", NSError * error)
- * The native module should take care of persisting the device secret and token obtained from core
- * and making sure it is secure/encrypted
- */
-/*
-RCT_EXPORT_METHOD(connectToRoom
-                  :(NSString*)username
-                  :(NSString*)password
-                  
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
-    
-    RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
-    [main connectToRoomWithRoom:@"demo3" token:@"1234"];
-    [self.bridge.eventDispatcher sendAppEventWithName:@"connectToRoom" body:@{@"command": @"Connect To Room"}];
-
-    
-}
-*/
-
-/**
- * Disconnects from the current room. Applicable to downloadable apps.
- * on success: resolve(NSString* coreResponseJSONString )
- * on failure: reject(@"xxx", @"xxx", NSError * error)
- */
-/*
-RCT_EXPORT_METHOD(disconnectFromRoom
-                  
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
-    RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
-    [main disconnectFromRoom];
-    [self.bridge.eventDispatcher sendAppEventWithName:@"disconnectFromRoom" body:@{@"command": @"Disconnect From Room"}];
-}*/
-
-/**
- * Registers the device with a room using the given UID .
- * Applicable to property locked Apps
- * on success: resolve(NSString* coreResponseJSONString )
- * on failure: reject(@"xxx", @"xxx", NSError * error)
- * The native module should take care of persisting the device secret and token obtained from core
- * and making sure it is secure/encrypted
- */
-/*
-RCT_EXPORT_METHOD(registerToCore
-                  
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
-    
-}*/
-
-/**
- * Connects to hub using the presets and attempts to login ( send IDENTIFY)
- * If Hub is already connected, reply with  hubConnectionPromise.resolve(true)
- * on success: resolve(true)
- * on failure:  reject(@"xxx", @"xxx", NSError * error)
- * Native module should also take care of the PING PONG and reconnect if PING drops
- */
-/*
-RCT_EXPORT_METHOD(connectToHub
-                  
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
- 
-    
-    RCTOkkamiMain *helloWorld = [RCTOkkamiMain newInstance];
-    [helloWorld getGuestService];
-    //[helloWorld preConnect];
-    //[helloWorld connectToRoom];
-    //[helloWorld postToken];
-    
-    //RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:self.bridge moduleName:@"ImageBrowserApp" initialProperties:[helloWorld setupRx]];
-    //NSString *test = [helloWorld setupRx];
-//    if (test) {
-//        resolve(test);
-//    } else {
-//        //reject(test);
-//    }
-    
-}
-*/
-
-/**
- * Disconnects and cleans up the existing connection
- * If Hub is already connected, reply with  hubDisconnectionPromise.resolve(true) immediately
- * on success: resolve(true)
- * on failure: reject(@"xxx", @"xxx", NSError * error)
- *
- */
-/*
-RCT_EXPORT_METHOD(disconnectFromHub
-                  
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
-    [self.bridge.eventDispatcher sendAppEventWithName:@"onHubDisconnected" body:nil];
-}
-
-*/
-
-/**
- * Send command to hub. a command can look like this:
- * POWER light-1 ON
- * 2311 Default | POWER light-1 ON
- * 1234 2311 Default | POWER light-1 ON
- * <p>
- * The native module should fill in the missing info based on the command received
- * such as filling in room , group , none if not provided and skip those if provied already
- * on success ( successful write ) : sendMessageToHubPromise.resolve(true)
- * on failure:  hubDisconnectionPromise.reject(@"xxx", @"xxx", NSError * error)
- */
-/*
-RCT_EXPORT_METHOD(sendCommandToHub:(NSString*)command
-                  
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
-    
-    [self.bridge.eventDispatcher sendAppEventWithName:@"onHubCommand"
-                                                 body:@{@"command": @"1234 2311 Default | POWER light-1 ON"}];
-    
-}
-*/
-
-/**
- * downloads presets from core.
- * If force == YES, force download from core
- * If force == NO, and there is already presets from core, reply with that
- * on success : resolve(coreResponseJSONString)
- * on failure:  reject(@"xxx", @"xxx", NSError * error)
- */
-/*
-RCT_EXPORT_METHOD(downloadPresets
-                  :(BOOL)force
-                  
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
-    RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
-    [main downloadPresetsWithForce:1];
-    [self.bridge.eventDispatcher sendAppEventWithName:@"downloadPresets"
-                                                 body:@{@"command": @"Download Presets"}];
-}
-*/
-/**
- * Similar strategy as downloadPresets method
- *
- */
-/*
-RCT_EXPORT_METHOD(downloadRoomInfo
-                  :(BOOL)force
-                  
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
-    RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
-    [main downloadRoomInfoWithForce:1];
-    [self.bridge.eventDispatcher sendAppEventWithName:@"downloadRoomInfo"
-                                                 body:@{@"command": @"Download Room Info"}];
-}
-*/
-/**
- * The purpose of this method is to provide general purpose way to call any core endpoint.
- * Internally, the downloadPresets,downloadRoomInfo,connectToRoom all of them should use this method.
- * <p>
- * on success : resolve(coreResponseJSONString)
- * on failure:  reject(@"xxx", @"xxx", NSError * error)
- *
- * @param endPoint                full core url . https://api.fingi.com/devices/v1/register
- * @param getPost                 "GET" or "POST"
- * @param payload                 JSON encoded payload if it is POST
- */
-/*
-RCT_EXPORT_METHOD(downloadFromCore
-                  
-                  :(NSString*)endPoint
-                  :(NSString*)getPost
-                  :(NSString*)payLoad
-                  
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
-    
-}
-
-*/
-/**
- * if hub is currently connected + logged in :
- * resolve(true);
- * else
- * resolve(false);
- */
-/*
-RCT_EXPORT_METHOD(isHubLoggedIn
-                  
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
-    
-    [self.bridge.eventDispatcher sendAppEventWithName:@"onHubLoggedIn" body:@{@"command": @"Hub Logged In"}];
-    //ok
-    resolve(@YES);
-    
-}*/
-
-/**
- * if hub is currently connected ( regardless of logged in )  :
- * resolve(true);
- * else
- * resolve(false);
-*
- */
-/*
-RCT_EXPORT_METHOD(isHubConnected
-                  
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
-    
-    [self.bridge.eventDispatcher sendAppEventWithName:@"onHubConnected" body:nil];
-    //ok
-    resolve(@YES);
-    
-}
-*/
-
-
-//Events emission
-/*
- *  onHubCommand
- *
- *   [self.bridge.eventDispatcher sendAppEventWithName:@"onHubCommand"
- *       body:@{@"command": @"1234 2311 Default | POWER light-1 ON"}];
- *
- *
- *  onHubConnected
- *   
- *   [self.bridge.eventDispatcher sendAppEventWithName:@"onHubConnected" body:nil];
- *
- *
- *  onHubLoggedIn ( when IDENTIFIED is received )
- *
- *   [self.bridge.eventDispatcher sendAppEventWithName:@"onHubLoggedIn" body:nil];
- *
- *
- *  onHubDisconnected
- *
- *   [self.bridge.eventDispatcher sendAppEventWithName:@"onHubDisconnected" body:nil];
- *
- *
- * */
-
-
-
-/*---------------------------------------------------------------------------------------------------*/
-
-/*-------------------------------------- SIP / PhoneCall --------------------------------------------*/
-
-
-// SIP should be enabled / disabled autometically by the native sdk based on what is set in the preset
-// If Downloadable app, registration should not persist when app is in background
-// If property locked app, registration should persist even in background . Not applicable to iOS apps .
-// Registration should happen as soon as downloadPresets is successful
-
-
-/**
- * Dial a number. if voip Not available, dial using native dialer
- *
- * @param calledNumber
- * @param preferSip
- */
-/*
-RCT_EXPORT_METHOD(dial
-                  
-                  :(NSString*)calledNumber
-                  :(BOOL)preferSip
-            
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
-    
-}
-*/
-
-/**
- * Attempt to accept an incoming voip call
- */
-
-/*
-RCT_EXPORT_METHOD(receive
-                  
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
-
-    
-}
- */
-/**
- * Hangup an incoming / ongoing voip Call
- *
- * @param hangupPromise
- */
-/*
-RCT_EXPORT_METHOD(hangup
-                  
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
-    //ok
-    resolve(@YES);
-    
-}
-*/
-
-
-
-
-
-//Events emission
-/*
- *  onIncomingCall
- *
- *   [self.bridge.eventDispatcher sendAppEventWithName:@"onIncomingCall"
- *       body:@{@"caller": @"CALLER_NUMBER",  @"uniqueId":  @"CALL_UNIQUE_ID", @"eventData":  @"JSON_STRING"}];
- *
- *  onSipEvent
- *
- *   [self.bridge.eventDispatcher sendAppEventWithName:@"onSipEvent"
- *       body:@{@"eventNumber": @"SIP_EVENT_NUMBER_LIKE_200_400_404_ETC", @"JSON_STRING"}];
- *
- *  onCallHangup
- *
- *   [self.bridge.eventDispatcher sendAppEventWithName:@"onCallHangup"
- *       body:@{@"caller": @"CALLER_NUMBER",  @"uniqueId":  @"CALL_UNIQUE_ID", @"eventData":  @"JSON_STRING"}];
- *
- *  onSipRegistrationStatusChanged
- *
- *   [self.bridge.eventDispatcher sendAppEventWithName:@"onSipRegistrationStatusChanged"
- *       body:@{@"status": @"STATUS", @"eventData":  @"JSON_STRING"}]; // status should be one of : REGISTERING, REGISTERED , AUTHENTICATION_FAILURE , UNREGISTERED ,
- */
-
-
-
-
-/*---------------------------------------------------------------------------------------------------*/
-
-
-
-/*-------------------------------------- WIFI --------------------------------------------------------*/
-
-//wifi status is to be managed by the native sdk internally.
-//for property locked app, the sdk should set SSID and password as soon as downloadPresets is successful
-
-
-//Events emission
-/*
- *
- *  onWifiStatusChanged
- *
- *   [self.bridge.eventDispatcher sendAppEventWithName:@"onWifiStatusChanged"
- *       body:@{@"status": @"STATUS", @"eventData":  @"JSON_STRING"}]; // status should be one of : CONNECTING,CONNECTED,DISCONNECTED
- **/
-
-
-/*---------------------------------------------------------------------------------------------------*/
-
-
-/*-------------------------------------- Keys --------------------------------------------------------*/
-
-//?? need discussion
-
-
-/*---------------------------------------------------------------------------------------------------*/
-
-
-
-
 @end
+
+
+/*OkkamiSmoochChat *smooch = [OkkamiSmoochChat newInstanceWithAppToken:smoochAppToken];
+ self.smooch = smooch;
+ NSNotificationCenter *defaultNotif = [NSNotificationCenter defaultCenter];
+ [defaultNotif addObserver:self selector:@selector(listenerOkkami:) name:self.smooch.notificationName object:nil];
+ [self.smooch addNotifWithNotif: defaultNotif];
+ dispatch_async(dispatch_get_main_queue(), ^{
+ [self.smooch smoochChatWithUser:userID color: color textColor: textColor rgbColor: rgbColor rgbTextColor: rgbTextColor];
+ //[UIApplication sharedApplication].applicationIconBadgeNumber = [self.smooch getUnreadMessageCount];
+ });*/
