@@ -78,7 +78,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
 
     private static final String TAG = "OKKAMISDK";
     private static final int LINE_LOGIN_REQUEST_CODE = 10;
-    private static HubModule hubModule;
+    private HubModule hubModule;
     private final NonceManagerModule nonce = new NonceManagerModule();
     private final CommandSerializerModule cmdSerializer = new CommandSerializerModule();
     private final NumberFormatterModule numberFormatter = new NumberFormatterModule();
@@ -477,6 +477,12 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         mCmdFactory = getCmdFactotry(deviceId, auth);
         mock.setHubDnsName(hubDnsName);
         mock.setHubSslPort(hubSslPort);
+
+        if(hubModule!= null){
+            hubModule.disconnect();
+            hubModule=null;
+        }
+
         hubModule = new HubModule(
                 mContext,
                 mock,
