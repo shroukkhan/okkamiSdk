@@ -558,6 +558,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
 
                 try {
                     hubModule.disconnect();
+                    hubModule=null;
                     hubDisconnectionPromise.resolve(true);
                     sendEvent((ReactContext) mContext, "onHubDisconnected", null);
                 } catch (Exception e) {
