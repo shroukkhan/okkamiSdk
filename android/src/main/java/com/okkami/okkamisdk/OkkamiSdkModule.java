@@ -11,6 +11,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -83,7 +84,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     private final CommandSerializerModule cmdSerializer = new CommandSerializerModule();
     private final NumberFormatterModule numberFormatter = new NumberFormatterModule();
     private Application mApp;
-    private Context mContext;
+    private static Context mContext;
     private String lineLoginChannelId = "1499319131";
     private SDK okkamiSdk;
     private Promise lineLoginPromise = null;
@@ -205,11 +206,19 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     }
 
     // have a connection to any network
-    public boolean isNetworkConnected() {
-        ConnectivityManager cm =
-                (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
+    public static boolean isNetworkConnected() {
+        NetworkInfo info = getActiveNetworkInfo();
+
+        boolean isConnected = (info != null && info.isConnected());
+
+        Log.d(TAG, "isConnected=" + isConnected);
+
+        return isConnected;
+    }
+
+    private static NetworkInfo getActiveNetworkInfo() {
+        return ((ConnectivityManager) mContext.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE))
+                .getActiveNetworkInfo();
     }
 
     // have an internet access
