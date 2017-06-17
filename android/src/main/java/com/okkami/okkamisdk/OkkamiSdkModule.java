@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.telephony.TelephonyManager;
@@ -533,20 +534,35 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
      * @param hubConnectionPromise
      */
     @ReactMethod
-    public void connectToHub(String userId, String secret, String token, String hubUrl, String hubPort, Promise hubConnectionPromise) {
+    public void connectToHub(final String userId, String secret, String token, final String hubUrl,final String hubPort, final Promise hubConnectionPromise) {
 
         Log.d(TAG, "this.userId=" + this.userId);
         Log.d(TAG, "userId=" + userId);
 
-        BaseAuthentication auth = new DeviceAuth(token, secret);
-        try {
-            initHub(userId, hubUrl, Integer.parseInt(hubPort), auth);
-            hubModule.connect(userId);
-            hubConnectionPromise.resolve(true);
-            sendEvent((ReactContext) mContext, "onHubConnected", null);
-        } catch (Exception e) {
-            hubConnectionPromise.reject(e);
-        }
+        final BaseAuthentication auth = new DeviceAuth(token, secret);
+//        try {
+//            initHub(userId, hubUrl, Integer.parseInt(hubPort), auth);
+//            hubModule.connect(userId);
+//            hubConnectionPromise.resolve(true);
+//            sendEvent((ReactContext) mContext, "onHubConnected", null);
+//        } catch (Exception e) {
+//            hubConnectionPromise.reject(e);
+//        }
+
+        final OkkamiSdkModule __myself=this;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    __myself.initHub(userId, hubUrl, Integer.parseInt(hubPort), auth);
+                    __myself.hubModule.connect(userId);
+                    hubConnectionPromise.resolve(true);
+                    sendEvent((ReactContext) mContext, "onHubConnected", null);
+                } catch (Exception e) {
+                    hubConnectionPromise.reject(e);
+                }
+            }
+        }).start();
     }
 
     /**
@@ -559,15 +575,21 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
      */
     @ReactMethod
     public void disconnectFromHub(final Promise hubDisconnectionPromise) {
+        final OkkamiSdkModule __myself=this;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    __myself.hubModule.disconnect();
+                    __myself.hubModule=null;
+                    hubDisconnectionPromise.resolve(true);
+                    sendEvent((ReactContext) mContext, "onHubDisconnected", null);
+                } catch (Exception e) {
+                    hubDisconnectionPromise.reject(e);
+                }
+            }
+        }).start();
 
-        try {
-            hubModule.disconnect();
-            hubModule=null;
-            hubDisconnectionPromise.resolve(true);
-            sendEvent((ReactContext) mContext, "onHubDisconnected", null);
-        } catch (Exception e) {
-            hubDisconnectionPromise.reject(e);
-        }
     }
 
     /**
