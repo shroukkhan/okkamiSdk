@@ -553,18 +553,12 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         this.hubUrl = hubUrl;
         this.hubPort = hubPort;
 
-//        Log.d(TAG, "this.userId=" + this.userId);
-//        Log.d(TAG, "userId=" + userId);
+
+
+        Log.d(TAG, "this.userId=" + this.userId);
+        Log.d(TAG, "userId=" + userId);
 
         final BaseAuthentication auth = new DeviceAuth(token, secret);
-//        try {
-//            initHub(userId, hubUrl, Integer.parseInt(hubPort), auth);
-//            hubModule.connect(userId);
-//            hubConnectionPromise.resolve(true);
-//            sendEvent((ReactContext) mContext, "onHubConnected", null);
-//        } catch (Exception e) {
-//            hubConnectionPromise.reject(e);
-//        }
 
         final OkkamiSdkModule __myself = this;
         new Thread(new Runnable() {
@@ -573,10 +567,13 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
                 try {
                     __myself.initHub(userId, hubUrl, Integer.parseInt(hubPort), auth);
                     __myself.hubModule.connect(userId);
-                    hubConnectionPromise.resolve(true);
+                    if (hubConnectionPromise != null)
+                        hubConnectionPromise.resolve(true);
                     sendEvent((ReactContext) mContext, "onHubConnected", null);
+
                 } catch (Exception e) {
-                    hubConnectionPromise.reject(e);
+                    if (hubConnectionPromise != null)
+                        hubConnectionPromise.reject(e);
                 }
             }
         }).start();
@@ -654,39 +651,12 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         try {
             boolean result = hubModule.sendCommand(command);
 
-            if (!result) {
+            if (result == false) {
+
+                Log.e(TAG, "sendCommandToHub: failed, reconnecting");
+
                 //connectToHub(final String userId, String secret, String token, final String hubUrl, final String hubPort, final Promise hubConnectionPromise) {
-                connectToHub(this.userId, this.secret, this.token, this.hubUrl, this.hubPort, new Promise() {
-                    @Override
-                    public void resolve(@javax.annotation.Nullable Object value) {
-
-                    }
-
-                    @Override
-                    public void reject(String code, String message) {
-
-                    }
-
-                    @Override
-                    public void reject(String code, Throwable e) {
-
-                    }
-
-                    @Override
-                    public void reject(String code, String message, Throwable e) {
-
-                    }
-
-                    @Override
-                    public void reject(String message) {
-
-                    }
-
-                    @Override
-                    public void reject(Throwable reason) {
-
-                    }
-                });
+                connectToHub(this.userId, this.secret, this.token, this.hubUrl, this.hubPort, null);
             }
 
             sendMessageToHubPromise.resolve(true);
