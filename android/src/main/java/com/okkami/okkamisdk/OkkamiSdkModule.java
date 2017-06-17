@@ -76,6 +76,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     public interface MethodInvokeListener {
         void invoke(String methodName, String arg);
     }
+
     private MethodInvokeListener mMethodInvoker;
 
     private static final String TAG = "OKKAMISDK";
@@ -91,7 +92,8 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     private Promise lineLoginPromise = null;
 
     private static String userId;
-    public static String getUserId () {
+
+    public static String getUserId() {
         return userId;
     }
 
@@ -197,6 +199,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     }
 
 /*-------------------------------------- Utility   --------------------------------------------------*/
+
     /**
      * @return the name of this module. This will be the name used to {@code require()} this module
      * from javascript.
@@ -247,7 +250,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         Log.d(TAG, "fbAppId=" + fbAppId);
 
         if (FacebookSdk.isInitialized() && FacebookSdk.getApplicationId().equals(fbAppId)) {
-          return;
+            return;
         }
 
         FacebookSdk.setApplicationId(fbAppId);
@@ -263,12 +266,13 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
 
     /**
      * Set the badge app icon with provided number
+     *
      * @param unreadMsgNumber - the number to be show in badge app icon
      */
     @ReactMethod
     public void setAppBadgeIcon(int unreadMsgNumber) {
         if (mContext == null) {
-            throw new IllegalArgumentException( "mContext can't be null" );
+            throw new IllegalArgumentException("mContext can't be null");
         }
 
         if (unreadMsgNumber > 0) {
@@ -279,7 +283,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         }
     }
 
-/*---------------------------Core------------------------------------------------------------------------*/
+    /*---------------------------Core------------------------------------------------------------------------*/
     @ReactMethod
     public void lineLogin(Promise lineLoginPromise) {
 
@@ -299,6 +303,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     }
 
 /*-------------------------------------- Hub -------------------------------------------------*/
+
     /**
      * The purpose of this method is to provide general purpose way to call any core endpoint.
      * Internally, the downloadPresets,downloadRoomInfo,connectToRoom all of them should use this method.
@@ -425,7 +430,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
 
                             }
                         });
-            } else if (getPost.compareTo("DELETE") == 0){
+            } else if (getPost.compareTo("DELETE") == 0) {
 
                 okkamiSdk.getBACKEND_SERVICE_MODULE().doCoreDeleteCall(endPoint, "DELETE", payload, b)
                         .subscribeOn(io.reactivex.schedulers.Schedulers.io())
@@ -488,9 +493,9 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         mock.setHubDnsName(hubDnsName);
         mock.setHubSslPort(hubSslPort);
 
-        if(hubModule!= null){
+        if (hubModule != null) {
             hubModule.disconnect();
-            hubModule=null;
+            hubModule = null;
         }
 
         hubModule = new HubModule(
@@ -519,6 +524,12 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         );
     }
 
+
+    static String secret;
+    static String token;
+    static String hubUrl;
+    static String hubPort;
+
     /**
      * Connects to hub using the presets and attempts to login ( send IDENTIFY)
      * If Hub is already connected, reply with  hubConnectionPromise.resolve(true)
@@ -534,10 +545,16 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
      * @param hubConnectionPromise
      */
     @ReactMethod
-    public void connectToHub(final String userId, String secret, String token, final String hubUrl,final String hubPort, final Promise hubConnectionPromise) {
+    public void connectToHub(final String userId, String secret, String token, final String hubUrl, final String hubPort, final Promise hubConnectionPromise) {
 
-        Log.d(TAG, "this.userId=" + this.userId);
-        Log.d(TAG, "userId=" + userId);
+        this.userId = userId;
+        this.secret = secret;
+        this.token = token;
+        this.hubUrl = hubUrl;
+        this.hubPort = hubPort;
+
+//        Log.d(TAG, "this.userId=" + this.userId);
+//        Log.d(TAG, "userId=" + userId);
 
         final BaseAuthentication auth = new DeviceAuth(token, secret);
 //        try {
@@ -549,7 +566,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
 //            hubConnectionPromise.reject(e);
 //        }
 
-        final OkkamiSdkModule __myself=this;
+        final OkkamiSdkModule __myself = this;
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -575,13 +592,13 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
      */
     @ReactMethod
     public void disconnectFromHub(final Promise hubDisconnectionPromise) {
-        final OkkamiSdkModule __myself=this;
+        final OkkamiSdkModule __myself = this;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     __myself.hubModule.disconnect();
-                    __myself.hubModule=null;
+                    __myself.hubModule = null;
                     hubDisconnectionPromise.resolve(true);
                     sendEvent((ReactContext) mContext, "onHubDisconnected", null);
                 } catch (Exception e) {
@@ -635,7 +652,43 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void sendCommandToHub(String command, Promise sendMessageToHubPromise) {
         try {
-            hubModule.sendCommand(command);
+            boolean result = hubModule.sendCommand(command);
+
+            if (!result) {
+                //connectToHub(final String userId, String secret, String token, final String hubUrl, final String hubPort, final Promise hubConnectionPromise) {
+                connectToHub(this.userId, this.secret, this.token, this.hubUrl, this.hubPort, new Promise() {
+                    @Override
+                    public void resolve(@javax.annotation.Nullable Object value) {
+
+                    }
+
+                    @Override
+                    public void reject(String code, String message) {
+
+                    }
+
+                    @Override
+                    public void reject(String code, Throwable e) {
+
+                    }
+
+                    @Override
+                    public void reject(String code, String message, Throwable e) {
+
+                    }
+
+                    @Override
+                    public void reject(String message) {
+
+                    }
+
+                    @Override
+                    public void reject(Throwable reason) {
+
+                    }
+                });
+            }
+
             sendMessageToHubPromise.resolve(true);
         } catch (Exception e) {
             sendMessageToHubPromise.reject(e);
