@@ -560,23 +560,14 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void disconnectFromHub(final Promise hubDisconnectionPromise) {
 
-        new AsyncTask<Void, Void, Void>() {
-
-            @Override
-            protected Void doInBackground(Void... params) {
-
-                try {
-                    hubModule.disconnect();
-                    hubModule=null;
-                    hubDisconnectionPromise.resolve(true);
-                    sendEvent((ReactContext) mContext, "onHubDisconnected", null);
-                } catch (Exception e) {
-                    hubDisconnectionPromise.reject(e);
-                }
-
-                return null;
-            }
-        }.execute();
+        try {
+            hubModule.disconnect();
+            hubModule=null;
+            hubDisconnectionPromise.resolve(true);
+            sendEvent((ReactContext) mContext, "onHubDisconnected", null);
+        } catch (Exception e) {
+            hubDisconnectionPromise.reject(e);
+        }
     }
 
     /**
