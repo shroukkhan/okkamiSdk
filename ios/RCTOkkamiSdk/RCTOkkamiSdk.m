@@ -6,6 +6,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import <Smooch/Smooch.h>
 #import "ReactNativeConfig.h"
+#import "Language.h"
 
 @implementation OkkamiSdk
 
@@ -42,6 +43,13 @@ RCT_EXPORT_MODULE();
         //TODO: Handle/Log error
     }
 }
+
+
+- (void)openSmooch: (NSString*)appToken :(NSString*)userId {
+    //enhancement put open smooch all in here
+}
+
+
 
 
 RCT_EXPORT_METHOD(checkNotif
@@ -83,12 +91,14 @@ RCT_EXPORT_METHOD(checkNotif
 }
 
 -(void)conversation:(SKTConversation *)conversation willShowViewController:(UIViewController *)viewController{
+    viewController.navigationItem.title = self.hotelName;
     self.isSmoochShow = YES;
 }
 
 -(void)conversation:(SKTConversation *)conversation willDismissViewController:(UIViewController *)viewController{
     self.isSmoochShow = NO;
 }
+
 
 #pragma mark Pusher Delegate
 -(void) pusher:(PTPusher *)pusher didSubscribeToChannel:(PTPusherChannel *)channel{
@@ -682,6 +692,7 @@ RCT_EXPORT_METHOD(openChatWindow
                   :(RCTPromiseRejectBlock)reject)
 {
     
+    self.hotelName = hotelName;
     dispatch_async(dispatch_get_main_queue(), ^{
         [Smooch destroy];
         SKTSettings *settings = [SKTSettings settingsWithAppToken:smoochAppToken];
@@ -849,6 +860,20 @@ RCT_EXPORT_METHOD(setUserId
     [dict writeToFile:plistPath atomically: YES];
     
     [self.appdel.pusher connect];
+}
+
+
+RCT_EXPORT_METHOD(setLanguage
+                  
+                  :(NSString *) language
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    NSLog(@"Language : %@", language);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [Language setLanguage: language];
+    });
 }
 
 @end
