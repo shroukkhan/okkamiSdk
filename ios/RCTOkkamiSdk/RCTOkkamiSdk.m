@@ -872,6 +872,8 @@ RCT_EXPORT_METHOD(setLanguage
 {
     NSLog(@"Language : %@", language);
     dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObject:language] forKey:@"AppleLanguages"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
         [Language setLanguage: language];
     });
 }
