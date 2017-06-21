@@ -10,12 +10,13 @@
 		5D72D2EC1C16249000E22EC1 /* RCTOkkamiSdk.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5D72D2EB1C16249000E22EC1 /* RCTOkkamiSdk.h */; };
 		5D72D2EE1C16249000E22EC1 /* RCTOkkamiSdk.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D72D2ED1C16249000E22EC1 /* RCTOkkamiSdk.m */; };
 		651237371EE48026004CD7F1 /* RCTokkamiiossdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 651237361EE48026004CD7F1 /* RCTokkamiiossdk.framework */; };
+		654321451EFA541F00BF2027 /* Language.m in Sources */ = {isa = PBXBuildFile; fileRef = 654321441EFA541F00BF2027 /* Language.m */; };
+		654321471EFA617D00BF2027 /* Smooch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 654321461EFA617D00BF2027 /* Smooch.framework */; };
 		657817CE1ED573790079B076 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 657817CC1ED573780079B076 /* UserNotifications.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		657817CF1ED573790079B076 /* UserNotificationsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 657817CD1ED573780079B076 /* UserNotificationsUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		6589563C1ECFF9F00080F354 /* Pusher.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6589563B1ECFF9F00080F354 /* Pusher.framework */; };
 		6589563E1ECFF9F70080F354 /* SocketRocket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6589563D1ECFF9F70080F354 /* SocketRocket.framework */; };
 		658956401ECFFAB30080F354 /* Pods_OKKAMI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6589563F1ECFFAB30080F354 /* Pods_OKKAMI.framework */; };
-		65F9CF3E1ED2941D00315693 /* Smooch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65F9CF3D1ED2941C00315693 /* Smooch.framework */; };
 		65F9CF401ED2945100315693 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65F9CF3F1ED2945100315693 /* OpenGLES.framework */; };
 		65F9CF421ED2945700315693 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65F9CF411ED2945700315693 /* UIKit.framework */; };
 		65F9CF441ED2945E00315693 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65F9CF431ED2945E00315693 /* SystemConfiguration.framework */; };
@@ -53,6 +54,9 @@
 		5D72D2ED1C16249000E22EC1 /* RCTOkkamiSdk.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTOkkamiSdk.m; sourceTree = "<group>"; };
 		651237361EE48026004CD7F1 /* RCTokkamiiossdk.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RCTokkamiiossdk.framework; path = "okkami-ios-sdk/build/Release-iphoneos/RCTokkamiiossdk.framework"; sourceTree = "<group>"; };
 		652ED7D51EE9A4960036635E /* libReactNativeConfig.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libReactNativeConfig.a; path = "../../node_modules/react-native-config/ios/build/Debug-iphoneos/libReactNativeConfig.a"; sourceTree = "<group>"; };
+		654321431EFA541E00BF2027 /* Language.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Language.h; sourceTree = "<group>"; };
+		654321441EFA541F00BF2027 /* Language.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Language.m; sourceTree = "<group>"; };
+		654321461EFA617D00BF2027 /* Smooch.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Smooch.framework; sourceTree = "<group>"; };
 		657817CC1ED573780079B076 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		657817CD1ED573780079B076 /* UserNotificationsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotificationsUI.framework; path = System/Library/Frameworks/UserNotificationsUI.framework; sourceTree = SDKROOT; };
 		6589563B1ECFF9F00080F354 /* Pusher.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pusher.framework; path = "/Users/macbook/Documents/ios/react/OKKAMI-NEW/OKKAMI/ios/Pods/../build/Debug-iphoneos/libPusher/Pusher.framework"; sourceTree = "<absolute>"; };
@@ -106,7 +110,6 @@
 		658956951ECFFF4B0080F354 /* SocketRocket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SocketRocket.h; sourceTree = "<group>"; };
 		658956961ECFFF4B0080F354 /* SRWebSocket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SRWebSocket.h; sourceTree = "<group>"; };
 		658956971ECFFF4B0080F354 /* SRWebSocket.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SRWebSocket.m; sourceTree = "<group>"; };
-		65F9CF3D1ED2941C00315693 /* Smooch.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Smooch.framework; path = "okkami-ios-sdk/Smooch.framework"; sourceTree = "<group>"; };
 		65F9CF3F1ED2945100315693 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		65F9CF411ED2945700315693 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		65F9CF431ED2945E00315693 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -137,6 +140,7 @@
 				65F9CF4C1ED2948500315693 /* Foundation.framework in Frameworks */,
 				65F9CF561ED294A300315693 /* AssetsLibrary.framework in Frameworks */,
 				65F9CF541ED2949E00315693 /* AVFoundation.framework in Frameworks */,
+				654321471EFA617D00BF2027 /* Smooch.framework in Frameworks */,
 				65F9CF521ED2949900315693 /* CFNetwork.framework in Frameworks */,
 				65F9CF501ED2949300315693 /* CoreGraphics.framework in Frameworks */,
 				65F9CF4E1ED2948D00315693 /* CoreText.framework in Frameworks */,
@@ -153,7 +157,6 @@
 				6589563C1ECFF9F00080F354 /* Pusher.framework in Frameworks */,
 				FAF109081E48E2B9000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework in Frameworks */,
 				FA7FD0A41EC09CAA00C7D8B9 /* FBSDKCoreKit.framework in Frameworks */,
-				65F9CF3E1ED2941D00315693 /* Smooch.framework in Frameworks */,
 				FAF109061E48E2A0000B1E84 /* RCTOkkamiSdkImplementation.framework in Frameworks */,
 				FA3DC2351E6D954900866C11 /* LineSDK.framework in Frameworks */,
 			);
@@ -186,6 +189,8 @@
 			children = (
 				5D72D2EB1C16249000E22EC1 /* RCTOkkamiSdk.h */,
 				5D72D2ED1C16249000E22EC1 /* RCTOkkamiSdk.m */,
+				654321431EFA541E00BF2027 /* Language.h */,
+				654321441EFA541F00BF2027 /* Language.m */,
 			);
 			path = RCTOkkamiSdk;
 			sourceTree = "<group>";
@@ -279,6 +284,7 @@
 		FAF229A71E141BE800F3C9C1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				654321461EFA617D00BF2027 /* Smooch.framework */,
 				652ED7D51EE9A4960036635E /* libReactNativeConfig.a */,
 				651237361EE48026004CD7F1 /* RCTokkamiiossdk.framework */,
 				657817CC1ED573780079B076 /* UserNotifications.framework */,
@@ -295,7 +301,6 @@
 				65F9CF431ED2945E00315693 /* SystemConfiguration.framework */,
 				65F9CF411ED2945700315693 /* UIKit.framework */,
 				65F9CF3F1ED2945100315693 /* OpenGLES.framework */,
-				65F9CF3D1ED2941C00315693 /* Smooch.framework */,
 				6589563F1ECFFAB30080F354 /* Pods_OKKAMI.framework */,
 				6589563D1ECFF9F70080F354 /* SocketRocket.framework */,
 				6589563B1ECFF9F00080F354 /* Pusher.framework */,
@@ -367,6 +372,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5D72D2EE1C16249000E22EC1 /* RCTOkkamiSdk.m in Sources */,
+				654321451EFA541F00BF2027 /* Language.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -463,6 +469,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/RCTOkkamiSdkImplementation/build/Debug-iphoneos",
@@ -490,6 +497,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/RCTOkkamiSdkImplementation/build/Debug-iphoneos",

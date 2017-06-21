@@ -71,6 +71,10 @@ class OkkamiSdk {
   checkNotif(){
     return OkkamiSdkManager.checkNotif();
   }
+
+  setLanguage(language){
+    return OkkamiSdkManager.setLanguage(language);
+  }
   /*---------------------------------------------------------------------------------------------------*/
 
   /*-------------------------------------- SMOOCH --------------------------------------------*/

@@ -18,6 +18,7 @@
 @property (nonatomic, copy)NSString * statusMessage;
 @property (nonatomic, copy)NSString * pictureURL;
 @property (nonatomic, copy)NSString * smoochUserId;
+@property (nonatomic, copy)NSString * hotelName;
 @property (nonatomic, copy)NSString * status;
 @property (copy, nonatomic) NSDictionary * lineData;
 @property (nonatomic,retain) CLLocationManager *locationManager;
