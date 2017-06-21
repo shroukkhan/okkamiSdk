@@ -75,6 +75,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
 
     public interface MethodInvokeListener {
         void invoke(String methodName, String arg);
+        void invokeUnsubscribePusher();
     }
 
     private MethodInvokeListener mMethodInvoker;
@@ -594,10 +595,15 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
             @Override
             public void run() {
                 try {
-                    __myself.hubModule.disconnect();
-                    __myself.hubModule = null;
-                    hubDisconnectionPromise.resolve(true);
-                    sendEvent((ReactContext) mContext, "onHubDisconnected", null);
+                    if(__myself.hubModule != null) {
+                        __myself.hubModule.disconnect();
+                        __myself.hubModule = null;
+                        hubDisconnectionPromise.resolve(true);
+                        sendEvent((ReactContext) mContext, "onHubDisconnected", null);
+                    } else {
+                        hubDisconnectionPromise.reject("NullException", "HubModule is null object");
+                    }
+
                 } catch (Exception e) {
                     hubDisconnectionPromise.reject(e);
                 }
@@ -941,6 +947,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
                 ConversationActivity.close();
                 logoutChatWindowPromise.resolve(1);
             }
+            mMethodInvoker.invokeUnsubscribePusher();
         } catch (Exception e) {
             logoutChatWindowPromise.reject(e.getMessage(), e.getMessage());
         }
