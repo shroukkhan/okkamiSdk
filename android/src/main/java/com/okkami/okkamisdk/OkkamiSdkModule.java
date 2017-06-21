@@ -651,16 +651,20 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         try {
             boolean result = hubModule.sendCommand(command);
 
+
             if (result == false) {
 
                 Log.e(TAG, "sendCommandToHub: failed, reconnecting");
 
                 //connectToHub(final String userId, String secret, String token, final String hubUrl, final String hubPort, final Promise hubConnectionPromise) {
                 connectToHub(this.userId, this.secret, this.token, this.hubUrl, this.hubPort, null);
+            }else{
+                Log.d(TAG,"Successfully sent command to hub..");
             }
 
             sendMessageToHubPromise.resolve(true);
         } catch (Exception e) {
+            Log.e(TAG, "sendCommandToHub: failed : " + e.getMessage());
             sendMessageToHubPromise.reject(e);
         }
     }
