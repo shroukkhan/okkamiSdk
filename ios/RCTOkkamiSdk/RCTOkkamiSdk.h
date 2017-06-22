@@ -20,6 +20,7 @@
 @property (nonatomic, copy)NSString * smoochUserId;
 @property (nonatomic, copy)NSString * hotelName;
 @property (nonatomic, copy)NSString * status;
+@property (nonatomic, copy)NSString * currentSmoochToken;
 @property (copy, nonatomic) NSDictionary * lineData;
 @property (nonatomic,retain) CLLocationManager *locationManager;
 @property (strong, nonatomic) RCTPromiseResolveBlock loginResolver;
