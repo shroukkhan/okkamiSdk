@@ -25,6 +25,7 @@ RCT_EXPORT_MODULE();
         self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
         self.locationManager.distanceFilter = kCLDistanceFilterNone;
         self.isSmoochShow = NO;
+        self.currentSmoochToken = @"";
         [self.locationManager startUpdatingLocation];
         [self.locationManager requestWhenInUseAuthorization];
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
@@ -69,6 +70,7 @@ RCT_EXPORT_METHOD(checkNotif
         if(notification[@"data"][@"property_smooch_app_token"]){
             dispatch_async(dispatch_get_main_queue(), ^{
                 [Smooch destroy];
+                self.currentSmoochToken = notification[@"data"][@"property_smooch_app_token"];
                 SKTSettings *settings = [SKTSettings settingsWithAppToken:notification[@"data"][@"property_smooch_app_token"]];
                 settings.enableAppDelegateSwizzling = NO;
                 settings.enableUserNotificationCenterDelegateOverride = NO;
@@ -162,6 +164,7 @@ RCT_EXPORT_METHOD(checkNotif
     {
         NSLog( @"INACTIVE" );
         [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:userInfo[@"data"]];
+        self.currentSmoochToken = userInfo[@"data"][@"property_smooch_app_token"];
         SKTSettings *settings = [SKTSettings settingsWithAppToken:userInfo[@"data"][@"property_smooch_app_token"]];
         settings.enableAppDelegateSwizzling = NO;
         settings.enableUserNotificationCenterDelegateOverride = NO;
@@ -178,7 +181,7 @@ RCT_EXPORT_METHOD(checkNotif
     }
     else
     {
-        if(self.isSmoochShow){
+        if(self.isSmoochShow && [userInfo[@"data"][@"property_smooch_app_token"] isEqualToString:self.currentSmoochToken] ){
             
         }else{
             UIUserNotificationType types = UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
@@ -236,7 +239,7 @@ RCT_EXPORT_METHOD(checkNotif
             [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
         }
         
-        if(self.isSmoochShow){
+        if(self.isSmoochShow && [notification.request.content.userInfo[@"data"][@"property_smooch_app_token"] isEqualToString:self.currentSmoochToken]){
             completionHandler(UIUserNotificationTypeNone  | UIUserNotificationTypeBadge);
         }else{
             completionHandler(UIUserNotificationTypeSound |    UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
@@ -259,6 +262,7 @@ RCT_EXPORT_METHOD(checkNotif
         }
 
         [Smooch destroy];
+        self.currentSmoochToken = response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"];
         SKTSettings *settings = [SKTSettings settingsWithAppToken:response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"]];
         settings.enableAppDelegateSwizzling = NO;
         settings.enableUserNotificationCenterDelegateOverride = NO;
@@ -693,6 +697,7 @@ RCT_EXPORT_METHOD(openChatWindow
 {
     
     self.hotelName = hotelName;
+    self.currentSmoochToken = smoochAppToken;
     dispatch_async(dispatch_get_main_queue(), ^{
         [Smooch destroy];
         SKTSettings *settings = [SKTSettings settingsWithAppToken:smoochAppToken];
