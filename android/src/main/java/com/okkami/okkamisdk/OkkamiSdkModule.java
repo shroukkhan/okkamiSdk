@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -15,6 +16,7 @@ import android.support.annotation.Nullable;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.facebook.react.bridge.ActivityEventListener;
@@ -29,6 +31,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.toast.ToastModule;
 import com.linecorp.linesdk.auth.LineLoginApi;
 import com.linecorp.linesdk.auth.LineLoginResult;
 import com.okkami.android.sdk.SDK;
@@ -48,6 +51,7 @@ import com.okkami.android.sdk.module.HubModule;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -76,7 +80,10 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     public interface MethodInvokeListener {
         void invoke(String methodName, String arg);
         void invokeUnsubscribePusher();
+        void onAppLanded();
     }
+
+
 
     private MethodInvokeListener mMethodInvoker;
 
@@ -769,8 +776,9 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
                 String appToken = smoochAllAppTokenArray.getString(i);
                 Settings settings = new Settings(appToken);
                 settings.setUserId(userId);
-                Smooch.getSettings().setFirebaseCloudMessagingAutoRegistrationEnabled(false);
+                settings.setFirebaseCloudMessagingAutoRegistrationEnabled(false);
                 Smooch.init(mApp, settings);
+                Smooch.setFirebaseCloudMessagingToken("nan");
 
                 List<Message> listMsg = Smooch.getConversation().getMessages();
                 int unreadMsgCount = Smooch.getConversation().getUnreadCount();
@@ -867,7 +875,9 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
 
             Settings settings = new Settings(smoochAppToken);
             settings.setUserId(userId);
+            settings.setFirebaseCloudMessagingAutoRegistrationEnabled(false);
             Smooch.init(mApp, settings);
+            Smooch.setFirebaseCloudMessagingToken("nan");
 
             Intent chatWindow = new Intent();
             ComponentName cmp = new ComponentName(getReactApplicationContext().getPackageName(),
@@ -909,7 +919,9 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     public void loginChatWindow(String userId, String appToken) {
         Settings settings = new Settings(appToken);
         settings.setUserId(userId);
+        settings.setFirebaseCloudMessagingAutoRegistrationEnabled(false);
         Smooch.init(mApp, settings);
+        Smooch.setFirebaseCloudMessagingToken("nan");
     }
 
     /**
@@ -924,6 +936,8 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     public void getUnreadMessageCount(String smoochAppToken, String userId, Promise getUnreadMessageCountPromise) {
         try {
             Smooch.init(mApp, smoochAppToken);
+            Smooch.setFirebaseCloudMessagingToken("nan");
+            Smooch.getSettings().setFirebaseCloudMessagingAutoRegistrationEnabled(false);
             getUnreadMessageCountPromise.resolve(Smooch.getConversation().getUnreadCount());
         } catch (Exception e) {
             getUnreadMessageCountPromise.reject(e.getMessage(), e.getMessage());
@@ -951,5 +965,37 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         } catch (Exception e) {
             logoutChatWindowPromise.reject(e.getMessage(), e.getMessage());
         }
+    }
+
+    /**
+     * Open an external app with a given android package name
+     * @param pName Android package name
+     */
+    @ReactMethod
+    public void openAndroidExternalApp(String pName, Promise openAppPromise) {
+        try {
+            if (!TextUtils.isEmpty(pName)) {
+                Intent intent = mContext.getPackageManager().getLaunchIntentForPackage(pName);
+                if (intent == null) {
+                    Toast.makeText(mApp, "App not found, opening Google Play instead.", Toast.LENGTH_SHORT).show();
+                    // Bring user to the market or let them choose an app?
+                    intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse("market://details?id=" + pName));
+                } else {
+                    Toast.makeText(mApp, "Opening an app...", Toast.LENGTH_SHORT).show();
+                }
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(intent);
+            } else {
+                openAppPromise.reject("-1", "Pacakge name is empty or null.");
+            }
+        } catch (Exception e) {
+            openAppPromise.reject(Integer.toString(e.hashCode()), e.getMessage());
+        }
+    }
+
+    @ReactMethod
+    public void onAppLanded(Promise onAppLandedPromise) {
+        mMethodInvoker.onAppLanded();
     }
 }

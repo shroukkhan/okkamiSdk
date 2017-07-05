@@ -1,5 +1,5 @@
 import {NativeModules, DeviceEventEmitter} from 'react-native';
-import {convertRgbaToHex} from '../App/Lib/Utilities'
+// import {convertRgbaToHex} from '../App/Lib/Utilities'
 const OkkamiSdkManager = NativeModules.OkkamiSdk;
 
 
@@ -215,7 +215,20 @@ class OkkamiSdk {
     return await OkkamiSdkManager.convertTime(time);
   }
 
+  /**
+   * Open an external app with a given android package name
+   * @param pName Android package name
+   * @returns {*}
+   */
+  openAndroidExternalApp(pName){
+    console.log("Open android package name ", pName)
+    return OkkamiSdkManager.openAndroidExternalApp(pName);
+  }
 
+  onAppLanded(){
+    console.log("On app landed")
+    OkkamiSdkManager.onAppLanded();
+  }
 
 }
 let okkamiSdk = new OkkamiSdk();
