@@ -14,6 +14,9 @@
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 #define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 
+#define SMOOCH_NAME @"OKKAMI CONCIERGE"
+#define OKKAMI_DEEPLINK @"okkami://"
+
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE();
@@ -26,6 +29,7 @@ RCT_EXPORT_MODULE();
         self.locationManager.distanceFilter = kCLDistanceFilterNone;
         self.isSmoochShow = NO;
         self.currentSmoochToken = @"";
+        self.hotelName = SMOOCH_NAME;
         [self.locationManager startUpdatingLocation];
         [self.locationManager requestWhenInUseAuthorization];
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
@@ -70,6 +74,12 @@ RCT_EXPORT_METHOD(checkNotif
         if(notification[@"data"][@"property_smooch_app_token"]){
             dispatch_async(dispatch_get_main_queue(), ^{
                 [Smooch destroy];
+                if([notification[@"app"][@"alert"][@"title"] isEqualToString:@""] || notification[@"app"][@"alert"][@"title"] != nil){
+                    self.hotelName = SMOOCH_NAME;
+                }else{
+                    self.hotelName = notification[@"app"][@"alert"][@"title"];
+                }
+                
                 self.currentSmoochToken = notification[@"data"][@"property_smooch_app_token"];
                 SKTSettings *settings = [SKTSettings settingsWithAppToken:notification[@"data"][@"property_smooch_app_token"]];
                 settings.enableAppDelegateSwizzling = NO;
@@ -86,6 +96,12 @@ RCT_EXPORT_METHOD(checkNotif
     }
 }
 
+#pragma mark Safari Delegate
+
+/*- (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
+    [self.currentViewController dismissViewControllerAnimated:false completion:nil];
+}*/
+
 #pragma mark Smooch Delegate
 
 -(BOOL)conversation:(SKTConversation *)conversation shouldShowInAppNotificationForMessage:(SKTMessage *)message{
@@ -94,13 +110,34 @@ RCT_EXPORT_METHOD(checkNotif
 
 -(void)conversation:(SKTConversation *)conversation willShowViewController:(UIViewController *)viewController{
     viewController.navigationItem.title = self.hotelName;
+    self.currentViewController = viewController;
     self.isSmoochShow = YES;
+}
+
+-(void)conversation:(SKTConversation *)conversation didShowViewController:(UIViewController *)viewController{
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 }
 
 -(void)conversation:(SKTConversation *)conversation willDismissViewController:(UIViewController *)viewController{
     self.isSmoochShow = NO;
 }
 
+- (BOOL)conversation:(SKTConversation *)conversation shouldHandleMessageAction:(SKTMessageAction *)action{
+    if(action.uri != nil && [action.uri.absoluteString containsString:OKKAMI_DEEPLINK]){
+        NSString *preTel;
+        NSString *postTel;
+        
+        NSScanner *scanner = [NSScanner scannerWithString:action.uri.absoluteString];
+        [scanner scanUpToString:OKKAMI_DEEPLINK intoString:&preTel];
+        [scanner scanString:OKKAMI_DEEPLINK intoString:nil];
+        postTel = [action.uri.absoluteString substringFromIndex:scanner.scanLocation];
+        SFSafariViewController *svc = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:postTel]];
+        svc.delegate = self;
+        [self.currentViewController presentViewController:svc animated:YES completion:nil];
+        return NO;
+    }
+    return YES;
+}
 
 #pragma mark Pusher Delegate
 -(void) pusher:(PTPusher *)pusher didSubscribeToChannel:(PTPusherChannel *)channel{
@@ -164,6 +201,11 @@ RCT_EXPORT_METHOD(checkNotif
     {
         NSLog( @"INACTIVE" );
         [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:userInfo[@"data"]];
+        if([userInfo[@"app"][@"alert"][@"title"] isEqualToString:@""] || userInfo[@"app"][@"alert"][@"title"] != nil){
+            self.hotelName = SMOOCH_NAME;
+        }else{
+            self.hotelName = userInfo[@"app"][@"alert"][@"title"];
+        }
         self.currentSmoochToken = userInfo[@"data"][@"property_smooch_app_token"];
         SKTSettings *settings = [SKTSettings settingsWithAppToken:userInfo[@"data"][@"property_smooch_app_token"]];
         settings.enableAppDelegateSwizzling = NO;
@@ -262,6 +304,11 @@ RCT_EXPORT_METHOD(checkNotif
         }
 
         [Smooch destroy];
+        if([response.notification.request.content.userInfo[@"app"][@"alert"][@"title"] isEqualToString:@""] || response.notification.request.content.userInfo[@"app"][@"alert"][@"title"] != nil){
+            self.hotelName = SMOOCH_NAME;
+        }else{
+            self.hotelName = response.notification.request.content.userInfo[@"app"][@"alert"][@"title"];
+        }
         self.currentSmoochToken = response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"];
         SKTSettings *settings = [SKTSettings settingsWithAppToken:response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"]];
         settings.enableAppDelegateSwizzling = NO;
@@ -695,7 +742,6 @@ RCT_EXPORT_METHOD(openChatWindow
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
-    
     self.hotelName = hotelName;
     self.currentSmoochToken = smoochAppToken;
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -766,74 +812,6 @@ RCT_EXPORT_METHOD(loginChatWindow
     [self.smooch smoochLoginWithUser:userID];
 }
 
-
-
-RCT_EXPORT_METHOD(setFacebookEnvironment
-                  
-                  :(NSDictionary *) data
-                  
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
-    
-    NSString *newPath = [[NSBundle mainBundle] pathForResource:@"Info" ofType:@"plist"];
-    NSLog(@"PATH %@", newPath);
-    NSMutableDictionary *savedStock = [[NSMutableDictionary alloc] initWithContentsOfFile: newPath];
-
-    //load from savedStock example int value
-    NSString* value;
-    value = [savedStock objectForKey:@"FacebookAppID"];
-    
-    NSMutableDictionary *newData = [[NSMutableDictionary alloc] initWithContentsOfFile: newPath];
-    NSMutableArray* newArray = [NSMutableArray array];
-    [newData setObject:data[@"fbAppId"] forKey:@"FacebookAppID"];
-
-    NSMutableArray* oldArray;
-    oldArray = [savedStock objectForKey:@"CFBundleURLTypes"];
-    
-    newArray[0] = oldArray[0];
-    newArray[1] = [NSMutableDictionary dictionary];
-    newArray[1][@"CFBundleURLSchemes"] = [NSMutableArray array];
-    newArray[1][@"CFBundleURLSchemes"][0] = [NSString stringWithFormat:@"fb%@", data[@"fbAppId"]];
-    
-    [newData setObject:newArray forKey:@"CFBundleURLTypes"];
-    [newData writeToFile: newPath atomically:YES];
-    
-    NSString* value2;
-    NSMutableDictionary *savedStock2 = [[NSMutableDictionary alloc] initWithContentsOfFile: newPath];
-    value2 = [savedStock2 objectForKey:@"FacebookAppID"];
-    
-    //set app id using fbsdk
-    [FBSDKSettings setAppID:data[@"fbAppId"]];
-    
-}
-
-RCT_EXPORT_METHOD(setLineEnvironment
-                  
-                  :(NSDictionary *) data
-                  
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
-    NSString *newPath = [[NSBundle mainBundle] pathForResource:@"Info" ofType:@"plist"];
-
-    NSMutableDictionary *savedStock = [[NSMutableDictionary alloc] initWithContentsOfFile: newPath];
-    
-    NSMutableDictionary* value;
-    value = [savedStock objectForKey:@"LineSDKConfig"];
-    
-    NSMutableDictionary *newData = [[NSMutableDictionary alloc] initWithContentsOfFile: newPath];
-    NSMutableDictionary* newValue = [NSMutableDictionary dictionaryWithObjectsAndKeys:data[@"lineAppId"],@"ChannelID", nil];
-    
-    [newData setObject:newValue forKey:@"LineSDKConfig"];
-    [newData writeToFile: newPath atomically:YES];
-    
-    NSMutableDictionary* value2;
-    NSMutableDictionary *savedStock2 = [[NSMutableDictionary alloc] initWithContentsOfFile: newPath];
-    value2 = [savedStock2 objectForKey:@"LineSDKConfig"];
-    
-}
-
 RCT_EXPORT_METHOD(setUserId
                   
                   :(NSString *) userId
@@ -884,14 +862,3 @@ RCT_EXPORT_METHOD(setLanguage
 }
 
 @end
-
-
-/*OkkamiSmoochChat *smooch = [OkkamiSmoochChat newInstanceWithAppToken:smoochAppToken];
- self.smooch = smooch;
- NSNotificationCenter *defaultNotif = [NSNotificationCenter defaultCenter];
- [defaultNotif addObserver:self selector:@selector(listenerOkkami:) name:self.smooch.notificationName object:nil];
- [self.smooch addNotifWithNotif: defaultNotif];
- dispatch_async(dispatch_get_main_queue(), ^{
- [self.smooch smoochChatWithUser:userID color: color textColor: textColor rgbColor: rgbColor rgbTextColor: rgbTextColor];
- //[UIApplication sharedApplication].applicationIconBadgeNumber = [self.smooch getUnreadMessageCount];
- });*/
