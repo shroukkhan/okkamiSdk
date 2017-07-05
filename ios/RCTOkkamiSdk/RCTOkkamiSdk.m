@@ -74,7 +74,7 @@ RCT_EXPORT_METHOD(checkNotif
         if(notification[@"data"][@"property_smooch_app_token"]){
             dispatch_async(dispatch_get_main_queue(), ^{
                 [Smooch destroy];
-                if([notification[@"app"][@"alert"][@"title"] isEqualToString:@""] || notification[@"app"][@"alert"][@"title"] != nil){
+                if([notification[@"app"][@"alert"][@"title"] isEqualToString:@""] || notification[@"app"][@"alert"][@"title"] == nil){
                     self.hotelName = SMOOCH_NAME;
                 }else{
                     self.hotelName = notification[@"app"][@"alert"][@"title"];
@@ -201,7 +201,7 @@ RCT_EXPORT_METHOD(checkNotif
     {
         NSLog( @"INACTIVE" );
         [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:userInfo[@"data"]];
-        if([userInfo[@"app"][@"alert"][@"title"] isEqualToString:@""] || userInfo[@"app"][@"alert"][@"title"] != nil){
+        if([userInfo[@"app"][@"alert"][@"title"] isEqualToString:@""] || userInfo[@"app"][@"alert"][@"title"] == nil){
             self.hotelName = SMOOCH_NAME;
         }else{
             self.hotelName = userInfo[@"app"][@"alert"][@"title"];
@@ -304,7 +304,7 @@ RCT_EXPORT_METHOD(checkNotif
         }
 
         [Smooch destroy];
-        if([response.notification.request.content.userInfo[@"app"][@"alert"][@"title"] isEqualToString:@""] || response.notification.request.content.userInfo[@"app"][@"alert"][@"title"] != nil){
+        if([response.notification.request.content.userInfo[@"app"][@"alert"][@"title"] isEqualToString:@""] || response.notification.request.content.userInfo[@"app"][@"alert"][@"title"] == nil){
             self.hotelName = SMOOCH_NAME;
         }else{
             self.hotelName = response.notification.request.content.userInfo[@"app"][@"alert"][@"title"];
