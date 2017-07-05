@@ -6,11 +6,12 @@
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import "Pusher.h"
 #import "AppDelegate.h"
+#import <SafariServices/SafariServices.h>
 #import <Smooch/Smooch.h>
 
 @import RCTokkamiiossdk;
 
-@interface OkkamiSdk : NSObject <RCTBridgeModule, LineSDKLoginDelegate, CLLocationManagerDelegate,UNUserNotificationCenterDelegate, UIApplicationDelegate, SKTConversationDelegate, PTPusherDelegate>
+@interface OkkamiSdk : NSObject <RCTBridgeModule, LineSDKLoginDelegate, CLLocationManagerDelegate,UNUserNotificationCenterDelegate, UIApplicationDelegate, SKTConversationDelegate, PTPusherDelegate, SFSafariViewControllerDelegate>
 
 @property (nonatomic, copy)NSString * accessToken;
 @property (nonatomic, copy)NSString * userId;
@@ -29,5 +30,6 @@
 @property (strong, nonatomic) RCTEventDispatcher* event;
 @property (strong, nonatomic) OkkamiSmoochChat* smooch;
 @property (strong, nonatomic) AppDelegate* appdel;
+@property (strong, nonatomic) UIViewController* currentViewController;
 @property (nonatomic, assign)BOOL isSmoochShow;
 @end
