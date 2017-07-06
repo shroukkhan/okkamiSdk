@@ -32,4 +32,5 @@
 @property (strong, nonatomic) AppDelegate* appdel;
 @property (strong, nonatomic) UIViewController* currentViewController;
 @property (nonatomic, assign)BOOL isSmoochShow;
+@property (nonatomic, assign)BOOL isCheckNotif;
 @end
