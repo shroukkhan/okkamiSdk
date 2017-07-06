@@ -28,6 +28,7 @@ RCT_EXPORT_MODULE();
         self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
         self.locationManager.distanceFilter = kCLDistanceFilterNone;
         self.isSmoochShow = NO;
+        self.isCheckNotif = NO;
         self.currentSmoochToken = @"";
         self.hotelName = SMOOCH_NAME;
         [self.locationManager startUpdatingLocation];
@@ -73,11 +74,12 @@ RCT_EXPORT_METHOD(checkNotif
     if(notification){
         if(notification[@"data"][@"property_smooch_app_token"]){
             dispatch_async(dispatch_get_main_queue(), ^{
+                self.isCheckNotif = YES;
                 [Smooch destroy];
-                if([notification[@"app"][@"alert"][@"title"] isEqualToString:@""] || notification[@"app"][@"alert"][@"title"] == nil){
+                if([notification[@"aps"][@"alert"][@"title"] isEqualToString:@""] || notification[@"aps"][@"alert"][@"title"] == nil){
                     self.hotelName = SMOOCH_NAME;
                 }else{
-                    self.hotelName = notification[@"app"][@"alert"][@"title"];
+                    self.hotelName = notification[@"aps"][@"alert"][@"title"];
                 }
                 
                 self.currentSmoochToken = notification[@"data"][@"property_smooch_app_token"];
@@ -115,11 +117,19 @@ RCT_EXPORT_METHOD(checkNotif
 }
 
 -(void)conversation:(SKTConversation *)conversation didShowViewController:(UIViewController *)viewController{
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+    if(self.isCheckNotif){
+        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+    }
 }
 
 -(void)conversation:(SKTConversation *)conversation willDismissViewController:(UIViewController *)viewController{
     self.isSmoochShow = NO;
+}
+
+-(void)conversation:(SKTConversation *)conversation didDismissViewController:(UIViewController *)viewController{
+    if(self.isCheckNotif){
+        self.isCheckNotif = NO;
+    }
 }
 
 - (BOOL)conversation:(SKTConversation *)conversation shouldHandleMessageAction:(SKTMessageAction *)action{
@@ -201,10 +211,10 @@ RCT_EXPORT_METHOD(checkNotif
     {
         NSLog( @"INACTIVE" );
         [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:userInfo[@"data"]];
-        if([userInfo[@"app"][@"alert"][@"title"] isEqualToString:@""] || userInfo[@"app"][@"alert"][@"title"] == nil){
+        if([userInfo[@"aps"][@"alert"][@"title"] isEqualToString:@""] || userInfo[@"aps"][@"alert"][@"title"] == nil){
             self.hotelName = SMOOCH_NAME;
         }else{
-            self.hotelName = userInfo[@"app"][@"alert"][@"title"];
+            self.hotelName = userInfo[@"aps"][@"alert"][@"title"];
         }
         self.currentSmoochToken = userInfo[@"data"][@"property_smooch_app_token"];
         SKTSettings *settings = [SKTSettings settingsWithAppToken:userInfo[@"data"][@"property_smooch_app_token"]];
@@ -304,10 +314,10 @@ RCT_EXPORT_METHOD(checkNotif
         }
 
         [Smooch destroy];
-        if([response.notification.request.content.userInfo[@"app"][@"alert"][@"title"] isEqualToString:@""] || response.notification.request.content.userInfo[@"app"][@"alert"][@"title"] == nil){
+        if([response.notification.request.content.userInfo[@"aps"][@"alert"][@"title"] isEqualToString:@""] || response.notification.request.content.userInfo[@"aps"][@"alert"][@"title"] == nil){
             self.hotelName = SMOOCH_NAME;
         }else{
-            self.hotelName = response.notification.request.content.userInfo[@"app"][@"alert"][@"title"];
+            self.hotelName = response.notification.request.content.userInfo[@"aps"][@"alert"][@"title"];
         }
         self.currentSmoochToken = response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"];
         SKTSettings *settings = [SKTSettings settingsWithAppToken:response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"]];
