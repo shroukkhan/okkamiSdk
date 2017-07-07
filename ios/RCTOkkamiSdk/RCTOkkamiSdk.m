@@ -1,12 +1,11 @@
 #import "RCTOkkamiSdk.h"
 #import "RCTEventDispatcher.h"
-
 #import "RCTBundleURLProvider.h"
 #import "RCTRootView.h"
-#import <CoreLocation/CoreLocation.h>
-#import <Smooch/Smooch.h>
 #import "ReactNativeConfig.h"
 #import "Language.h"
+#import <CoreLocation/CoreLocation.h>
+#import <Smooch/Smooch.h>
 
 @implementation OkkamiSdk
 
@@ -51,52 +50,14 @@ RCT_EXPORT_MODULE();
 }
 
 
-- (void)openSmooch: (NSString*)appToken :(NSString*)userId {
+- (void)openSmooch: (NSString*)appToken :(NSString*)userId :(NSString*)hotelName {
     //enhancement put open smooch all in here
 }
 
-
-
-
-RCT_EXPORT_METHOD(checkNotif
-                  
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
-    NSError *error;
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *plistPath = [documentsDirectory stringByAppendingPathComponent:@"Notifications.plist"];
-    NSString *userPath = [documentsDirectory stringByAppendingPathComponent:@"UserInfo.plist"];
-    NSMutableDictionary *notification = [[NSMutableDictionary alloc] initWithContentsOfFile: plistPath];
-    NSDictionary *userInfo = [[NSDictionary alloc] initWithContentsOfFile: userPath];
-
-    if(notification){
-        if(notification[@"data"][@"property_smooch_app_token"]){
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.isCheckNotif = YES;
-                [Smooch destroy];
-                if([notification[@"aps"][@"alert"][@"title"] isEqualToString:@""] || notification[@"aps"][@"alert"][@"title"] == nil){
-                    self.hotelName = SMOOCH_NAME;
-                }else{
-                    self.hotelName = notification[@"aps"][@"alert"][@"title"];
-                }
-                
-                self.currentSmoochToken = notification[@"data"][@"property_smooch_app_token"];
-                SKTSettings *settings = [SKTSettings settingsWithAppToken:notification[@"data"][@"property_smooch_app_token"]];
-                settings.enableAppDelegateSwizzling = NO;
-                settings.enableUserNotificationCenterDelegateOverride = NO;
-                [Smooch initWithSettings:settings];
-                [[Smooch conversation] setDelegate:self];
-                [Smooch login:[userInfo objectForKey:@"userId"] jwt:nil];
-                [Smooch show];
-                [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
-                [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:notification[@"data"]];
-                [self deletePList:@"Notifications"];
-            });
-        }
-    }
+- (void)sendEvent: (NSString*)eventName :(NSDictionary*)eventBody {
+    [self.bridge.eventDispatcher sendAppEventWithName:eventName body:eventBody];
 }
+
 
 #pragma mark Safari Delegate
 
@@ -141,9 +102,11 @@ RCT_EXPORT_METHOD(checkNotif
         [scanner scanUpToString:OKKAMI_DEEPLINK intoString:&preTel];
         [scanner scanString:OKKAMI_DEEPLINK intoString:nil];
         postTel = [action.uri.absoluteString substringFromIndex:scanner.scanLocation];
-        SFSafariViewController *svc = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:postTel]];
+        /*SFSafariViewController *svc = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:postTel]];
         svc.delegate = self;
-        [self.currentViewController presentViewController:svc animated:YES completion:nil];
+        [self.currentViewController presentViewController:svc animated:YES completion:nil];*/
+        [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_WEBVIEW" body:@{@"hotelName":self.hotelName,@"title":action.text,@"url":postTel,@"appToken": self.currentSmoochToken}];
+        [self.currentViewController dismissViewControllerAnimated:true completion:nil];
         return NO;
     }
     return YES;
@@ -373,6 +336,46 @@ RCT_EXPORT_METHOD(checkNotif
     }
 }
 
+
+RCT_EXPORT_METHOD(checkNotif
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    NSError *error;
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *plistPath = [documentsDirectory stringByAppendingPathComponent:@"Notifications.plist"];
+    NSString *userPath = [documentsDirectory stringByAppendingPathComponent:@"UserInfo.plist"];
+    NSMutableDictionary *notification = [[NSMutableDictionary alloc] initWithContentsOfFile: plistPath];
+    NSDictionary *userInfo = [[NSDictionary alloc] initWithContentsOfFile: userPath];
+    
+    if(notification){
+        if(notification[@"data"][@"property_smooch_app_token"]){
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.isCheckNotif = YES;
+                [Smooch destroy];
+                if([notification[@"aps"][@"alert"][@"title"] isEqualToString:@""] || notification[@"aps"][@"alert"][@"title"] == nil){
+                    self.hotelName = SMOOCH_NAME;
+                }else{
+                    self.hotelName = notification[@"aps"][@"alert"][@"title"];
+                }
+                
+                self.currentSmoochToken = notification[@"data"][@"property_smooch_app_token"];
+                SKTSettings *settings = [SKTSettings settingsWithAppToken:notification[@"data"][@"property_smooch_app_token"]];
+                settings.enableAppDelegateSwizzling = NO;
+                settings.enableUserNotificationCenterDelegateOverride = NO;
+                [Smooch initWithSettings:settings];
+                [[Smooch conversation] setDelegate:self];
+                [Smooch login:[userInfo objectForKey:@"userId"] jwt:nil];
+                [Smooch show];
+                [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
+                [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:notification[@"data"]];
+                [self deletePList:@"Notifications"];
+            });
+        }
+    }
+}
 
 
 RCT_EXPORT_METHOD(lineLogin
