@@ -1,6 +1,5 @@
 #import "RCTBridge.h"
 #import "Pusher.h"
-#import "AppDelegate.h"
 #import "RCTBridgeModule.h"
 #import <UserNotifications/UserNotifications.h>
 #import <LineSDK/LineSDK.h>
@@ -8,10 +7,17 @@
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <SafariServices/SafariServices.h>
 #import <Smooch/Smooch.h>
+#import "RCTEventDispatcher.h"
+#import "RCTBundleURLProvider.h"
+#import "RCTRootView.h"
+#import "ReactNativeConfig.h"
+#import "Language.h"
 
 @import RCTokkamiiossdk;
+@class AppDelegate;
 
 @interface OkkamiSdk : NSObject <RCTBridgeModule, LineSDKLoginDelegate, CLLocationManagerDelegate,UNUserNotificationCenterDelegate, UIApplicationDelegate, SKTConversationDelegate, PTPusherDelegate, SFSafariViewControllerDelegate>
+
 
 @property (nonatomic, copy)NSString * accessToken;
 @property (nonatomic, copy)NSString * userId;
