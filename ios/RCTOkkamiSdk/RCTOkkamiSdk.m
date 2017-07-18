@@ -1,11 +1,6 @@
 #import "RCTOkkamiSdk.h"
-#import "RCTEventDispatcher.h"
-#import "RCTBundleURLProvider.h"
-#import "RCTRootView.h"
-#import "ReactNativeConfig.h"
-#import "Language.h"
-#import <CoreLocation/CoreLocation.h>
-#import <Smooch/Smooch.h>
+#import "AppDelegate.h"
+
 
 @implementation OkkamiSdk
 
@@ -50,20 +45,42 @@ RCT_EXPORT_MODULE();
 }
 
 
-- (void)openSmooch: (NSString*)appToken :(NSString*)userId :(NSString*)hotelName {
+- (void)openSmooch: (NSString*)appToken userId:(NSString*)userId title:(NSString*)title {
     //enhancement put open smooch all in here
+    [Smooch destroy];
+    if([title isEqualToString:@""] || title == nil){
+        self.hotelName = SMOOCH_NAME;
+    }else{
+        self.hotelName = title;
+    }
+    self.currentSmoochToken = appToken;
+    SKTSettings *settings = [SKTSettings settingsWithAppToken:appToken];
+    settings.enableAppDelegateSwizzling = NO;
+    settings.enableUserNotificationCenterDelegateOverride = NO;
+    [Smooch initWithSettings:settings];
+    [[Smooch conversation] setDelegate:self];
+    [Smooch login:self.smoochUserId jwt:nil];
+    [Smooch show];
+    
+}
+
+
+- (void)handleOkkamiUrl: (NSString*)url title: (NSString*)title {
+    NSString *preTel;
+    NSString *postTel;
+    
+    NSScanner *scanner = [NSScanner scannerWithString:url];
+    [scanner scanUpToString:OKKAMI_DEEPLINK intoString:&preTel];
+    [scanner scanString:OKKAMI_DEEPLINK intoString:nil];
+    postTel = [url substringFromIndex:scanner.scanLocation];
+    [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_WEBVIEW" body:@{@"hotelName":self.hotelName,@"title":title,@"url":postTel,@"appToken": self.currentSmoochToken}];
+    [self.currentViewController dismissViewControllerAnimated:true completion:nil];
+    
 }
 
 - (void)sendEvent: (NSString*)eventName :(NSDictionary*)eventBody {
     [self.bridge.eventDispatcher sendAppEventWithName:eventName body:eventBody];
 }
-
-
-#pragma mark Safari Delegate
-
-/*- (void)safariViewControllerDidFinish:(SFSafariViewController *)controller {
-    [self.currentViewController dismissViewControllerAnimated:false completion:nil];
-}*/
 
 #pragma mark Smooch Delegate
 
@@ -95,18 +112,7 @@ RCT_EXPORT_MODULE();
 
 - (BOOL)conversation:(SKTConversation *)conversation shouldHandleMessageAction:(SKTMessageAction *)action{
     if(action.uri != nil && [action.uri.absoluteString containsString:OKKAMI_DEEPLINK]){
-        NSString *preTel;
-        NSString *postTel;
-        
-        NSScanner *scanner = [NSScanner scannerWithString:action.uri.absoluteString];
-        [scanner scanUpToString:OKKAMI_DEEPLINK intoString:&preTel];
-        [scanner scanString:OKKAMI_DEEPLINK intoString:nil];
-        postTel = [action.uri.absoluteString substringFromIndex:scanner.scanLocation];
-        /*SFSafariViewController *svc = [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:postTel]];
-        svc.delegate = self;
-        [self.currentViewController presentViewController:svc animated:YES completion:nil];*/
-        [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_WEBVIEW" body:@{@"hotelName":self.hotelName,@"title":action.text,@"url":postTel,@"appToken": self.currentSmoochToken}];
-        [self.currentViewController dismissViewControllerAnimated:true completion:nil];
+        [self handleOkkamiUrl:action.uri.absoluteString title:action.text];
         return NO;
     }
     return YES;
@@ -137,7 +143,7 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-    NSLog(@"DID REGISTER REMOTE ???");
+    NSLog(@"DID REGISTER REMOTE ??? from RCTOkkamiSdk:");
     [Smooch logout];
     [Smooch destroy];
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
@@ -149,7 +155,7 @@ RCT_EXPORT_MODULE();
 {
     [Smooch logout];
     [Smooch destroy];
-    NSLog(@"DID RECEIVE REMOTE ?");
+    NSLog(@"DID RECEIVE REMOTE ? from RCTOkkamiSdk:");
     [self application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:^(UIBackgroundFetchResult result) {
     }];
 }
@@ -159,7 +165,7 @@ RCT_EXPORT_MODULE();
 {
     // iOS 10 will handle notifications through other methods
     
-    NSLog( @"HANDLE PUSH, didReceiveRemoteNotification: %@", userInfo );
+    NSLog( @"HANDLE PUSH, didReceiveRemoteNotification from RCTOkkamiSdk: %@", userInfo );
     [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:userInfo[@"data"]];
     
     if( SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO( @"10.0" ) )
@@ -167,9 +173,8 @@ RCT_EXPORT_MODULE();
         NSLog( @"iOS version >= 10. Let NotificationCenter handle this one." );
         return;
     }
-    ;
-    // custom code to handle notification content
     
+    // custom code to handle notification content
     if( [UIApplication sharedApplication].applicationState == UIApplicationStateInactive )
     {
         NSLog( @"INACTIVE" );
@@ -216,28 +221,6 @@ RCT_EXPORT_MODULE();
     }
 }
 
-/*- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
-{
-    if( SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO( @"10.0" ) )
-    {
-        return;
-    }else{
-        if(notification.userInfo[@"data"][@"property_smooch_app_token"]){
-            [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
-            [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:nil];
-            [Smooch destroy];
-            SKTSettings *settings = [SKTSettings settingsWithAppToken:notification.userInfo[@"data"][@"property_smooch_app_token"]];
-            settings.enableAppDelegateSwizzling = NO;
-            settings.enableUserNotificationCenterDelegateOverride = NO;
-            [Smooch initWithSettings:settings];
-            [Smooch login:self.smoochUserId jwt:nil];
-            [Smooch show];
-            [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
-        }
-    }
-}*/
-
-
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
        willPresentNotification:(UNNotification *)notification
          withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
@@ -250,6 +233,8 @@ RCT_EXPORT_MODULE();
         self.status = @"foreground";
         if(notification.request.content.userInfo[@"data"][@"command"]){
             [self.bridge.eventDispatcher sendAppEventWithName:notification.request.content.userInfo[@"data"][@"command"] body:nil];
+        }else if(notification.request.content.userInfo[@"data"][@"status"] && notification.request.content.userInfo[@"data"][@"room_number"]){
+            [self.bridge.eventDispatcher sendAppEventWithName:notification.request.content.userInfo[@"data"][@"status"] body:notification.request.content.userInfo[@"data"]];
         }else{
             [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
         }
@@ -293,6 +278,8 @@ RCT_EXPORT_MODULE();
         [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
     }else if(response.notification.request.content.userInfo[@"data"][@"command"]){
         [self.bridge.eventDispatcher sendAppEventWithName:response.notification.request.content.userInfo[@"data"][@"command"] body:nil];
+    }else if(response.notification.request.content.userInfo[@"data"][@"status"] && response.notification.request.content.userInfo[@"data"][@"room_number"]){
+        [self.bridge.eventDispatcher sendAppEventWithName:response.notification.request.content.userInfo[@"data"][@"status"] body:response.notification.request.content.userInfo[@"data"]];
     }
     completionHandler();
 }
