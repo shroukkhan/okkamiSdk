@@ -1,7 +1,6 @@
 #import "RCTOkkamiSdk.h"
 #import "AppDelegate.h"
 
-
 @implementation OkkamiSdk
 
 // define macro
@@ -68,14 +67,12 @@ RCT_EXPORT_MODULE();
 - (void)handleOkkamiUrl: (NSString*)url title: (NSString*)title {
     NSString *preTel;
     NSString *postTel;
-    
     NSScanner *scanner = [NSScanner scannerWithString:url];
     [scanner scanUpToString:OKKAMI_DEEPLINK intoString:&preTel];
     [scanner scanString:OKKAMI_DEEPLINK intoString:nil];
     postTel = [url substringFromIndex:scanner.scanLocation];
     [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_WEBVIEW" body:@{@"hotelName":self.hotelName,@"title":title,@"url":postTel,@"appToken": self.currentSmoochToken}];
     [self.currentViewController dismissViewControllerAnimated:true completion:nil];
-    
 }
 
 - (void)sendEvent: (NSString*)eventName :(NSDictionary*)eventBody {
@@ -498,7 +495,7 @@ RCT_EXPORT_METHOD(connectToHub
             NSMutableDictionary* details = [NSMutableDictionary dictionary];
             [details setValue:@"Not connected To Room" forKey:NSLocalizedDescriptionKey];
             // populate the error object with the details
-            NSError *error = [NSError errorWithDomain:@"E_ROOM_NOT_CONNECTED" code:1200 userInfo:details];
+            NSError *error = [NSError errorWithDomain:@"E_ROOM_NOT_CONNECTED" code:401 userInfo:details];
             reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
         }
     }];
@@ -522,7 +519,7 @@ RCT_EXPORT_METHOD(disconnectFromHub
         NSMutableDictionary* details = [NSMutableDictionary dictionary];
         [details setValue:@"Not connected To Hub" forKey:NSLocalizedDescriptionKey];
         // populate the error object with the details
-        NSError *error = [NSError errorWithDomain:@"E_HUB_NOT_CONNECTED" code:200 userInfo:details];
+        NSError *error = [NSError errorWithDomain:@"E_HUB_NOT_CONNECTED" code:401 userInfo:details];
         reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
     }else{
         [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -556,7 +553,7 @@ RCT_EXPORT_METHOD(reconnectToHub
         NSMutableDictionary* details = [NSMutableDictionary dictionary];
         [details setValue:@"Not connected To Hub" forKey:NSLocalizedDescriptionKey];
         // populate the error object with the details
-        NSError *error = [NSError errorWithDomain:@"E_HUB_NOT_CONNECTED" code:200 userInfo:details];
+        NSError *error = [NSError errorWithDomain:@"E_HUB_NOT_CONNECTED" code:401 userInfo:details];
         reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
     }else{
         NSNotificationCenter *defaultNotif = [NSNotificationCenter defaultCenter];
@@ -600,7 +597,7 @@ RCT_EXPORT_METHOD(sendCommandToHub
         NSMutableDictionary* details = [NSMutableDictionary dictionary];
         [details setValue:@"Not connected To Hub" forKey:NSLocalizedDescriptionKey];
         // populate the error object with the details
-        NSError *error = [NSError errorWithDomain:@"E_HUB_NOT_CONNECTED" code:200 userInfo:details];
+        NSError *error = [NSError errorWithDomain:@"E_HUB_NOT_CONNECTED" code:401 userInfo:details];
         reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
     }else{
         [self.main sendCommandToHubWithCommand:command completion:^(NSError * error) {
@@ -637,7 +634,7 @@ RCT_EXPORT_METHOD(isHubLoggedIn
         NSMutableDictionary* details = [NSMutableDictionary dictionary];
         [details setValue:@"Not connected To Hub" forKey:NSLocalizedDescriptionKey];
         // populate the error object with the details
-        NSError *error = [NSError errorWithDomain:@"OkkamiNotConnectedToHub" code:200 userInfo:details];
+        NSError *error = [NSError errorWithDomain:@"OkkamiNotConnectedToHub" code:401 userInfo:details];
         reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
     }else{
         [self.main isHubLoggedInCompletion:^(NSNumber * number) {
@@ -672,7 +669,7 @@ RCT_EXPORT_METHOD(isHubConnected
         NSMutableDictionary* details = [NSMutableDictionary dictionary];
         [details setValue:@"Not connected To Hub" forKey:NSLocalizedDescriptionKey];
         // populate the error object with the details
-        NSError *error = [NSError errorWithDomain:@"OkkamiNotConnectedToHub" code:200 userInfo:details];
+        NSError *error = [NSError errorWithDomain:@"OkkamiNotConnectedToHub" code:401 userInfo:details];
         reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
     }else{
         [self.main isHubConnectedWithCompletion:^(NSNumber * number) {
