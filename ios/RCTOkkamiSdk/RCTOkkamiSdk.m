@@ -64,7 +64,7 @@ RCT_EXPORT_MODULE();
 }
 
 
-- (void)handleOkkamiUrl: (NSString*)url title: (NSString*)title {
+- (void)handleOkkamiUrlWithDeepLink: (NSString*)url title: (NSString*)title {
     NSString *preTel;
     NSString *postTel;
     NSScanner *scanner = [NSScanner scannerWithString:url];
@@ -74,6 +74,12 @@ RCT_EXPORT_MODULE();
     [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_WEBVIEW" body:@{@"hotelName":self.hotelName,@"title":title,@"url":postTel,@"appToken": self.currentSmoochToken}];
     [self.currentViewController dismissViewControllerAnimated:true completion:nil];
 }
+
+- (void)handleOkkamiUrl: (NSString*)url title: (NSString*)title {
+    [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_WEBVIEW" body:@{@"hotelName":self.hotelName,@"title":title,@"url":url,@"appToken": self.currentSmoochToken}];
+    [self.currentViewController dismissViewControllerAnimated:true completion:nil];
+}
+
 
 - (void)sendEvent: (NSString*)eventName :(NSDictionary*)eventBody {
     [self.bridge.eventDispatcher sendAppEventWithName:eventName body:eventBody];
@@ -108,7 +114,7 @@ RCT_EXPORT_MODULE();
 }
 
 - (BOOL)conversation:(SKTConversation *)conversation shouldHandleMessageAction:(SKTMessageAction *)action{
-    if(action.uri != nil && [action.uri.absoluteString containsString:OKKAMI_DEEPLINK]){
+    if(action.uri != nil){
         [self handleOkkamiUrl:action.uri.absoluteString title:action.text];
         return NO;
     }
