@@ -873,6 +873,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
             Log.d(TAG, "smoochAppToken=" + smoochAppToken);
             Log.d(TAG, "userId=" + userId);
 
+            Smooch.destroy();
             Settings settings = new Settings(smoochAppToken);
             settings.setUserId(userId);
             settings.setFirebaseCloudMessagingAutoRegistrationEnabled(false);
