@@ -114,9 +114,13 @@ RCT_EXPORT_MODULE();
 }
 
 - (BOOL)conversation:(SKTConversation *)conversation shouldHandleMessageAction:(SKTMessageAction *)action{
-    if(action.uri != nil){
-        [self handleOkkamiUrl:action.uri.absoluteString title:action.text];
-        return NO;
+    if(action.uri != nil && [action.type isEqualToString:@"link"]){
+        if([[NSString stringWithFormat:@"%@", action.uri] containsString:@"maps.google"]){
+            return YES;
+        }else{
+            [self handleOkkamiUrl:action.uri.absoluteString title:action.text];
+            return NO;
+        }
     }
     return YES;
 }
