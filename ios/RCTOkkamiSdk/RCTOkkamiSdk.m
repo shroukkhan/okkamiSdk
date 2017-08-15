@@ -76,7 +76,7 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)handleOkkamiUrl: (NSString*)url title: (NSString*)title {
-    [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_WEBVIEW" body:@{@"hotelName":self.hotelName,@"title":title,@"url":url,@"appToken": self.currentSmoochToken}];
+    [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_WEBVIEW" body:@{@"hotelName":self.hotelName,@"title":title,@"url":url,@"appToken": self.currentSmoochToken, @"user_id":self.smoochUserId}];
     [self.currentViewController dismissViewControllerAnimated:true completion:nil];
 }
 
