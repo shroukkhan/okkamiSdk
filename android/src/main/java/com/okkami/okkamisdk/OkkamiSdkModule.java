@@ -306,7 +306,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         }
 
         this.lineLoginPromise = lineLoginPromise;
-        Intent loginIntent = LineLoginAPI.getLoginIntent(mContext, lineLoginChannelId);
+        Intent loginIntent = LineLoginApi.getLoginIntent(mContext, lineLoginChannelId);
         getCurrentActivity().startActivityForResult(loginIntent, LINE_LOGIN_REQUEST_CODE);
     }
 
