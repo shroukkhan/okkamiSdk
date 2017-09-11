@@ -111,6 +111,7 @@ RCT_EXPORT_MODULE();
     if(self.isCheckNotif){
         self.isCheckNotif = NO;
     }
+    [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
 }
 
 - (BOOL)conversation:(SKTConversation *)conversation shouldHandleMessageAction:(SKTMessageAction *)action{
