@@ -1,5 +1,6 @@
 #import "RCTOkkamiSdk.h"
 #import "AppDelegate.h"
+#import <CommonCrypto/CommonCrypto.h>
 
 @implementation OkkamiSdk
 
@@ -124,6 +125,29 @@ RCT_EXPORT_MODULE();
         }
     }
     return YES;
+}
+
+- (NSString *)HMACSHA1:(NSData *)data secret:(NSString *)secret{
+    NSParameterAssert(data);
+    
+    NSData *keyData = [secret dataUsingEncoding:NSUTF8StringEncoding];
+    NSMutableData *hMacOut = [NSMutableData dataWithLength:CC_SHA1_DIGEST_LENGTH];
+    
+    CCHmac(kCCHmacAlgSHA1,
+           keyData.bytes, keyData.length,
+           data.bytes,    data.length,
+           hMacOut.mutableBytes);
+    
+    /* Returns hexadecimal string of NSData. Empty string if data is empty. */
+    NSString *hexString = @"";
+    if (data) {
+        uint8_t *dataPointer = (uint8_t *)(hMacOut.bytes);
+        for (int i = 0; i < CC_SHA1_DIGEST_LENGTH; i++) {
+            hexString = [hexString stringByAppendingFormat:@"%02x", dataPointer[i]];
+        }
+    }
+    
+    return hexString;
 }
 
 #pragma mark Pusher Delegate
@@ -477,6 +501,17 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
         }else{
             [self.bridge.eventDispatcher sendAppEventWithName:event body:nil];
         }
+        
+        if([event isEqualToString:@"identify"]){
+            NSString *str = [theData objectForKey:@"data"];
+            NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
+            NSString *hmacStr = [self HMACSHA1:data secret:self.secretKey];
+            
+            NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%@", hmacStr],@"HMAC",[NSString stringWithFormat:@"%@", str],@"data",
+                                  nil];
+            self.notifSocket =   [theData objectForKey:@"notif"];
+            [self.notifSocket postNotificationName:@"ListenerSocket" object:NULL userInfo:dict];
+        }
     }
     
 }
@@ -494,7 +529,9 @@ RCT_EXPORT_METHOD(connectToHub
     
     RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
     self.main = main;
+    self.secretKey = secret;
     NSNotificationCenter *defaultNotif = [NSNotificationCenter defaultCenter];
+
     [defaultNotif addObserver:self selector:@selector(listenerOkkami:) name:self.main.notificationName object:nil];
     
     NSNumberFormatter* formatter = [[NSNumberFormatter alloc] init];
