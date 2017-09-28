@@ -28,6 +28,7 @@
 @property (nonatomic, copy)NSString * hotelName;
 @property (nonatomic, copy)NSString * status;
 @property (nonatomic, copy)NSString * currentSmoochToken;
+@property (nonatomic, copy)NSString * secretKey;
 @property (copy, nonatomic) NSDictionary * lineData;
 @property (nonatomic,retain) CLLocationManager *locationManager;
 @property (strong, nonatomic) RCTPromiseResolveBlock loginResolver;
@@ -39,4 +40,5 @@
 @property (strong, nonatomic) UIViewController* currentViewController;
 @property (nonatomic, assign)BOOL isSmoochShow;
 @property (nonatomic, assign)BOOL isCheckNotif;
+@property (strong, nonatomic) NSNotificationCenter* notifSocket;
 @end
