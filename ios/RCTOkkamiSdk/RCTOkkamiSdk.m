@@ -455,9 +455,11 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
 {
     
     RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
-    
+    self.secretKey = secret;
+    NSNotificationCenter *defaultNotif = [NSNotificationCenter defaultCenter];
+    [defaultNotif addObserver:self selector:@selector(listenerOkkami:) name:@"Listener" object:nil];
     dispatch_async(dispatch_get_main_queue(), ^{
-        [main executeCoreRESTCallWithApicore:endPoint apifunc:getPost payload:payLoad secret:secret token:token force:force completion:^(NSString* callback, NSError* error) {
+        [main executeCoreRESTCallWithNotif:defaultNotif apicore:endPoint apifunc:getPost payload:payLoad secret:secret token:token force:force completion:^(NSString* callback, NSError* error) {
             
             NSLog(@"callback %@", callback);
             NSLog(@"error %@", error);
@@ -511,6 +513,15 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
                                   nil];
             self.notifSocket =   [theData objectForKey:@"notif"];
             [self.notifSocket postNotificationName:@"ListenerSocket" object:NULL userInfo:dict];
+        }else if([event isEqualToString:@"restcall"]){
+            NSString *str = [theData objectForKey:@"data"];
+            NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
+            NSString *hmacStr = [self HMACSHA1:data secret:self.secretKey];
+            
+            NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%@", hmacStr],@"HMAC",[NSString stringWithFormat:@"%@", str],@"data",
+                                  nil];
+            self.notifSocket =   [theData objectForKey:@"notif"];
+            [self.notifSocket postNotificationName:@"ListenerSocketCore" object:NULL userInfo:dict];
         }
     }
     
