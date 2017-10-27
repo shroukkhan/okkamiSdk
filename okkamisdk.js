@@ -222,6 +222,10 @@ class OkkamiSdk {
     OkkamiSdkManager.onAppLanded();
   }
 
+  shutdownApp(){
+    console.log("shutting down the app...")
+    OkkamiSdkManager.shutdownApp();
+  }
 }
 let okkamiSdk = new OkkamiSdk();
 export default okkamiSdk;
