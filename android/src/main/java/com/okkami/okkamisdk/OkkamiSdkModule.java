@@ -999,4 +999,15 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     public void onAppLanded(Promise onAppLandedPromise) {
         mMethodInvoker.onAppLanded();
     }
+
+    /**
+     * This does not kill the entire app.
+     * Finish current activity as well as all activities immediately below it
+     * in the current task that have the same affinity.
+     * @param shutdownAppPromise
+     */
+    @ReactMethod
+    public void shutdownApp(Promise shutdownAppPromise) {
+        getCurrentActivity().finishAffinity();
+    }
 }
