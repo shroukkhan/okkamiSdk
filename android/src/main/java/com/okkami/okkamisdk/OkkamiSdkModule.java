@@ -81,6 +81,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         void invoke(String methodName, String arg);
         void invokeUnsubscribePusher();
         void onAppLanded();
+        void invokeInitSmooch(String token, String userId, String smoochAppId);
     }
 
 
@@ -770,14 +771,14 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
             ArrayList<JSONObject> okkamiChatList = new ArrayList<>();
             ArrayList<JSONObject> activeChatList = new ArrayList<>();
             ArrayList<JSONObject> inactiveChatList = new ArrayList<>();
+            Log.e(TAG, "getConversationsList: "+smoochAllAppTokenArray.size());
 
             for (int i = 0; i < smoochAllAppTokenArray.size(); i++) {
 
                 String appToken = smoochAllAppTokenArray.getString(i);
-                Settings settings = new Settings(appToken);
-                settings.setUserId(userId);
-                settings.setFirebaseCloudMessagingAutoRegistrationEnabled(false);
-                Smooch.init(mApp, settings);
+                String smoochAppId = (String) BuildConfigUtil.getBuildConfigValue(getReactApplicationContext(), "SMOOCH_APP_ID");
+                mMethodInvoker.invokeInitSmooch(appToken, userId, smoochAppId);
+
                 Smooch.setFirebaseCloudMessagingToken("nan");
 
                 List<Message> listMsg = Smooch.getConversation().getMessages();
@@ -870,14 +871,11 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
                                boolean titleInRgb) {
         try {
 
-            Log.d(TAG, "smoochAppToken=" + smoochAppToken);
-            Log.d(TAG, "userId=" + userId);
+            Log.d(TAG, "openChatWindow: smoochAppToken=" + smoochAppToken);
+            Log.d(TAG, "openChatWindow: userId=" + userId);
 
-            Smooch.destroy();
-            Settings settings = new Settings(smoochAppToken);
-            settings.setUserId(userId);
-            settings.setFirebaseCloudMessagingAutoRegistrationEnabled(false);
-            Smooch.init(mApp, settings);
+            String smoochAppId = (String) BuildConfigUtil.getBuildConfigValue(getReactApplicationContext(), "SMOOCH_APP_ID");
+            mMethodInvoker.invokeInitSmooch(smoochAppToken, userId, smoochAppId);
             Smooch.setFirebaseCloudMessagingToken("nan");
 
             Intent chatWindow = new Intent();
@@ -918,10 +916,9 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     // React native calling as looping with different appTokens
     @ReactMethod
     public void loginChatWindow(String userId, String appToken) {
-        Settings settings = new Settings(appToken);
-        settings.setUserId(userId);
-        settings.setFirebaseCloudMessagingAutoRegistrationEnabled(false);
-        Smooch.init(mApp, settings);
+        Log.e(TAG, "loginChatWindow: "+appToken);
+        String smoochAppId = (String) BuildConfigUtil.getBuildConfigValue(getReactApplicationContext(), "SMOOCH_APP_ID");
+        mMethodInvoker.invokeInitSmooch(appToken, userId, smoochAppId);
         Smooch.setFirebaseCloudMessagingToken("nan");
     }
 
@@ -936,7 +933,9 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void getUnreadMessageCount(String smoochAppToken, String userId, Promise getUnreadMessageCountPromise) {
         try {
-            Smooch.init(mApp, smoochAppToken);
+            Log.e(TAG, "getUnreadMessageCount: "+smoochAppToken);
+            String smoochAppId = (String) BuildConfigUtil.getBuildConfigValue(getReactApplicationContext(), "SMOOCH_APP_ID");
+            mMethodInvoker.invokeInitSmooch(smoochAppToken, userId, smoochAppId);
             Smooch.setFirebaseCloudMessagingToken("nan");
             Smooch.getSettings().setFirebaseCloudMessagingAutoRegistrationEnabled(false);
             getUnreadMessageCountPromise.resolve(Smooch.getConversation().getUnreadCount());
