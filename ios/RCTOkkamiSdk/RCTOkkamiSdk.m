@@ -10,6 +10,7 @@
 
 #define SMOOCH_NAME @"OKKAMI CONCIERGE"
 #define OKKAMI_DEEPLINK @"okkami://"
+#define PUBLIC_JWT @"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJPS0tBTUkifQ.CiozmY4WIVhbzQ4K_XUuC8jPKko4CbTeWFhAedPeZ4I"
 
 @synthesize bridge = _bridge;
 
@@ -54,14 +55,17 @@ RCT_EXPORT_MODULE();
         self.hotelName = title;
     }
     self.currentSmoochToken = appToken;
-    SKTSettings *settings = [SKTSettings settingsWithAppToken:appToken];
+    SKTSettings *settings = [SKTSettings settingsWithAppId:appToken];
     settings.enableAppDelegateSwizzling = NO;
     settings.enableUserNotificationCenterDelegateOverride = NO;
-    [Smooch initWithSettings:settings];
-    [[Smooch conversation] setDelegate:self];
-    [Smooch login:self.smoochUserId jwt:nil];
-    [Smooch show];
     
+    __weak __typeof(self) weakSelf = self;
+    [Smooch initWithSettings:settings completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+        [[Smooch conversation] setDelegate:weakSelf];
+        [Smooch login:weakSelf.smoochUserId jwt:PUBLIC_JWT completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+            [Smooch show];
+        }];
+    }];
 }
 
 
@@ -176,8 +180,9 @@ RCT_EXPORT_MODULE();
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     NSLog(@"DID REGISTER REMOTE ??? from RCTOkkamiSdk:");
-    [Smooch logout];
-    [Smooch destroy];
+    [Smooch logoutWithCompletionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+       [Smooch destroy];
+    }];
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     self.appdel = appDelegate;
     [[self.appdel.pusher nativePusher] registerWithDeviceToken:deviceToken];
@@ -185,8 +190,9 @@ RCT_EXPORT_MODULE();
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
-    [Smooch logout];
-    [Smooch destroy];
+    [Smooch logoutWithCompletionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+        [Smooch destroy];
+    }];
     NSLog(@"DID RECEIVE REMOTE ? from RCTOkkamiSdk:");
     [self application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:^(UIBackgroundFetchResult result) {
     }];
@@ -216,14 +222,17 @@ RCT_EXPORT_MODULE();
         }else{
             self.hotelName = userInfo[@"aps"][@"alert"][@"title"];
         }
-        self.currentSmoochToken = userInfo[@"data"][@"property_smooch_app_token"];
-        SKTSettings *settings = [SKTSettings settingsWithAppToken:userInfo[@"data"][@"property_smooch_app_token"]];
+        self.currentSmoochToken = userInfo[@"data"][@"property_smooch_app_id"];
+        SKTSettings *settings = [SKTSettings settingsWithAppId:userInfo[@"data"][@"property_smooch_app_id"]];
         settings.enableAppDelegateSwizzling = NO;
         settings.enableUserNotificationCenterDelegateOverride = NO;
-        [Smooch initWithSettings:settings];
-        [[Smooch conversation] setDelegate:self];
-        [Smooch login:self.smoochUserId jwt:nil];
-        [Smooch show];
+        __weak __typeof(self) weakSelf = self;
+        [Smooch initWithSettings:settings completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+            [[Smooch conversation] setDelegate:weakSelf];
+            [Smooch login:weakSelf.smoochUserId jwt:PUBLIC_JWT completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+                [Smooch show];
+            }];
+        }];
         completionHandler( UIBackgroundFetchResultNewData );
     }
     else if( [UIApplication sharedApplication].applicationState == UIApplicationStateBackground )
@@ -233,7 +242,7 @@ RCT_EXPORT_MODULE();
     }
     else
     {
-        if(self.isSmoochShow && [userInfo[@"data"][@"property_smooch_app_token"] isEqualToString:self.currentSmoochToken] ){
+        if(self.isSmoochShow && [userInfo[@"data"][@"property_smooch_app_id"] isEqualToString:self.currentSmoochToken] ){
             
         }else{
             UIUserNotificationType types = UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
@@ -271,7 +280,7 @@ RCT_EXPORT_MODULE();
             [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
         }
         
-        if(self.isSmoochShow && [notification.request.content.userInfo[@"data"][@"property_smooch_app_token"] isEqualToString:self.currentSmoochToken]){
+        if(self.isSmoochShow && [notification.request.content.userInfo[@"data"][@"property_smooch_app_id"] isEqualToString:self.currentSmoochToken]){
             completionHandler(UIUserNotificationTypeNone  | UIUserNotificationTypeBadge);
         }else{
             completionHandler(UIUserNotificationTypeSound |    UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
@@ -281,12 +290,12 @@ RCT_EXPORT_MODULE();
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler{
     NSLog( @"Handle push from background or closed" );
-    if(response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"]){
+    if(response.notification.request.content.userInfo[@"data"][@"property_smooch_app_id"]){
         [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
-        if([response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"] isEqualToString:[ReactNativeConfig envFor:@"OKKAMI_SMOOCH"]]){
+        if([response.notification.request.content.userInfo[@"data"][@"property_smooch_app_id"] isEqualToString:[ReactNativeConfig envFor:@"OKKAMI_SMOOCH"]]){
             NSMutableDictionary *newNotif = [[NSMutableDictionary alloc] init];
             NSMutableDictionary *insideNewNotif = [[NSMutableDictionary alloc] init];
-            [insideNewNotif setObject:[ReactNativeConfig envFor:@"OKKAMI_SMOOCH"] forKey:@"property_smooch_app_token"];
+            [insideNewNotif setObject:[ReactNativeConfig envFor:@"OKKAMI_SMOOCH"] forKey:@"property_smooch_app_id"];
             [newNotif setObject:insideNewNotif forKey:@"data"];
             [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:newNotif[@"data"]];
         }else{
@@ -299,14 +308,17 @@ RCT_EXPORT_MODULE();
         }else{
             self.hotelName = response.notification.request.content.userInfo[@"aps"][@"alert"][@"title"];
         }
-        self.currentSmoochToken = response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"];
-        SKTSettings *settings = [SKTSettings settingsWithAppToken:response.notification.request.content.userInfo[@"data"][@"property_smooch_app_token"]];
+        self.currentSmoochToken = response.notification.request.content.userInfo[@"data"][@"property_smooch_app_id"];
+        SKTSettings *settings = [SKTSettings settingsWithAppId:response.notification.request.content.userInfo[@"data"][@"property_smooch_app_id"]];
         settings.enableAppDelegateSwizzling = NO;
         settings.enableUserNotificationCenterDelegateOverride = NO;
-        [Smooch initWithSettings:settings];
-        [[Smooch conversation] setDelegate:self];
-        [Smooch login:self.smoochUserId jwt:nil];
-        [Smooch show];
+        __weak __typeof(self) weakSelf = self;
+        [Smooch initWithSettings:settings completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+            [[Smooch conversation] setDelegate:weakSelf];
+            [Smooch login:self.smoochUserId jwt:PUBLIC_JWT completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+                [Smooch show];
+            }];
+        }];
         [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
     }else if(response.notification.request.content.userInfo[@"data"][@"command"]){
         [self.bridge.eventDispatcher sendAppEventWithName:response.notification.request.content.userInfo[@"data"][@"command"] body:nil];
@@ -370,7 +382,7 @@ RCT_EXPORT_METHOD(checkNotif
     NSDictionary *userInfo = [[NSDictionary alloc] initWithContentsOfFile: userPath];
     
     if(notification){
-        if(notification[@"data"][@"property_smooch_app_token"]){
+        if(notification[@"data"][@"property_smooch_app_id"]){
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.isCheckNotif = YES;
                 [Smooch destroy];
@@ -380,14 +392,17 @@ RCT_EXPORT_METHOD(checkNotif
                     self.hotelName = notification[@"aps"][@"alert"][@"title"];
                 }
                 
-                self.currentSmoochToken = notification[@"data"][@"property_smooch_app_token"];
-                SKTSettings *settings = [SKTSettings settingsWithAppToken:notification[@"data"][@"property_smooch_app_token"]];
+                self.currentSmoochToken = notification[@"data"][@"property_smooch_app_id"];
+                SKTSettings *settings = [SKTSettings settingsWithAppId:notification[@"data"][@"property_smooch_app_id"]];
                 settings.enableAppDelegateSwizzling = NO;
                 settings.enableUserNotificationCenterDelegateOverride = NO;
-                [Smooch initWithSettings:settings];
-                [[Smooch conversation] setDelegate:self];
-                [Smooch login:[userInfo objectForKey:@"userId"] jwt:nil];
-                [Smooch show];
+                __weak __typeof(self) weakSelf = self;
+                [Smooch initWithSettings:settings completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+                    [[Smooch conversation] setDelegate:self];
+                    [Smooch login:[userInfo objectForKey:@"userId"] jwt:PUBLIC_JWT completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+                        [Smooch show];
+                    }];
+                }];
                 [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
                 [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:notification[@"data"]];
                 [self deletePList:@"Notifications"];
@@ -489,7 +504,7 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
 
 -(void)sendAnEvent:(NSString*)eventName :(NSDictionary*)userInfo{
     NSString *event = eventName;
-    NSString *appToken = userInfo[@"data"][@"property_smooch_app_token"];
+    NSString *appToken = userInfo[@"data"][@"property_smooch_app_id"];
     [self.bridge.eventDispatcher sendAppEventWithName:event body:@{@"apptoken": appToken}];
     
 }
@@ -802,13 +817,16 @@ RCT_EXPORT_METHOD(openChatWindow
     self.currentSmoochToken = smoochAppToken;
     dispatch_async(dispatch_get_main_queue(), ^{
         [Smooch destroy];
-        SKTSettings *settings = [SKTSettings settingsWithAppToken:smoochAppToken];
+        SKTSettings *settings = [SKTSettings settingsWithAppId:smoochAppToken];
         settings.enableAppDelegateSwizzling = NO;
         settings.enableUserNotificationCenterDelegateOverride = NO;
-        [Smooch initWithSettings:settings];
-        [[Smooch conversation] setDelegate:self];
-        [Smooch login:self.smoochUserId jwt:nil];
-        [Smooch show];
+        __weak __typeof(self) weakSelf = self;
+        [Smooch initWithSettings:settings completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+            [[Smooch conversation] setDelegate:weakSelf];
+            [Smooch login:self.smoochUserId jwt:PUBLIC_JWT completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {                
+                [Smooch show];
+            }];
+        }];
         [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
         [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber - 1;
     });
