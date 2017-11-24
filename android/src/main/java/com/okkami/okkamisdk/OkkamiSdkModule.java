@@ -860,11 +860,10 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     /**
      * Open the smooch chat window for a particular channel
      *
-     * @param smoochAppToken
+     * @param smoochAppId
      */
     @ReactMethod
-    public void openChatWindow(String smoochAppToken,
-                               String smoochAppid,
+    public void openChatWindow(String smoochAppId,
                                String userId,
                                String windowTitle,
                                String windowHexStringColor,
@@ -873,10 +872,11 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
                                boolean titleInRgb) {
         try {
 
+            String smoochAppToken = smoochAppId;
             Log.d(TAG, "openChatWindow: smoochAppToken=" + smoochAppToken);
+            Log.d(TAG, "openChatWindow: smoochAppId=" + smoochAppId);
             Log.d(TAG, "openChatWindow: userId=" + userId);
 
-            String smoochAppId = (String) BuildConfigUtil.getBuildConfigValue(getReactApplicationContext(), "SMOOCH_APP_ID");
             mMethodInvoker.invokeInitSmooch(smoochAppToken, userId, smoochAppId);
             Smooch.setFirebaseCloudMessagingToken("nan");
 
