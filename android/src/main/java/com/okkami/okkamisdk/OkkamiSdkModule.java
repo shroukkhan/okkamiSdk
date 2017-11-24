@@ -68,6 +68,7 @@ import io.smooch.core.InitializationStatus;
 import io.smooch.core.Message;
 import io.smooch.core.Settings;
 import io.smooch.core.Smooch;
+import io.smooch.core.SmoochCallback;
 import io.smooch.core.SmoochConnectionStatus;
 import io.smooch.ui.ConversationActivity;
 import me.leolin.shortcutbadger.ShortcutBadger;
@@ -863,6 +864,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
      */
     @ReactMethod
     public void openChatWindow(String smoochAppToken,
+                               String smoochAppid,
                                String userId,
                                String windowTitle,
                                String windowHexStringColor,
@@ -885,6 +887,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
             chatWindow.setComponent(cmp);
             chatWindow.putExtra("SMOOCH_SDK_INITIALIZED", true);
             chatWindow.putExtra("SMOOCH_APP_TOKEN", smoochAppToken);
+            chatWindow.putExtra("SMOOCH_APP_ID", smoochAppId);
             chatWindow.putExtra("USER_ID", userId);
             chatWindow.putExtra("CHAT_WINDOW_COLOR", windowHexStringColor);
             chatWindow.putExtra("CHAT_WINDOW_TITLE_COLOR", titleHexStringColor);
@@ -957,7 +960,12 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         try {
             if (Smooch.getInitializationStatus() == InitializationStatus.Success &&
                     Smooch.getSmoochConnectionStatus() == SmoochConnectionStatus.Connected) {
-                Smooch.logout();
+                Smooch.logout(new SmoochCallback() {
+                    @Override
+                    public void run(Response response) {
+                        Log.e(TAG, "run: Response after logout: "+response.toString() );
+                    }
+                });
                 ConversationActivity.close();
                 logoutChatWindowPromise.resolve(1);
             }
