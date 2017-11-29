@@ -869,7 +869,8 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
                                String windowHexStringColor,
                                String titleHexStringColor,
                                boolean windowInRgb,
-                               boolean titleInRgb) {
+                               boolean titleInRgb,
+                                Promise openChatWindowPromise) {
         try {
 
             String smoochAppToken = smoochAppId;
