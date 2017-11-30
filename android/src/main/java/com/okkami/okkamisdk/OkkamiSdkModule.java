@@ -82,7 +82,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         void invoke(String methodName, String arg);
         void invokeUnsubscribePusher();
         void onAppLanded();
-        void invokeInitSmooch(String token, String userId, String smoochAppId);
+        void invokeInitSmooch(String token, String userId, String smoochAppId, String smoochJwt);
     }
 
 
@@ -760,6 +760,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
                 .emit(eventName, params);
     }
 
+    // TODO: 11/30/2017 AD Is this method still in use have to ask Michael
     @ReactMethod
     public void getConversationsList(ReadableArray smoochAllAppTokenArray, String userId, Promise getConversationListPromise) {
 
@@ -778,7 +779,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
 
                 String appToken = smoochAllAppTokenArray.getString(i);
                 String smoochAppId = (String) BuildConfigUtil.getBuildConfigValue(getReactApplicationContext(), "SMOOCH_APP_ID");
-                mMethodInvoker.invokeInitSmooch(appToken, userId, smoochAppId);
+                mMethodInvoker.invokeInitSmooch(appToken, userId, smoochAppId, "");
 
                 Smooch.setFirebaseCloudMessagingToken("nan");
 
@@ -870,6 +871,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
                                String titleHexStringColor,
                                boolean windowInRgb,
                                boolean titleInRgb,
+                                String smoochJwt,
                                 Promise openChatWindowPromise) {
         try {
 
@@ -878,7 +880,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
             Log.d(TAG, "openChatWindow: smoochAppId=" + smoochAppId);
             Log.d(TAG, "openChatWindow: userId=" + userId);
 
-            mMethodInvoker.invokeInitSmooch(smoochAppToken, userId, smoochAppId);
+            mMethodInvoker.invokeInitSmooch(smoochAppToken, userId, smoochAppId, smoochJwt);
             Smooch.setFirebaseCloudMessagingToken("nan");
 
             Intent chatWindow = new Intent();
@@ -889,6 +891,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
             chatWindow.putExtra("SMOOCH_SDK_INITIALIZED", true);
             chatWindow.putExtra("SMOOCH_APP_TOKEN", smoochAppToken);
             chatWindow.putExtra("SMOOCH_APP_ID", smoochAppId);
+            chatWindow.putExtra("SMOOCH_JWT", smoochJwt);
             chatWindow.putExtra("USER_ID", userId);
             chatWindow.putExtra("CHAT_WINDOW_COLOR", windowHexStringColor);
             chatWindow.putExtra("CHAT_WINDOW_TITLE_COLOR", titleHexStringColor);
@@ -919,13 +922,14 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
 
     // React native calling as looping with different appTokens
     @ReactMethod
-    public void loginChatWindow(String userId, String appToken) {
+    public void loginChatWindow(String userId, String appToken, String smoochJwt, Promise logoutChatWindowPromise) {
         Log.e(TAG, "loginChatWindow: "+appToken);
         String smoochAppId = (String) BuildConfigUtil.getBuildConfigValue(getReactApplicationContext(), "SMOOCH_APP_ID");
-        mMethodInvoker.invokeInitSmooch(appToken, userId, smoochAppId);
+        mMethodInvoker.invokeInitSmooch(appToken, userId, smoochAppId, smoochJwt);
         Smooch.setFirebaseCloudMessagingToken("nan");
     }
 
+    // TODO: 11/30/2017 AD Is this method still in use have to ask Michael 
     /**
      * returns the number of unread message in a channel
      * getUnreadMessageCountPromise.resolve(Int) on success
@@ -939,7 +943,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         try {
             Log.e(TAG, "getUnreadMessageCount: "+smoochAppToken);
             String smoochAppId = (String) BuildConfigUtil.getBuildConfigValue(getReactApplicationContext(), "SMOOCH_APP_ID");
-            mMethodInvoker.invokeInitSmooch(smoochAppToken, userId, smoochAppId);
+            mMethodInvoker.invokeInitSmooch(smoochAppToken, userId, smoochAppId, "");
             Smooch.setFirebaseCloudMessagingToken("nan");
             Smooch.getSettings().setFirebaseCloudMessagingAutoRegistrationEnabled(false);
             getUnreadMessageCountPromise.resolve(Smooch.getConversation().getUnreadCount());
