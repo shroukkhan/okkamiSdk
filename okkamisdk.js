@@ -132,9 +132,10 @@ class OkkamiSdk {
    * @param smoochAppToken
    * @returns {Promise.<void>}
    */
-  async openChatWindow(smoochAppToken, userID, hotelName, color, textColor) {
+  async openChatWindow(smoochAppToken, userID, hotelName, color, textColor, smoochUserJwt) {
     console.log("smoochAppToken: "+smoochAppToken);
     console.log("userID: "+userID);
+    console.log("userJWT: "+smoochUserJwt);
     var newColor = color
     var newTextColor = textColor
     var rgbColor = false
@@ -174,7 +175,7 @@ class OkkamiSdk {
     // }
     //console.log("newColor: "+newColor);
     //console.log("newTextColor: "+newTextColor);
-    return await OkkamiSdkManager.openChatWindow(smoochAppToken, userID, hotelName, newColor, newTextColor, rgbColor, rgbTextColor);
+    return await OkkamiSdkManager.openChatWindow(smoochAppToken, userID, hotelName, newColor, newTextColor, rgbColor, rgbTextColor, smoochUserJwt);
   }
 
   /**
