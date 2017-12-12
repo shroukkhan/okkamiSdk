@@ -25,6 +25,7 @@
 @property (nonatomic, copy)NSString * statusMessage;
 @property (nonatomic, copy)NSString * pictureURL;
 @property (nonatomic, copy)NSString * smoochUserId;
+@property (nonatomic, copy)NSString * smoochUserJwt;
 @property (nonatomic, copy)NSString * hotelName;
 @property (nonatomic, copy)NSString * status;
 @property (nonatomic, copy)NSString * currentSmoochToken;
@@ -35,7 +36,6 @@
 @property (strong, nonatomic) RCTPromiseRejectBlock loginRejecter;
 @property (strong, nonatomic) RCTOkkamiMain* main;
 @property (strong, nonatomic) RCTEventDispatcher* event;
-@property (strong, nonatomic) OkkamiSmoochChat* smooch;
 @property (strong, nonatomic) AppDelegate* appdel;
 @property (strong, nonatomic) UIViewController* currentViewController;
 @property (nonatomic, assign)BOOL isSmoochShow;
