@@ -64,6 +64,10 @@ class OkkamiSdk {
     return OkkamiSdkManager.checkNotif();
   }
 
+  checkEvent(){
+    return OkkamiSdkManager.checkEvent();
+  }
+
   setLanguage(language){
     return OkkamiSdkManager.setLanguage(language);
   }
