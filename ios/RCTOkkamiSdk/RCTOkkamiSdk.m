@@ -872,6 +872,7 @@ RCT_EXPORT_METHOD(logoutChatWindow
     [self.smooch okkamiLogout];
     NSLog(@"UNSUBSCRIBE TO %@", self.appdel.channel_name);
     [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.channel_name];
+    [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.brand_name];
     [self deletePList:@"UserInfo"];
     [self deletePList:@"Notifications"];
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
@@ -897,6 +898,7 @@ RCT_EXPORT_METHOD(loginChatWindow
 RCT_EXPORT_METHOD(setUserId
                   
                   :(NSString *) userId
+                  :(NSString *) brandId
                   
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
@@ -904,11 +906,14 @@ RCT_EXPORT_METHOD(setUserId
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     self.appdel = appDelegate;
     NSString *channelName = [NSString stringWithFormat:@"mobile_user_%@", userId];
+    NSString *brandName = [NSString stringWithFormat:@"mobile_user_%@_%@", userId, brandId];
     self.smoochUserId = userId;
     NSLog(@"===SET USER ID====%@", channelName);
     [self.appdel setUser_id:userId];
     [self.appdel setChannel_name:channelName];
+    [self.appdel setBrand_name:brandName];
     [[self.appdel.pusher nativePusher] subscribe:channelName];
+    [[self.appdel.pusher nativePusher] subscribe:brandName];
 
     NSError *error;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
