@@ -401,6 +401,32 @@ RCT_EXPORT_METHOD(checkNotif
     }
 }
 
+// TODO : THIS ONE IS HACKY WAY SHOULD BE USE LINKINGMANAGER in http://ihor.burlachenko.com/deep-linking-with-react-native/ --> do this after react upgrade
+RCT_EXPORT_METHOD(checkEvent
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    NSError *error;
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *deepLinkPath = [documentsDirectory stringByAppendingPathComponent:@"DeepLink.plist"];
+    NSMutableDictionary *deeplink = [[NSMutableDictionary alloc] initWithContentsOfFile: deepLinkPath];
+    
+    if(deeplink){
+        if(deeplink[@"data"]){
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_SCREEN" body:@{@"screen" : deeplink[@"data"]}];
+                [self deletePList:@"DeepLink"];
+            });
+        }else{
+            [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_SCREEN" body:@{@"screen" : @"noscreen"}];
+        }
+    }else{
+        [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_SCREEN" body:@{@"screen" : @"noscreen"}];
+    }
+}
+
 
 RCT_EXPORT_METHOD(lineLogin
                   :(RCTPromiseResolveBlock)resolve
