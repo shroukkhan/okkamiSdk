@@ -920,16 +920,6 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         mMethodInvoker.invoke("initPusherFcmService", userId);
     }
 
-    // React native calling as looping with different appTokens
-    @ReactMethod
-    public void loginChatWindow(String userId, String appToken, String smoochJwt, Promise logoutChatWindowPromise) {
-        Log.e(TAG, "loginChatWindow: "+appToken);
-        String smoochAppId = (String) BuildConfigUtil.getBuildConfigValue(getReactApplicationContext(), "SMOOCH_APP_ID");
-        mMethodInvoker.invokeInitSmooch(appToken, userId, smoochAppId, smoochJwt);
-        Smooch.setFirebaseCloudMessagingToken("nan");
-    }
-
-    // TODO: 11/30/2017 AD Is this method still in use have to ask Michael 
     /**
      * returns the number of unread message in a channel
      * getUnreadMessageCountPromise.resolve(Int) on success
