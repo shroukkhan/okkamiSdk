@@ -401,6 +401,32 @@ RCT_EXPORT_METHOD(checkNotif
     }
 }
 
+// TODO : THIS ONE IS HACKY WAY SHOULD BE USE LINKINGMANAGER in http://ihor.burlachenko.com/deep-linking-with-react-native/ --> do this after react upgrade
+RCT_EXPORT_METHOD(checkEvent
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    NSError *error;
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *deepLinkPath = [documentsDirectory stringByAppendingPathComponent:@"DeepLink.plist"];
+    NSMutableDictionary *deeplink = [[NSMutableDictionary alloc] initWithContentsOfFile: deepLinkPath];
+    
+    if(deeplink){
+        if(deeplink[@"data"]){
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_SCREEN" body:@{@"screen" : deeplink[@"data"]}];
+                [self deletePList:@"DeepLink"];
+            });
+        }else{
+            [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_SCREEN" body:@{@"screen" : @"noscreen"}];
+        }
+    }else{
+        [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_SCREEN" body:@{@"screen" : @"noscreen"}];
+    }
+}
+
 
 RCT_EXPORT_METHOD(lineLogin
                   :(RCTPromiseResolveBlock)resolve
@@ -822,6 +848,7 @@ RCT_EXPORT_METHOD(logoutChatWindow
     }];
     NSLog(@"UNSUBSCRIBE TO %@", self.appdel.channel_name);
     [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.channel_name];
+    [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.brand_name];
     [self deletePList:@"UserInfo"];
     [self deletePList:@"Notifications"];
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
@@ -830,6 +857,7 @@ RCT_EXPORT_METHOD(logoutChatWindow
 RCT_EXPORT_METHOD(setUserId
                   
                   :(NSString *) userId
+                  :(NSString *) brandId
                   
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
@@ -837,11 +865,14 @@ RCT_EXPORT_METHOD(setUserId
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     self.appdel = appDelegate;
     NSString *channelName = [NSString stringWithFormat:@"mobile_user_%@", userId];
+    NSString *brandName = [NSString stringWithFormat:@"mobile_user_%@_%@", userId, brandId];
     self.smoochUserId = userId;
     NSLog(@"===SET USER ID====%@", channelName);
     [self.appdel setUser_id:userId];
     [self.appdel setChannel_name:channelName];
+    [self.appdel setBrand_name:brandName];
     [[self.appdel.pusher nativePusher] subscribe:channelName];
+    [[self.appdel.pusher nativePusher] subscribe:brandName];
 
     NSError *error;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);

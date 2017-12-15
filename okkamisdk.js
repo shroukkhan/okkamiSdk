@@ -47,9 +47,8 @@ class OkkamiSdk {
     return OkkamiSdkManager.setAppBadgeIcon(number);
   }
 
-  setUserId(userId){
-    console.log("SET USER ID ? ", userId)
-    return OkkamiSdkManager.setUserId(userId);
+  setUserId(userId, brandId){
+    return OkkamiSdkManager.setUserId(userId, brandId);
   }
 
   async isHubLoggedIn() {
@@ -62,6 +61,10 @@ class OkkamiSdk {
 
   checkNotif(){
     return OkkamiSdkManager.checkNotif();
+  }
+
+  checkEvent(){
+    return OkkamiSdkManager.checkEvent();
   }
 
   setLanguage(language){
