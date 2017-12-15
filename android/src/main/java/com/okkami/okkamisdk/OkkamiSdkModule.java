@@ -64,6 +64,7 @@ import io.smooch.core.InitializationStatus;
 import io.smooch.core.Message;
 import io.smooch.core.Settings;
 import io.smooch.core.Smooch;
+import io.smooch.core.SmoochCallback;
 import io.smooch.core.SmoochConnectionStatus;
 import io.smooch.ui.ConversationActivity;
 import me.leolin.shortcutbadger.ShortcutBadger;
@@ -77,6 +78,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         void invokeSubscribePusher(String methodName, String userId, String brandId);
         void invokeUnsubscribePusher();
         void onAppLanded();
+        void invokeInitSmooch(String token, String userId, String smoochAppId, String smoochJwt);
     }
 
 
@@ -754,6 +756,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
                 .emit(eventName, params);
     }
 
+    // TODO: 11/30/2017 AD Is this method still in use have to ask Michael
     @ReactMethod
     public void getConversationsList(ReadableArray smoochAllAppTokenArray, String userId, Promise getConversationListPromise) {
 
@@ -766,14 +769,14 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
             ArrayList<JSONObject> okkamiChatList = new ArrayList<>();
             ArrayList<JSONObject> activeChatList = new ArrayList<>();
             ArrayList<JSONObject> inactiveChatList = new ArrayList<>();
+            Log.e(TAG, "getConversationsList: "+smoochAllAppTokenArray.size());
 
             for (int i = 0; i < smoochAllAppTokenArray.size(); i++) {
 
                 String appToken = smoochAllAppTokenArray.getString(i);
-                Settings settings = new Settings(appToken);
-                settings.setUserId(userId);
-                settings.setFirebaseCloudMessagingAutoRegistrationEnabled(false);
-                Smooch.init(mApp, settings);
+                String smoochAppId = (String) BuildConfigUtil.getBuildConfigValue(getReactApplicationContext(), "SMOOCH_APP_ID");
+                mMethodInvoker.invokeInitSmooch(appToken, userId, smoochAppId, "");
+
                 Smooch.setFirebaseCloudMessagingToken("nan");
 
                 List<Message> listMsg = Smooch.getConversation().getMessages();
@@ -854,26 +857,26 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     /**
      * Open the smooch chat window for a particular channel
      *
-     * @param smoochAppToken
+     * @param smoochAppId
      */
     @ReactMethod
-    public void openChatWindow(String smoochAppToken,
+    public void openChatWindow(String smoochAppId,
                                String userId,
                                String windowTitle,
                                String windowHexStringColor,
                                String titleHexStringColor,
                                boolean windowInRgb,
-                               boolean titleInRgb) {
+                               boolean titleInRgb,
+                                String smoochJwt,
+                                Promise openChatWindowPromise) {
         try {
 
-            Log.d(TAG, "smoochAppToken=" + smoochAppToken);
-            Log.d(TAG, "userId=" + userId);
+            String smoochAppToken = smoochAppId;
+            Log.d(TAG, "openChatWindow: smoochAppToken=" + smoochAppToken);
+            Log.d(TAG, "openChatWindow: smoochAppId=" + smoochAppId);
+            Log.d(TAG, "openChatWindow: userId=" + userId);
 
-            Smooch.destroy();
-            Settings settings = new Settings(smoochAppToken);
-            settings.setUserId(userId);
-            settings.setFirebaseCloudMessagingAutoRegistrationEnabled(false);
-            Smooch.init(mApp, settings);
+            mMethodInvoker.invokeInitSmooch(smoochAppToken, userId, smoochAppId, smoochJwt);
             Smooch.setFirebaseCloudMessagingToken("nan");
 
             Intent chatWindow = new Intent();
@@ -883,6 +886,8 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
             chatWindow.setComponent(cmp);
             chatWindow.putExtra("SMOOCH_SDK_INITIALIZED", true);
             chatWindow.putExtra("SMOOCH_APP_TOKEN", smoochAppToken);
+            chatWindow.putExtra("SMOOCH_APP_ID", smoochAppId);
+            chatWindow.putExtra("SMOOCH_JWT", smoochJwt);
             chatWindow.putExtra("USER_ID", userId);
             chatWindow.putExtra("CHAT_WINDOW_COLOR", windowHexStringColor);
             chatWindow.putExtra("CHAT_WINDOW_TITLE_COLOR", titleHexStringColor);
@@ -918,16 +923,6 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         mMethodInvoker.invokeSubscribePusher("initPusherFcmService", userId, brandId);
     }
 
-    // React native calling as looping with different appTokens
-    @ReactMethod
-    public void loginChatWindow(String userId, String appToken) {
-        Settings settings = new Settings(appToken);
-        settings.setUserId(userId);
-        settings.setFirebaseCloudMessagingAutoRegistrationEnabled(false);
-        Smooch.init(mApp, settings);
-        Smooch.setFirebaseCloudMessagingToken("nan");
-    }
-
     /**
      * returns the number of unread message in a channel
      * getUnreadMessageCountPromise.resolve(Int) on success
@@ -939,7 +934,9 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void getUnreadMessageCount(String smoochAppToken, String userId, Promise getUnreadMessageCountPromise) {
         try {
-            Smooch.init(mApp, smoochAppToken);
+            Log.e(TAG, "getUnreadMessageCount: "+smoochAppToken);
+            String smoochAppId = (String) BuildConfigUtil.getBuildConfigValue(getReactApplicationContext(), "SMOOCH_APP_ID");
+            mMethodInvoker.invokeInitSmooch(smoochAppToken, userId, smoochAppId, "");
             Smooch.setFirebaseCloudMessagingToken("nan");
             Smooch.getSettings().setFirebaseCloudMessagingAutoRegistrationEnabled(false);
             getUnreadMessageCountPromise.resolve(Smooch.getConversation().getUnreadCount());
@@ -961,7 +958,12 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         try {
             if (Smooch.getInitializationStatus() == InitializationStatus.Success &&
                     Smooch.getSmoochConnectionStatus() == SmoochConnectionStatus.Connected) {
-                Smooch.logout();
+                Smooch.logout(new SmoochCallback() {
+                    @Override
+                    public void run(Response response) {
+                        Log.e(TAG, "run: Response after logout: "+response.toString() );
+                    }
+                });
                 ConversationActivity.close();
                 logoutChatWindowPromise.resolve(1);
             }
