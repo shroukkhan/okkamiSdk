@@ -10,10 +10,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -31,7 +29,6 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.modules.toast.ToastModule;
 import com.linecorp.linesdk.auth.LineLoginApi;
 import com.linecorp.linesdk.auth.LineLoginResult;
 import com.okkami.android.sdk.SDK;
@@ -51,7 +48,6 @@ import com.okkami.android.sdk.module.HubModule;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -79,7 +75,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         OnHubCommandReceivedListener {
 
     public interface MethodInvokeListener {
-        void invoke(String methodName, String arg);
+        void invokeSubscribePusher(String methodName, String userId, String brandId);
         void invokeUnsubscribePusher();
         void onAppLanded();
         void invokeInitSmooch(String token, String userId, String smoochAppId, String smoochJwt);
@@ -101,9 +97,9 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     private SDK okkamiSdk;
     private Promise lineLoginPromise = null;
 
-    private static String userId;
+    private String userId;
 
-    public static String getUserId() {
+    public String getUserId() {
         return userId;
     }
 
@@ -906,18 +902,25 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     // React native layer will call this function upon user
     // login and|or application starts up event
     @ReactMethod
-    public void setUserId(String id) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mApp);
-        prefs.edit().putString("USER_ID", userId);
-        prefs.edit().commit();
-        userId = id;
+    public void setUserId(String userId, String brandId) {
 
-        invokeInitPushNoti();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mApp);
+        prefs.edit().putString("USER_ID", userId).commit();
+        prefs.edit().putString("BRAND_ID", userId).commit();
+
+        this.userId = userId;
+
+        String savedId = prefs.getString("USER_ID", "");
+        if (TextUtils.isEmpty(savedId) || !savedId.equals(userId)) {
+            Log.e(TAG, "Failed saving userId");
+        }
+
+        invokeInitPushNoti(userId, brandId);
     }
 
-    private void invokeInitPushNoti() {
+    private void invokeInitPushNoti(String userId, String brandId) {
         // Method name is currently optional.
-        mMethodInvoker.invoke("initPusherFcmService", userId);
+        mMethodInvoker.invokeSubscribePusher("initPusherFcmService", userId, brandId);
     }
 
     /**
