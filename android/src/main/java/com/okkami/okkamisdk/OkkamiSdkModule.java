@@ -876,7 +876,21 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
             Log.d(TAG, "openChatWindow: smoochAppId=" + smoochAppId);
             Log.d(TAG, "openChatWindow: userId=" + userId);
 
-            mMethodInvoker.invokeInitSmooch(smoochAppToken, userId, smoochAppId, smoochJwt);
+//            mMethodInvoker.invokeInitSmooch(smoochAppToken, userId, smoochAppId, smoochJwt);
+            InitializationStatus smoochInitStatus = Smooch.getInitializationStatus();
+            SmoochConnectionStatus smoochConnStatus = Smooch.getSmoochConnectionStatus();
+            String sInitStatus = smoochInitStatus != null ? smoochInitStatus.toString() : "n/a";
+            String sConnStatus = smoochConnStatus != null ? smoochConnStatus.toString() : "n/a";
+
+            Log.e(TAG, "InitializationStatus: "+sInitStatus+" , SmoochConnectionStatus: "+sConnStatus );
+            Boolean isSameToken;
+            if ((smoochInitStatus == null && smoochConnStatus == null) || !smoochInitStatus.equals(InitializationStatus.Success.name()) || !smoochConnStatus.equals(SmoochConnectionStatus.Connected.name())) {
+                isSameToken = false;
+            } else {
+                isSameToken = TextUtils.isEmpty(Smooch.getSettings().getAppId()) ? false : Smooch.getSettings().getAppId().equals(smoochAppId);
+            }
+
+            Log.d(TAG, "openChatWindow: isSameToken=" + isSameToken);
             Smooch.setFirebaseCloudMessagingToken("nan");
 
             Intent chatWindow = new Intent();
@@ -889,6 +903,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
             chatWindow.putExtra("SMOOCH_APP_ID", smoochAppId);
             chatWindow.putExtra("SMOOCH_JWT", smoochJwt);
             chatWindow.putExtra("USER_ID", userId);
+            chatWindow.putExtra("IS_SAME_TOKEN", isSameToken);
             chatWindow.putExtra("CHAT_WINDOW_COLOR", windowHexStringColor);
             chatWindow.putExtra("CHAT_WINDOW_TITLE_COLOR", titleHexStringColor);
             chatWindow.putExtra("CHAT_WINDOW_TITLE", windowTitle);
