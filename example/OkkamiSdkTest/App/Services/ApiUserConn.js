@@ -69,7 +69,7 @@ const appToken = (obj) => {
   let data = {
     "client_id" : CLIENT_ID,
     "client_secret" : CLIENT_SECRET,
-    "grant_type" : "client_credentials"
+    "grant_type" : "client_credentials",
   }
 
   console.log(apiUrl)
