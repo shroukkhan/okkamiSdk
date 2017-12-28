@@ -884,9 +884,10 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
 
             Log.e(TAG, "InitializationStatus: "+sInitStatus+" , SmoochConnectionStatus: "+sConnStatus );
             Boolean isSameToken;
-            if ((smoochInitStatus == null && smoochConnStatus == null) || !smoochInitStatus.equals(InitializationStatus.Success.name()) || !smoochConnStatus.equals(SmoochConnectionStatus.Connected.name())) {
+            if ((smoochInitStatus == null && smoochConnStatus == null) || !sInitStatus.equals(InitializationStatus.Success.name()) || !sConnStatus.equals(SmoochConnectionStatus.Connected.name())) {
                 isSameToken = false;
             } else {
+                Log.e(TAG, "openChatWindowiiiii: "+Smooch.getSettings().getAppId());
                 isSameToken = TextUtils.isEmpty(Smooch.getSettings().getAppId()) ? false : Smooch.getSettings().getAppId().equals(smoochAppId);
             }
 
