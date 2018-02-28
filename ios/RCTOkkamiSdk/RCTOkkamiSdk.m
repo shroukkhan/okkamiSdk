@@ -213,9 +213,9 @@ RCT_EXPORT_MODULE();
         return;
     }
     
-    if(userInfo[@"data"][@"command"]){
-        [self.bridge.eventDispatcher sendAppEventWithName:userInfo[@"data"][@"command"] body:nil];
-    }
+//    if(userInfo[@"data"][@"command"]){
+//        [self.bridge.eventDispatcher sendAppEventWithName:userInfo[@"data"][@"command"] body:nil];
+//    } 
     
     // custom code to handle notification content
     if( [UIApplication sharedApplication].applicationState == UIApplicationStateInactive )
