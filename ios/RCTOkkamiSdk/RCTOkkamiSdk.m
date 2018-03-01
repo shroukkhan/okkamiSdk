@@ -406,6 +406,8 @@ RCT_EXPORT_METHOD(checkNotif
                 [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:notification[@"data"]];
                 [self deletePList:@"Notifications"];
             });
+        } else {
+            [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:notification[@"data"]];
         }
     }
 }
