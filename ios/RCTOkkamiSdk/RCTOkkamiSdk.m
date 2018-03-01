@@ -78,7 +78,7 @@ RCT_EXPORT_MODULE();
 
 - (void)handleOkkamiUrl: (NSString*)url title: (NSString*)title {
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    if ([url containsString:appDelegate.okkamiDeepLink]) {
+    if ([url containsString:[NSString stringWithFormat:@"%@://", appDelegate.okkamiDeepLink]]) {
         [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_SCREEN" body:@{@"screen":url}];
     } else {
         [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_WEBVIEW" body:@{@"hotelName":self.hotelName,@"title":title,@"url":url,@"appToken": self.currentSmoochToken, @"user_id":self.smoochUserId, @"smooch_user_jwt":self.smoochUserJwt}];
