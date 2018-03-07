@@ -218,6 +218,25 @@ class OkkamiSdk {
     console.log('shutting down the app...')
     OkkamiSdkManager.shutdownApp()
   }
+
+  /**
+   * Subscribe pusher channel with device id
+   * @param dId
+   */
+  subscribePusher (dId) {
+    console.log('subscribing pusher with device id: ', dId)
+    OkkamiSdkManager.subscribePushser(dId)
+  }
+
+  /**
+   * Unsubscribe pusher channel with device id
+   * @param dId
+   */
+  unsubscribePusher (dId) {
+    console.log('unsubscribing pusher with device id: ', dId)
+    OkkamiSdkManager.unsubscribePushser(dId)
+  }
+
 }
 let okkamiSdk = new OkkamiSdk()
 export default okkamiSdk
