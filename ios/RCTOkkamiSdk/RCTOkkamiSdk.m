@@ -10,7 +10,6 @@
 
 #define SMOOCH_NAME @"OKKAMI CONCIERGE"
 #define OKKAMI_DEEPLINK @"okkami://"
-#define PUBLIC_JWT @"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOiJPS0tBTUkifQ.CiozmY4WIVhbzQ4K_XUuC8jPKko4CbTeWFhAedPeZ4I"
 
 @synthesize bridge = _bridge;
 
@@ -30,6 +29,13 @@ RCT_EXPORT_MODULE();
         [self.locationManager requestWhenInUseAuthorization];
         UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
         center.delegate = self;
+        AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        self.appdel = appDelegate;
+        if (!self.appdel.isOkkami) {
+            RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
+            self.main = main;
+            [self registerInstanceId:self.appdel.pusher_instance_id];
+        }
     }
     return self;
 }
@@ -41,13 +47,12 @@ RCT_EXPORT_MODULE();
         NSError *error;
     if(![[NSFileManager defaultManager] removeItemAtPath:path error:&error])
     {
-        //TODO: Handle/Log error
+        
     }
 }
 
 
 - (void)openSmooch: (NSString*)appToken userId:(NSString*)userId title:(NSString*)title {
-    //enhancement put open smooch all in here
     [Smooch destroy];
     if([title isEqualToString:@""] || title == nil){
         self.hotelName = SMOOCH_NAME;
@@ -143,7 +148,6 @@ RCT_EXPORT_MODULE();
            data.bytes,    data.length,
            hMacOut.mutableBytes);
     
-    /* Returns hexadecimal string of NSData. Empty string if data is empty. */
     NSString *hexString = @"";
     if (data) {
         uint8_t *dataPointer = (uint8_t *)(hMacOut.bytes);
@@ -157,36 +161,41 @@ RCT_EXPORT_MODULE();
 
 #pragma mark Pusher Delegate
 -(void) pusher:(PTPusher *)pusher didSubscribeToChannel:(PTPusherChannel *)channel{
-    NSLog(@"didSubscribeToChannel : %@", channel);
-}
--(void) pusher:(PTPusher *)pusher didUnsubscribeFromChannel:(PTPusherChannel *)channel{
-    NSLog(@"didUnsubscribeFromChannel : %@", channel);
-}
--(void) nativePusher:(PTNativePusher *)nativePusher didRegisterForPushNotificationsWithClientId:(NSString *)clientId{
-    NSLog(@"didRegisterForPushNotificationsWithClientId : %@", clientId);
-}
--(void) nativePusher:(PTNativePusher *)nativePusher didSubscribeToInterest:(NSString *)interestName{
-    NSLog(@"didSubscribeToInterest : %@", interestName);
-}
--(void) nativePusher:(PTNativePusher *)nativePusher didUnsubscribeFromInterest:(NSString *)interestName{
-    NSLog(@"didUnsubscribeFromInterest : %@", interestName);
+
 }
 
+-(void) pusher:(PTPusher *)pusher didUnsubscribeFromChannel:(PTPusherChannel *)channel{
+
+}
+
+-(void) nativePusher:(PTNativePusher *)nativePusher didRegisterForPushNotificationsWithClientId:(NSString *)clientId{
+    
+}
+
+-(void) nativePusher:(PTNativePusher *)nativePusher didSubscribeToInterest:(NSString *)interestName{
+
+}
+
+-(void) nativePusher:(PTNativePusher *)nativePusher didUnsubscribeFromInterest:(NSString *)interestName{
+
+}
 
 #pragma mark Notif Delegate
 
 -(void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error{
-    NSLog(@"ERROR REGISTER: %@", error);
+
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-    NSLog(@"DID REGISTER REMOTE ??? from RCTOkkamiSdk:");
     [Smooch logoutWithCompletionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
        [Smooch destroy];
     }];
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     self.appdel = appDelegate;
     [[self.appdel.pusher nativePusher] registerWithDeviceToken:deviceToken];
+    if (!self.appdel.isOkkami) {
+        [self registerForPusher:deviceToken];
+    }
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
@@ -194,7 +203,6 @@ RCT_EXPORT_MODULE();
     [Smooch logoutWithCompletionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
         [Smooch destroy];
     }];
-    NSLog(@"DID RECEIVE REMOTE ? from RCTOkkamiSdk:");
     [self application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:^(UIBackgroundFetchResult result) {
     }];
 }
@@ -202,9 +210,6 @@ RCT_EXPORT_MODULE();
 -(void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void
                                                                                                                                (^)(UIBackgroundFetchResult))completionHandler
 {
-    // iOS 10 will handle notifications through other methods
-    
-    NSLog( @"HANDLE PUSH, didReceiveRemoteNotification from RCTOkkamiSdk: %@", userInfo );
     [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:userInfo[@"data"]];
     
     if( SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO( @"10.0" ) )
@@ -213,14 +218,8 @@ RCT_EXPORT_MODULE();
         return;
     }
     
-//    if(userInfo[@"data"][@"command"]){
-//        [self.bridge.eventDispatcher sendAppEventWithName:userInfo[@"data"][@"command"] body:nil];
-//    } 
-    
-    // custom code to handle notification content
     if( [UIApplication sharedApplication].applicationState == UIApplicationStateInactive )
     {
-        NSLog( @"INACTIVE" );
         [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:userInfo[@"data"]];
         if([userInfo[@"aps"][@"alert"][@"title"] isEqualToString:@""] || userInfo[@"aps"][@"alert"][@"title"] == nil){
             self.hotelName = SMOOCH_NAME;
@@ -269,8 +268,6 @@ RCT_EXPORT_MODULE();
        willPresentNotification:(UNNotification *)notification
          withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
-    NSLog( @"Handle push from foreground" );
-    NSLog(@"%@", notification.request.content.userInfo);
     if(notification.request.content.userInfo[@"SmoochNotification"]){
         completionHandler(UIUserNotificationTypeNone  | UIUserNotificationTypeBadge);
     }else{
@@ -292,7 +289,6 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler{
-    NSLog( @"Handle push from background or closed" );
     if(response.notification.request.content.userInfo[@"data"][@"property_smooch_app_id"]){
         [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
         if([response.notification.request.content.userInfo[@"data"][@"property_smooch_app_id"] isEqualToString:[ReactNativeConfig envFor:@"OKKAMI_SMOOCH"]]){
@@ -336,20 +332,13 @@ RCT_EXPORT_MODULE();
          profile:(LineSDKProfile *)profile
            error:(NSError *)error
 {
-    NSLog(@"come here ? %@", error);
     if (error) {
-        NSLog(@"Error data : %@", error);
-        self.loginRejecter([NSString stringWithFormat:@"%ld", error.code],error.description, error);
-        // Login failed with an error. You can use the error parameter to help determine what the problem was.
-    }
-    else {
-        
-        // Login has succeeded. You can get the user's access token and profile information.
+         self.loginRejecter([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+    } else {
         self.accessToken = credential.accessToken.accessToken;
         self.userId = profile.userID;
         self.displayName = profile.displayName;
         self.statusMessage = profile.statusMessage;
-        // If the user does not have a profile picture set, pictureURL will be nil
         if (profile.pictureURL) {
             self.pictureURL = profile.pictureURL.absoluteString;
         }else{
@@ -370,11 +359,7 @@ RCT_EXPORT_MODULE();
 }
 
 
-RCT_EXPORT_METHOD(checkNotif
-                  
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
+RCT_EXPORT_METHOD(checkNotif:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject) {
     NSError *error;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
@@ -382,7 +367,6 @@ RCT_EXPORT_METHOD(checkNotif
     NSString *userPath = [documentsDirectory stringByAppendingPathComponent:@"UserInfo.plist"];
     NSMutableDictionary *notification = [[NSMutableDictionary alloc] initWithContentsOfFile: plistPath];
     NSDictionary *userInfo = [[NSDictionary alloc] initWithContentsOfFile: userPath];
-    
     if(notification){
         if(notification[@"data"][@"property_smooch_app_id"]){
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -393,7 +377,6 @@ RCT_EXPORT_METHOD(checkNotif
                 }else{
                     self.hotelName = notification[@"aps"][@"alert"][@"title"];
                 }
-                
                 self.currentSmoochToken = notification[@"data"][@"property_smooch_app_id"];
                 self.smoochUserJwt = notification[@"data"][@"smooch_user_jwt"];
                 SKTSettings *settings = [SKTSettings settingsWithAppId:notification[@"data"][@"property_smooch_app_id"]];
@@ -411,6 +394,61 @@ RCT_EXPORT_METHOD(checkNotif
             [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:notification[@"data"]];
         }
     }
+}
+
+#pragma mark: -PushNotifications
+
+- (void)registerInstanceId:(NSString *)instanceId {
+    if (self.main) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.main registerInstanceIdWithInstanceId: instanceId];
+        });
+    }
+}
+
+- (void)registerForPusher:(NSData *)deviceToken {
+    if (self.main) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.main registerForPusherWithDeviceToken: deviceToken];
+        });
+    }
+}
+
+
+- (void)subscribeToInterest:(NSString *)interest {
+    if (self.main) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.main subscribeToInterestWithInterest: interest];
+        });
+    }
+}
+
+- (void)unsubscribeToInterest:(NSString *)interest {
+    if (self.main) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.main unsubscribeToInterestWithInterest: interest];
+        });
+    }
+}
+
+- (void)unsubscribeAll {
+    if (self.main) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.main unsubscribeAll];
+        });
+    }
+}
+
+- (void)setSubscriptions:(NSArray *)subscriptions {
+    if (self.main) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.main setSubscriptionsWithInterests: subscriptions];
+        });
+    }
+}
+
+- (NSArray *)getInterests:(NSArray *)interests {
+    return [self.main getInterests];
 }
 
 // TODO : THIS ONE IS HACKY WAY SHOULD BE USE LINKINGMANAGER in http://ihor.burlachenko.com/deep-linking-with-react-native/ --> do this after react upgrade
@@ -440,36 +478,11 @@ RCT_EXPORT_METHOD(checkEvent
 }
 
 
-RCT_EXPORT_METHOD(lineLogin
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
-    
+RCT_EXPORT_METHOD(lineLogin:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject) {
     [LineSDKLogin sharedInstance].delegate = self;
-    NSLog(@"equal to line");
     [[LineSDKLogin sharedInstance] startLogin];
     self.loginResolver = resolve;
     self.loginRejecter = reject;
-    
-}
-
-/**
- * The purpose of this method is to provide general purpose way to call any core endpoint.
- * Internally, the downloadPresets,downloadRoomInfo,connectToRoom all of them should use this method.
- * <p>
- * on success : downloadFromCorePromise.resolve(coreResponseJSONString)
- * on failure:  downloadFromCorePromise.reject(Throwable e)
- *
- * @param endPoint                full core url . https://api.fingi.com/devices/v1/register
- * @param getPost                 "GET" or "POST"
- * @param payload                 JSON encoded payload if it is POST
- * @param downloadFromCorePromise
- */
-
-
-// Wait for location callbacks
-- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
-{
     
 }
 
@@ -494,8 +507,7 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
                   :(BOOL) force
                   
                   :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
+                  :(RCTPromiseRejectBlock)reject) {
     
     RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
     self.secretKey = secret;
@@ -503,10 +515,6 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
     [defaultNotif addObserver:self selector:@selector(listenerOkkami:) name:@"Listener" object:nil];
     dispatch_async(dispatch_get_main_queue(), ^{
         [main executeCoreRESTCallWithNotif:defaultNotif apicore:endPoint apifunc:getPost payload:payLoad secret:secret token:token force:force completion:^(NSString* callback, NSError* error) {
-            
-            NSLog(@"callback %@", callback);
-            NSLog(@"error %@", error);
-            
             if (error == NULL) {
                 resolve(callback);
                 [self.bridge.eventDispatcher sendAppEventWithName:@"executeCoreRESTCall" body:callback];
@@ -517,18 +525,6 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
         }];
     });
 }
-
-/**
- * Connects to hub using the presets and attempts to login ( send IDENTIFY)
- * If Hub is already connected, reply with  hubConnectionPromise.resolve(true)
- * on success: hubConnectionPromise.resolve(true)
- * on failure:  hubConnectionPromise.reject(Throwable e)
- * Native module should also take care of the PING PONG and reconnect if PING drops
- *
- * @param secrect secrect obtained from core
- * @param token   token obtained from core
- * @param hubConnectionPromise
- */
 
 -(void)sendAnEvent:(NSString*)eventName :(NSDictionary*)userInfo{
     NSString *event = eventName;
@@ -546,7 +542,6 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
         }else{
             [self.bridge.eventDispatcher sendAppEventWithName:event body:nil];
         }
-        
         if([event isEqualToString:@"identify"]){
             NSString *str = [theData objectForKey:@"data"];
             NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
@@ -567,7 +562,6 @@ RCT_EXPORT_METHOD(executeCoreRESTCall
             [self.notifSocket postNotificationName:@"ListenerSocketCore" object:NULL userInfo:dict];
         }
     }
-    
 }
 
 RCT_EXPORT_METHOD(connectToHub
@@ -578,8 +572,7 @@ RCT_EXPORT_METHOD(connectToHub
                   :(NSString*)hubPort
                   
                   :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
+                  :(RCTPromiseRejectBlock)reject) {
     
     RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
     self.main = main;
@@ -603,24 +596,13 @@ RCT_EXPORT_METHOD(connectToHub
     }];
 }
 
-
-/**
- * Disconnects and cleans up the existing connection
- * If Hub is already connected, reply with  hubDisconnectionPromise.resolve(true) immediately
- * on success: hubDisconnectionPromise.resolve(true)
- * on failure:  hubDisconnectionPromise.reject(Throwable e)
- *
- * @param hubDisconnectionPromise
- */
 RCT_EXPORT_METHOD(disconnectFromHub
                   
                   :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
+                  :(RCTPromiseRejectBlock)reject) {
     if (self.main == nil) {
         NSMutableDictionary* details = [NSMutableDictionary dictionary];
         [details setValue:@"Not connected To Hub" forKey:NSLocalizedDescriptionKey];
-        // populate the error object with the details
         NSError *error = [NSError errorWithDomain:@"E_HUB_NOT_CONNECTED" code:401 userInfo:details];
         reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
     }else{
@@ -628,7 +610,6 @@ RCT_EXPORT_METHOD(disconnectFromHub
         [self.main disconnectFromHubWithCompletion:^(NSError * error) {
             if (error == nil) {
                 [self.bridge.eventDispatcher sendAppEventWithName:@"disconnectFromHub" body:nil];
-                //ok
                 resolve(@YES);
             }else{
                 reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
@@ -637,24 +618,13 @@ RCT_EXPORT_METHOD(disconnectFromHub
     }
 }
 
-/**
- * Disconnects and cleans up the existing connection
- * Then attempt to connect to hub again.
- * on success ( hub has been successfully reconnected and logged in ) : hubReconnectionPromise.resolve(true)
- * on failure:  hubReconnectionPromise.reject(Throwable e)
- *
- * @param hubReconnectionPromise
- */
-
 RCT_EXPORT_METHOD(reconnectToHub
                   
                   :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
+                  :(RCTPromiseRejectBlock)reject) {
     if (self.main == nil) {
         NSMutableDictionary* details = [NSMutableDictionary dictionary];
         [details setValue:@"Not connected To Hub" forKey:NSLocalizedDescriptionKey];
-        // populate the error object with the details
         NSError *error = [NSError errorWithDomain:@"E_HUB_NOT_CONNECTED" code:401 userInfo:details];
         reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
     }else{
@@ -673,27 +643,12 @@ RCT_EXPORT_METHOD(reconnectToHub
     
 }
 
-/**
- * Send command to hub. a command can look like this:
- * POWER light-1 ON
- * 2311 Default | POWER light-1 ON
- * 1234 2311 Default | POWER light-1 ON
- * <p>
- * The native module should fill in the missing info based on the command received
- * such as filling in room , group , none if not provided and skip those if provied already
- * on success ( successful write ) : sendMessageToHubPromise.resolve(true)
- * on failure:  hubDisconnectionPromise.reject(Throwable e)
- *
- * @param sendMessageToHubPromise
- */
-
 RCT_EXPORT_METHOD(sendCommandToHub
                   
                   :(NSString*)command
                   
                   :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
+                  :(RCTPromiseRejectBlock)reject) {
     
     if (self.main == nil) {
         NSMutableDictionary* details = [NSMutableDictionary dictionary];
@@ -716,22 +671,10 @@ RCT_EXPORT_METHOD(sendCommandToHub
     
 }
 
-
-
-/**
- * if hub is currently connected + logged in :
- * hubLoggedPromise.resolve(true);
- * else
- * hubLoggedPromise.resolve(false);
- *
- * @param hubLoggedPromise
- */
-
 RCT_EXPORT_METHOD(isHubLoggedIn
                   
                   :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
+                  :(RCTPromiseRejectBlock)reject) {
     if (self.main == nil) {
         NSMutableDictionary* details = [NSMutableDictionary dictionary];
         [details setValue:@"Not connected To Hub" forKey:NSLocalizedDescriptionKey];
@@ -752,21 +695,10 @@ RCT_EXPORT_METHOD(isHubLoggedIn
     }
 }
 
-/**
- * if hub is currently connected ( regardless of logged in ) :
- * hubConnectedPromise.resolve(true);
- * else
- * hubConnectedPromise.resolve(false);
- *
- * @param hubConnectedPromise
- */
-
-
 RCT_EXPORT_METHOD(isHubConnected
                   
                   :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
+                  :(RCTPromiseRejectBlock)reject) {
     if (self.main == nil) {
         NSMutableDictionary* details = [NSMutableDictionary dictionary];
         [details setValue:@"Not connected To Hub" forKey:NSLocalizedDescriptionKey];
@@ -789,21 +721,14 @@ RCT_EXPORT_METHOD(isHubConnected
     
 }
 
-/*-------------------------------------- Smooch   --------------------------------------------------*/
-
-
-
-
 RCT_EXPORT_METHOD(convertTime
                   
                   :(double) time
                   
                   :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
+                  :(RCTPromiseRejectBlock)reject) {
     RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSLog(@"HOHOHO");
         NSString *jsonObj = [main convertTimeWithNumber:time];
         resolve(jsonObj);
     });
@@ -821,8 +746,7 @@ RCT_EXPORT_METHOD(openChatWindow
                   :(NSString*) smoochUserJwt
                                     
                   :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
+                  :(RCTPromiseRejectBlock)reject) {
     self.hotelName = hotelName;
     self.currentSmoochToken = smoochAppToken;
     self.smoochUserJwt = smoochUserJwt;
@@ -843,8 +767,7 @@ RCT_EXPORT_METHOD(openChatWindow
 RCT_EXPORT_METHOD(setAppBadgeIcon :(NSInteger)badgeIcon
                   
                   :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
+                  :(RCTPromiseRejectBlock)reject) {
     dispatch_async(dispatch_get_main_queue(), ^{
         [UIApplication sharedApplication].applicationIconBadgeNumber = badgeIcon;
     });
@@ -853,16 +776,17 @@ RCT_EXPORT_METHOD(setAppBadgeIcon :(NSInteger)badgeIcon
 RCT_EXPORT_METHOD(logoutChatWindow
                   
                   :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
+                  :(RCTPromiseRejectBlock)reject) {
     [Smooch logoutWithCompletionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
         [Smooch destroy];
     }];
-    NSLog(@"UNSUBSCRIBE TO %@", self.appdel.channel_name);
     [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.channel_name];
     [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.brand_name];
     [self deletePList:@"UserInfo"];
     [self deletePList:@"Notifications"];
+    if (!self.appdel.isOkkami) {
+        [self unsubscribeAll];
+    }
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
 }
 
@@ -872,20 +796,23 @@ RCT_EXPORT_METHOD(setUserId
                   :(NSString *) brandId
                   
                   :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
+                  :(RCTPromiseRejectBlock)reject) {
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     self.appdel = appDelegate;
     NSString *channelName = [NSString stringWithFormat:@"mobile_user_%@", userId];
     NSString *brandName = [NSString stringWithFormat:@"mobile_user_%@_%@", userId, brandId];
     self.smoochUserId = userId;
-    NSLog(@"===SET USER ID====%@", channelName);
     [self.appdel setUser_id:userId];
     [self.appdel setChannel_name:channelName];
     [self.appdel setBrand_name:brandName];
     [[self.appdel.pusher nativePusher] subscribe:channelName];
     [[self.appdel.pusher nativePusher] subscribe:brandName];
 
+    if (!self.appdel.isOkkami) {
+        [self subscribeToInterest:channelName];
+        [self subscribeToInterest:brandName];
+    }
+    
     NSError *error;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
@@ -897,7 +824,6 @@ RCT_EXPORT_METHOD(setUserId
     }
     NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:userId,@"userId",
                           nil];
-    NSLog(@"===PLIST PATH====%@", plistPath);
     [dict writeToFile:plistPath atomically: YES];
     
     [self.appdel.pusher connect];
@@ -909,9 +835,7 @@ RCT_EXPORT_METHOD(setLanguage
                   :(NSString *) language
                   
                   :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject)
-{
-    NSLog(@"Language : %@", language);
+                  :(RCTPromiseRejectBlock)reject) {
     dispatch_async(dispatch_get_main_queue(), ^{
         [[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObject:language] forKey:@"AppleLanguages"];
         [[NSUserDefaults standardUserDefaults] synchronize];
