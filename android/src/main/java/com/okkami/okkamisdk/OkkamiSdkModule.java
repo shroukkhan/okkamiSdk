@@ -76,7 +76,9 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
 
     public interface MethodInvokeListener {
         void invokeSubscribePusher(String methodName, String userId, String brandId);
+        void invokeSubscribePusher(String deviceId);
         void invokeUnsubscribePusher();
+        void invokeUnsubscribePusher(String deviceId);
         void onAppLanded();
         void invokeInitSmooch(String token, String userId, String smoochAppId, String smoochJwt);
     }
@@ -1030,5 +1032,25 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void shutdownApp(Promise shutdownAppPromise) {
         getCurrentActivity().finishAffinity();
+    }
+
+    /**
+     * Subscribe pusher channel with device id
+     * @param deviceId
+     * @param subscribePushser
+     */
+    @ReactMethod
+    public void subscribePushser(String deviceId, Promise subscribePushser) {
+        mMethodInvoker.invokeSubscribePusher(deviceId);
+    }
+
+    /**
+     * Unsubscribe pusher channel with device id
+     * @param deviceId
+     * @param unsubscribePushser
+     */
+    @ReactMethod
+    public void unsubscribePushser(String deviceId, Promise unsubscribePushser) {
+        mMethodInvoker.invokeUnsubscribePusher(deviceId);
     }
 }
