@@ -34,7 +34,7 @@ RCT_EXPORT_MODULE();
         if (!self.appdel.isOkkami) {
             RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
             self.main = main;
-            [self registerInstanceId:self.appdel.pusher_instance_id];
+            //[self registerInstanceId:self.appdel.pusher_instance_id];
         }
     }
     return self;
@@ -192,9 +192,10 @@ RCT_EXPORT_MODULE();
     }];
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     self.appdel = appDelegate;
-    [[self.appdel.pusher nativePusher] registerWithDeviceToken:deviceToken];
     if (!self.appdel.isOkkami) {
         [self registerForPusher:deviceToken];
+    } else {        
+        [[self.appdel.pusher nativePusher] registerWithDeviceToken:deviceToken];
     }
 }
 
