@@ -31,11 +31,12 @@ RCT_EXPORT_MODULE();
         center.delegate = self;
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         self.appdel = appDelegate;
-        if (!self.appdel.isOkkami) {
+        
+        /*if (!self.appdel.isOkkami) {
             RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
             self.main = main;
             //[self registerInstanceId:self.appdel.pusher_instance_id];
-        }
+        }*/
     }
     return self;
 }
@@ -192,11 +193,13 @@ RCT_EXPORT_MODULE();
     }];
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     self.appdel = appDelegate;
-    if (!self.appdel.isOkkami) {
+    [[self.appdel.pusher nativePusher] registerWithDeviceToken:deviceToken];
+
+    /*if (!self.appdel.isOkkami) {
         [self registerForPusher:deviceToken];
     } else {        
         [[self.appdel.pusher nativePusher] registerWithDeviceToken:deviceToken];
-    }
+    }*/
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
@@ -391,6 +394,9 @@ RCT_EXPORT_METHOD(checkNotif:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectB
                 [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:notification[@"data"]];
                 [self deletePList:@"Notifications"];
             });
+        } else if(notification[@"data"][@"command"]) {
+            [self.bridge.eventDispatcher sendAppEventWithName:notification[@"data"][@"command"] body:nil];
+            [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:notification[@"data"]];
         } else {
             [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:notification[@"data"]];
         }
@@ -785,9 +791,10 @@ RCT_EXPORT_METHOD(logoutChatWindow
     [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.brand_name];
     [self deletePList:@"UserInfo"];
     [self deletePList:@"Notifications"];
-    if (!self.appdel.isOkkami) {
+
+    /*if (!self.appdel.isOkkami) {
         [self unsubscribeAll];
-    }
+    }*/
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
 }
 
@@ -800,19 +807,28 @@ RCT_EXPORT_METHOD(setUserId
                   :(RCTPromiseRejectBlock)reject) {
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     self.appdel = appDelegate;
+    
+    if (self.appdel.channel_name) {
+        [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.channel_name];
+        if (self.appdel.brand_name) {
+            [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.brand_name];
+        }
+    }
+    
     NSString *channelName = [NSString stringWithFormat:@"mobile_user_%@", userId];
     NSString *brandName = [NSString stringWithFormat:@"mobile_user_%@_%@", userId, brandId];
     self.smoochUserId = userId;
     [self.appdel setUser_id:userId];
     [self.appdel setChannel_name:channelName];
     [self.appdel setBrand_name:brandName];
+    
     [[self.appdel.pusher nativePusher] subscribe:channelName];
     [[self.appdel.pusher nativePusher] subscribe:brandName];
 
-    if (!self.appdel.isOkkami) {
+    /*if (!self.appdel.isOkkami) {
         [self subscribeToInterest:channelName];
         [self subscribeToInterest:brandName];
-    }
+    }*/
     
     NSError *error;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
