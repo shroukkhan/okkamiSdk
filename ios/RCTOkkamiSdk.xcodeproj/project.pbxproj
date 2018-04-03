@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		453BAB5C1FC571CB001DE2B2 /* Smooch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 453BAB5B1FC571CB001DE2B2 /* Smooch.framework */; };
+		45D90A312073DF5000811ABE /* Smooch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45D90A302073DF5000811ABE /* Smooch.framework */; };
 		5D72D2EC1C16249000E22EC1 /* RCTOkkamiSdk.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5D72D2EB1C16249000E22EC1 /* RCTOkkamiSdk.h */; };
 		5D72D2EE1C16249000E22EC1 /* RCTOkkamiSdk.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D72D2ED1C16249000E22EC1 /* RCTOkkamiSdk.m */; };
 		651237371EE48026004CD7F1 /* RCTokkamiiossdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 651237361EE48026004CD7F1 /* RCTokkamiiossdk.framework */; };
@@ -49,7 +49,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		453BAB5B1FC571CB001DE2B2 /* Smooch.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Smooch.framework; sourceTree = "<group>"; };
+		45D90A302073DF5000811ABE /* Smooch.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Smooch.framework; sourceTree = "<group>"; };
 		5D72D2E81C16249000E22EC1 /* libRCTOkkamiSdk.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTOkkamiSdk.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D72D2EB1C16249000E22EC1 /* RCTOkkamiSdk.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTOkkamiSdk.h; sourceTree = "<group>"; };
 		5D72D2ED1C16249000E22EC1 /* RCTOkkamiSdk.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTOkkamiSdk.m; sourceTree = "<group>"; };
@@ -140,7 +140,7 @@
 				65F9CF4C1ED2948500315693 /* Foundation.framework in Frameworks */,
 				65F9CF561ED294A300315693 /* AssetsLibrary.framework in Frameworks */,
 				65F9CF541ED2949E00315693 /* AVFoundation.framework in Frameworks */,
-				453BAB5C1FC571CB001DE2B2 /* Smooch.framework in Frameworks */,
+				45D90A312073DF5000811ABE /* Smooch.framework in Frameworks */,
 				65F9CF521ED2949900315693 /* CFNetwork.framework in Frameworks */,
 				65F9CF501ED2949300315693 /* CoreGraphics.framework in Frameworks */,
 				65F9CF4E1ED2948D00315693 /* CoreText.framework in Frameworks */,
@@ -284,7 +284,7 @@
 		FAF229A71E141BE800F3C9C1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				453BAB5B1FC571CB001DE2B2 /* Smooch.framework */,
+				45D90A302073DF5000811ABE /* Smooch.framework */,
 				652ED7D51EE9A4960036635E /* libReactNativeConfig.a */,
 				651237361EE48026004CD7F1 /* RCTokkamiiossdk.framework */,
 				657817CC1ED573780079B076 /* UserNotifications.framework */,

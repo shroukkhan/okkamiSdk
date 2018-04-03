@@ -6,6 +6,7 @@
 #import <Foundation/Foundation.h>
 #import "SKTMessage.h"
 #import "SKTMessageAction.h"
+#import "SKTMessageItem.h"
 #import "SKTConversationActivity.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -213,6 +214,11 @@ extern NSString* const SKTConversationActivityKey;
  *  @discussion The primary use of this property is to be able to display an indicator / badge when the conversation has unread messages.
  */
 @property(readonly) NSUInteger unreadCount;
+
+/**
+ *  @abstract Date when the business last read the user messages
+ */
+@property(readonly) NSDate *appMakerLastRead;
 
 /**
  *  @abstract A delegate object for receiving notifications related to the conversation.
