@@ -392,7 +392,6 @@ RCT_EXPORT_METHOD(checkNotif:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectB
                 [Smooch show];
                 [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
                 [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:notification[@"data"]];
-                [self deletePList:@"Notifications"];
             });
         } else if(notification[@"data"][@"command"]) {
             [self.bridge.eventDispatcher sendAppEventWithName:notification[@"data"][@"command"] body:nil];
@@ -400,6 +399,7 @@ RCT_EXPORT_METHOD(checkNotif:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectB
         } else {
             [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:notification[@"data"]];
         }
+        [self deletePList:@"Notifications"];
     }
 }
 
