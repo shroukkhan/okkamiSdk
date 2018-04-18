@@ -860,4 +860,16 @@ RCT_EXPORT_METHOD(setLanguage
     });
 }
 
+RCT_EXPORT_METHOD(subscribePushser
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    NSString *uniqueIdentifier = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+    NSString *lastIdentifier = [uniqueIdentifier stringByReplacingOccurrencesOfString:@"-" withString:@""];
+    if (self.appdel) {
+         [[self.appdel.pusher nativePusher] subscribe:[NSString stringWithFormat:@"mobile_device_%@", lastIdentifier]];
+    }
+}
+
+
+
 @end
