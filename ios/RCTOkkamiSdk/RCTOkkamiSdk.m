@@ -787,8 +787,16 @@ RCT_EXPORT_METHOD(logoutChatWindow
     [Smooch logoutWithCompletionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
         [Smooch destroy];
     }];
+    @try{
     [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.channel_name];
-    [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.brand_name];
+         if (self.appdel.brand_name) {
+             [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.brand_name];
+             
+         }
+    }
+    @catch( NSException *exception){
+        NSLog(@"[logoutChatWindow] Failed with error :  %@", exception.reason);
+    }
     [self deletePList:@"UserInfo"];
     [self deletePList:@"Notifications"];
 
@@ -861,10 +869,13 @@ RCT_EXPORT_METHOD(setLanguage
 }
 
 RCT_EXPORT_METHOD(subscribePushser
+                  :(NSString *) deviceUid
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject) {
-    NSString *uniqueIdentifier = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
-    NSString *lastIdentifier = [uniqueIdentifier stringByReplacingOccurrencesOfString:@"-" withString:@""];
+    //NSString *uniqueIdentifier = [[[UIDevice currentDevice] identifierForVendor] UUIDString]; //<---------whhhyyy are we getting uuid here?? its passed from app already!
+    NSString *lastIdentifier = [deviceUid stringByReplacingOccurrencesOfString:@"-" withString:@""];
+    
+    
     if (self.appdel) {
          [[self.appdel.pusher nativePusher] subscribe:[NSString stringWithFormat:@"mobile_device_%@", lastIdentifier]];
     }
