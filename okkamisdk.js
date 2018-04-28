@@ -237,6 +237,15 @@ class OkkamiSdk {
     OkkamiSdkManager.unsubscribePushser(dId)
   }
 
+  /**
+   * Use to indicate user is on my request screen
+   * @param isUserInMyRequesScreen - boolean to indicate whether user is on my request screen
+   */
+  onUserInMyRequestScreen (isUserInMyRequesScreen) {
+    console.log('onUserInMyRequestScreen: ', isUserInMyRequesScreen)
+    OkkamiSdkManager.onUserInMyRequestScreen(isUserInMyRequesScreen)
+  }
+
 }
 let okkamiSdk = new OkkamiSdk()
 export default okkamiSdk

@@ -81,6 +81,8 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         void invokeUnsubscribePusher(String deviceId);
         void onAppLanded();
         void invokeInitSmooch(String token, String userId, String smoochAppId, String smoochJwt);
+        void setIsUserInMyRequestScreen(boolean isUserOnMyRequestScreen);
+//        boolean getIsUserInMyRequestScreen();
     }
 
 
@@ -923,6 +925,12 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     public void setUserId(String userId, String brandId) {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mApp);
+        String curUserId = prefs.getString("USER_ID", "");
+        boolean isSameUserId = curUserId.equals(userId);
+        if (!isSameUserId && !TextUtils.isEmpty(curUserId)) {
+            mMethodInvoker.invokeUnsubscribePusher();
+        }
+
         prefs.edit().putString("USER_ID", userId).commit();
         prefs.edit().putString("BRAND_ID", userId).commit();
 
@@ -1052,5 +1060,15 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void unsubscribePushser(String deviceId, Promise unsubscribePushser) {
         mMethodInvoker.invokeUnsubscribePusher(deviceId);
+    }
+
+    /**
+     * Use to indicate user is on my request screen
+     * @param isUserInMyRequesScreen - boolean to indicate whether user is on my request screen
+     * @param onUserInMyRequestScreenPromise - Promise
+     */
+    @ReactMethod
+    public void onUserInMyRequestScreen(boolean isUserInMyRequesScreen, Promise onUserInMyRequestScreenPromise) {
+        mMethodInvoker.setIsUserInMyRequestScreen(isUserInMyRequesScreen);
     }
 }
