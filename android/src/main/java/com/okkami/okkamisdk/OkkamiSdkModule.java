@@ -5,10 +5,13 @@ import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -57,12 +60,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import github.nisrulz.easydeviceinfo.base.EasyBatteryMod;
+import github.nisrulz.easydeviceinfo.base.EasyConfigMod;
+import github.nisrulz.easydeviceinfo.base.EasyNetworkMod;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.smooch.core.InitializationStatus;
 import io.smooch.core.Message;
-import io.smooch.core.Settings;
 import io.smooch.core.Smooch;
 import io.smooch.core.SmoochCallback;
 import io.smooch.core.SmoochConnectionStatus;
@@ -74,6 +79,7 @@ import retrofit2.Response;
 public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         OnHubCommandReceivedListener {
 
+
     public interface MethodInvokeListener {
         void invokeSubscribePusher(String methodName, String userId, String brandId);
         void invokeSubscribePusher(String deviceId);
@@ -82,7 +88,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         void onAppLanded();
         void invokeInitSmooch(String token, String userId, String smoochAppId, String smoochJwt);
         void setIsUserInMyRequestScreen(boolean isUserOnMyRequestScreen);
-//        boolean getIsUserInMyRequestScreen();
+        String invokeGetLastReceivedPushNotification();
     }
 
 
@@ -102,6 +108,8 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     private Promise lineLoginPromise = null;
 
     private String userId;
+
+//    private final Intent mBatteryStatusIntent;
 
     public String getUserId() {
         return userId;
@@ -193,6 +201,9 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
 //        lineLoginChannelId = reactContext.getString(R.string.line_login_channel_id);
         lineLoginChannelId = (String) BuildConfigUtil.getBuildConfigValue(getReactApplicationContext(), "LINE_APP_ID");
         Log.d(TAG, "lineLoginChannelId=" + lineLoginChannelId);
+
+        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+//        mBatteryStatusIntent = mContext.registerReceiver(null, ifilter);
     }
 
     private static JSONObject createConversationJsonObj(int unreadMsgCount, String iconUrl,
@@ -1070,5 +1081,163 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void onUserInMyRequestScreen(boolean isUserInMyRequesScreen, Promise onUserInMyRequestScreenPromise) {
         mMethodInvoker.setIsUserInMyRequestScreen(isUserInMyRequesScreen);
+    }
+
+    /**
+     * Return last received push notification string
+     * @param getLastReceivedPushNotificationPromise - Promise
+     */
+    @ReactMethod
+    public void getLastReceivedPushNotification(Promise getLastReceivedPushNotificationPromise) {
+        try {
+            WritableMap map = Arguments.createMap();
+            map.putString("lastPush", mMethodInvoker.invokeGetLastReceivedPushNotification());
+            getLastReceivedPushNotificationPromise.resolve(map);
+        } catch (Exception e) {
+            getLastReceivedPushNotificationPromise.reject("-1", e.getMessage());
+        }
+    }
+
+    /**
+     * Get the current battery level
+     * @param getBatteryLevelPromise - Promise
+     */
+    @ReactMethod
+    public void getBatteryLevel(Promise getBatteryLevelPromise) {
+        try {
+//            int level = mBatteryStatusIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+//            int scale = mBatteryStatusIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+//
+//            float batteryPct = level / (float)scale;
+//            getBatteryLevelPromise.resolve(batteryPct);
+            EasyBatteryMod easyBatteryMod = new EasyBatteryMod(mContext);
+            WritableMap map = Arguments.createMap();
+            map.putString("bLevel", Integer.toString(easyBatteryMod.getBatteryPercentage()));
+            getBatteryLevelPromise.resolve(map);
+        } catch (Exception e) {
+            getBatteryLevelPromise.reject("-1", e.getMessage());
+        }
+    }
+
+    /**
+     * Returns milliseconds since boot, not counting time spent in deep sleep.
+     * @param getUptimeMillisPromise - Promise
+     */
+    @ReactMethod
+    public void getUptimeMillis(Promise getUptimeMillisPromise) {
+        try {
+            EasyConfigMod easyConfigMod = new EasyConfigMod(mContext);
+            WritableMap map = Arguments.createMap();
+            map.putString("uptime", Long.toString(easyConfigMod.getUpTime()));
+            getUptimeMillisPromise.resolve(map);
+//            getUptimeMillisPromise.resolve(SystemClock.uptimeMillis());
+        } catch (Exception e) {
+            getUptimeMillisPromise.reject("-1", e.getMessage());
+        }
+    }
+
+    /**
+     * Returns WIFI signal strength and link speed in Mbps.
+     * @param getWifiSignalStrengthPromise - Promise
+     */
+    @ReactMethod
+    public void getWifiSignalStrength(Promise getWifiSignalStrengthPromise) {
+        try {
+            int dbm = 0;
+            int strengthInPercentage = 0;
+            String signalStrengthStr = "n/a";
+            WifiManager wifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+            if(wifiManager.isWifiEnabled()) {
+                WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+                if(wifiInfo != null) {
+                    dbm = wifiInfo.getRssi();
+                    strengthInPercentage = WifiManager.calculateSignalLevel(dbm, 100);
+
+
+                }
+            }
+            if (dbm < -70) {
+                signalStrengthStr = "Weak";
+            } else if (dbm >= -70 && dbm <= -60) {
+                signalStrengthStr = "Fair";
+            } else if (dbm >= -60 && dbm <= -50) {
+                signalStrengthStr = "Good";
+            } else if (dbm > -50) {
+                signalStrengthStr = "Excellent";
+            }
+            EasyNetworkMod easyNetworkMod = new EasyNetworkMod(mContext);
+//            String lSpeed = !TextUtils.isEmpty(easyNetworkMod.getWifiLinkSpeed()) ? easyNetworkMod.getWifiLinkSpeed() : "n/a";
+            signalStrengthStr = dbm + "(" + signalStrengthStr + ")";
+            WritableMap map = Arguments.createMap();
+            map.putString("strength", signalStrengthStr);
+            getWifiSignalStrengthPromise.resolve(map);
+//            getUptimeMillisPromise.resolve(SystemClock.uptimeMillis());
+        } catch (Exception e) {
+            getWifiSignalStrengthPromise.reject("-1", e.getMessage());
+        }
+    }
+
+    /**
+     * Returns WIFI SSID String
+     * @param getWifiSSIDPromise - Promise
+     */
+    @ReactMethod
+    public void getWifiSSID(Promise getWifiSSIDPromise) {
+        try {
+            EasyNetworkMod easyNetworkMod = new EasyNetworkMod(mContext);
+            WritableMap map = Arguments.createMap();
+            map.putString("ssid", easyNetworkMod.getWifiSSID());
+            getWifiSSIDPromise.resolve(map);
+        } catch (Exception e) {
+            getWifiSSIDPromise.reject("-1", e.getMessage());
+        }
+    }
+
+    /**
+     * Returns IPv4 String
+     * @param getIPv4Promise - Promise
+     */
+    @ReactMethod
+    public void getIPv4(Promise getIPv4Promise) {
+        try {
+            EasyNetworkMod easyNetworkMod = new EasyNetworkMod(mContext);
+            WritableMap map = Arguments.createMap();
+            map.putString("ipv4", easyNetworkMod.getIPv4Address());
+            getIPv4Promise.resolve(map);
+        } catch (Exception e) {
+            getIPv4Promise.reject("-1", e.getMessage());
+        }
+    }
+
+    /**
+     * Returns IPv6 String
+     * @param getIPv6Promise - Promise
+     */
+    @ReactMethod
+    public void getIPv6(Promise getIPv6Promise) {
+        try {
+            EasyNetworkMod easyNetworkMod = new EasyNetworkMod(mContext);
+            WritableMap map = Arguments.createMap();
+            map.putString("ipv6", easyNetworkMod.getIPv6Address());
+            getIPv6Promise.resolve(map);
+        } catch (Exception e) {
+            getIPv6Promise.reject("-1", e.getMessage());
+        }
+    }
+
+    /**
+     * Returns WIFI Mac Address String
+     * @param getWifiMacPromise - Promise
+     */
+    @ReactMethod
+    public void getWifiMac(Promise getWifiMacPromise) {
+        try {
+            EasyNetworkMod easyNetworkMod = new EasyNetworkMod(mContext);
+            WritableMap map = Arguments.createMap();
+            map.putString("mac", easyNetworkMod.getWifiMAC());
+            getWifiMacPromise.resolve(map);
+        } catch (Exception e) {
+            getWifiMacPromise.reject("-1", e.getMessage());
+        }
     }
 }

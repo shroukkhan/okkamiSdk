@@ -246,6 +246,106 @@ class OkkamiSdk {
     OkkamiSdkManager.onUserInMyRequestScreen(isUserInMyRequesScreen)
   }
 
+
+
+  // ============================================== Device Information  ==============================================
+
+  /**
+   * Return last received push notification string
+   */
+  async getLastReceivedPushNotification () {
+    try {
+      let {lastPush} = await OkkamiSdkManager.getLastReceivedPushNotification()
+      return lastPush
+    } catch (e) {
+      return e
+    }
+  }
+
+  /**
+   * Get the current battery level
+   */
+  async getBatteryLevel () {
+    try {
+      let {bLevel} = await OkkamiSdkManager.getBatteryLevel()
+      return bLevel
+    } catch (e) {
+      return e
+    }
+  }
+
+  /**
+   * Returns milliseconds since boot, not counting time spent in deep sleep.
+   */
+  async getUptimeMillis () {
+    try {
+      let {uptime} = await OkkamiSdkManager.getUptimeMillis()
+      return uptime
+    } catch (e) {
+      return e
+    }
+  }
+
+  /**
+   * Returns WIFI signal strength and link speed in Mbps.
+   */
+  async getWifiSignalStrength () {
+    try {
+      let {strength} = await OkkamiSdkManager.getWifiSignalStrength()
+      return strength
+    } catch (e) {
+      return e
+    }
+  }
+
+  /**
+   * Returns WIFI SSID String
+   */
+  async getWifiSSID () {
+    try {
+      let {ssid} = await OkkamiSdkManager.getWifiSSID()
+      return ssid
+    } catch (e) {
+      return e
+    }
+  }
+
+  /**
+   * Returns IPv4 String
+   */
+  async getIPv4 () {
+    try {
+      let {ipv4} = await OkkamiSdkManager.getIPv4()
+      return ipv4
+    } catch (e) {
+      return e
+    }
+  }
+
+  /**
+   * Returns IPv6 String
+   */
+  async getIPv6 () {
+    try {
+      let {ipv6} = await OkkamiSdkManager.getIPv6()
+      return ipv6
+    } catch (e) {
+      return e
+    }
+  }
+
+  /**
+   * Returns WIFI Mac Address String
+   */
+  async getWifiMac () {
+    try {
+      let {mac} = await OkkamiSdkManager.getWifiMac()
+      return mac
+    } catch (e) {
+      return e
+    }
+  }
+
 }
 let okkamiSdk = new OkkamiSdk()
 export default okkamiSdk
