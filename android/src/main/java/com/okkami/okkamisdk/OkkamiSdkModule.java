@@ -89,6 +89,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         void invokeInitSmooch(String token, String userId, String smoochAppId, String smoochJwt);
         void setIsUserInMyRequestScreen(boolean isUserOnMyRequestScreen);
         String invokeGetLastReceivedPushNotification();
+        String invokeGetLastFCMRegistrationStatus();
     }
 
 
@@ -1095,6 +1096,21 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
             getLastReceivedPushNotificationPromise.resolve(map);
         } catch (Exception e) {
             getLastReceivedPushNotificationPromise.reject("-1", e.getMessage());
+        }
+    }
+
+    /**
+     * Return last FCM Registration status
+     * @param getLastFcmRegistrationStatusPromise - Promise
+     */
+    @ReactMethod
+    public void getLastFcmRegistrationStatus(Promise getLastFcmRegistrationStatusPromise) {
+        try {
+            WritableMap map = Arguments.createMap();
+            map.putString("lastFcmStatus", mMethodInvoker.invokeGetLastReceivedPushNotification());
+            getLastFcmRegistrationStatusPromise.resolve(map);
+        } catch (Exception e) {
+            getLastFcmRegistrationStatusPromise.reject("-1", e.getMessage());
         }
     }
 
