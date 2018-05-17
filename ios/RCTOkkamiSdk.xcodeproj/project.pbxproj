@@ -478,8 +478,8 @@
 					"$(PROJECT_DIR)/okkami-ios-sdk/build/Release-iphoneos",
 				);
 				HEADER_SEARCH_PATHS = (
-					"${SRCROOT}/../../ios/SDK/Headers",
 					"$(inherited)",
+					"${SRCROOT}/../../ios/SDK/Headers",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../node_modules/react-native/React/**",
@@ -507,8 +507,8 @@
 					"$(PROJECT_DIR)/okkami-ios-sdk/build/Release-iphoneos",
 				);
 				HEADER_SEARCH_PATHS = (
-					"${SRCROOT}/../../ios/SDK/Headers",
 					"$(inherited)",
+					"${SRCROOT}/../../ios/SDK/Headers",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../node_modules/react-native/React/**",
