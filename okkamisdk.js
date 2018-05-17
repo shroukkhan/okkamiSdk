@@ -1,4 +1,5 @@
 import {NativeModules, DeviceEventEmitter} from 'react-native'
+import moment from 'moment'
 // import {convertRgbaToHex} from '../App/Lib/Utilities'
 const OkkamiSdkManager = NativeModules.OkkamiSdk
 
@@ -262,6 +263,19 @@ class OkkamiSdk {
     }
   }
 
+
+  /**
+   * Return last received push notification string
+   */
+  async getLastFCMRegistrationStatus() {
+    try {
+      let {lastFcmStatus} = await OkkamiSdkManager.getLastFcmRegistrationStatus()
+      return lastFcmStatus
+    } catch (e) {
+      return e
+    }
+  }
+
   /**
    * Get the current battery level
    */
@@ -280,6 +294,7 @@ class OkkamiSdk {
   async getUptimeMillis () {
     try {
       let {uptime} = await OkkamiSdkManager.getUptimeMillis()
+      uptime = moment().subtract(uptime, 'ms').fromNow(true)
       return uptime
     } catch (e) {
       return e
