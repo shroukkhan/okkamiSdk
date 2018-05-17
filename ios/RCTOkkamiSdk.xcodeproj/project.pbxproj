@@ -479,13 +479,13 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"${SRCROOT}/../../ios/SDK/Headers",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../ios/Pods/**",
 					"$(SRCROOT)/../../ios/OKKAMI/**",
 					"$(SRCROOT)/../../node_modules/react-native-config/**",
+					"${SRCROOT}/../../ios/SDK/Headers",
 				);
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = "-ObjC";
@@ -508,13 +508,13 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"${SRCROOT}/../../ios/SDK/Headers",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../ios/Pods/**",
 					"$(SRCROOT)/../../ios/OKKAMI/**",
 					"$(SRCROOT)/../../node_modules/react-native-config/**",
+					"${SRCROOT}/../../ios/SDK/Headers",
 				);
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = "-ObjC";
