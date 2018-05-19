@@ -883,5 +883,32 @@ RCT_EXPORT_METHOD(subscribePushser
 }
 
 
+RCT_EXPORT_METHOD(enableSingleAppMode
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    UIAccessibilityRequestGuidedAccessSession(YES, ^(BOOL didSucceed) {
+        if (didSucceed) {
+            NSLog(@"SUCCESS ENABLING!!!")
+        } else {
+            NSLog(@"SOMETHING WRONG PLEASE CHECK DEVICE ELIGIBILITY INCLUDING MDM (REGISTERED OR NOT) !!!")
+        }
+    })
+}
+
+
+
+RCT_EXPORT_METHOD(disableSingleAppMode
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    UIAccessibilityRequestGuidedAccessSession(NO, ^(BOOL didSucceed) {
+        if (didSucceed) {
+            NSLog(@"SUCCESS DISABLING !!!")
+        } else {
+            NSLog(@"SOMETHING WRONG PLEASE CHECK DEVICE ELIGIBILITY INCLUDING MDM (REGISTERED OR NOT) !!!")
+        }
+    })
+}
+
+
 
 @end

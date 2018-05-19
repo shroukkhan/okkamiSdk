@@ -247,7 +247,20 @@ class OkkamiSdk {
     OkkamiSdkManager.onUserInMyRequestScreen(isUserInMyRequesScreen)
   }
 
+  /**
+   * Use to enable single app
+   */
+  enableSingleAppMode () {
+    OkkamiSdkManager.enableSingleAppMode()
+  }
 
+
+  /**
+   * Use to disable single app
+   */
+  disableSingleAppMode () {
+    OkkamiSdkManager.disableSingleAppMode()
+  }
 
   // ============================================== Device Information  ==============================================
 
