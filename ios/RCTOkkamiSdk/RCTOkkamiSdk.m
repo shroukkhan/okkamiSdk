@@ -1,6 +1,17 @@
 #import "RCTOkkamiSdk.h"
 #import "AppDelegate.h"
+#import <NetworkExtension/NetworkExtension.h> 
 #import <CommonCrypto/CommonCrypto.h>
+#include <ifaddrs.h>
+#include <arpa/inet.h>
+#include <net/if.h>
+
+#define IOS_CELLULAR    @"pdp_ip0"
+#define IOS_WIFI        @"en0"
+#define IOS_VPN       @"utun0"
+#define IP_ADDR_IPv4    @"ipv4"
+#define IP_ADDR_IPv6    @"ipv6"
+
 
 @implementation OkkamiSdk
 
@@ -888,13 +899,12 @@ RCT_EXPORT_METHOD(enableSingleAppMode
                   :(RCTPromiseRejectBlock)reject) {
     UIAccessibilityRequestGuidedAccessSession(YES, ^(BOOL didSucceed) {
         if (didSucceed) {
-            NSLog(@"SUCCESS ENABLING!!!")
+            NSLog(@"SUCCESS ENABLING!!!");
         } else {
-            NSLog(@"SOMETHING WRONG PLEASE CHECK DEVICE ELIGIBILITY INCLUDING MDM (REGISTERED OR NOT) !!!")
+            NSLog(@"SOMETHING WRONG PLEASE CHECK DEVICE ELIGIBILITY INCLUDING MDM (REGISTERED OR NOT) !!!");
         }
-    })
+    });
 }
-
 
 
 RCT_EXPORT_METHOD(disableSingleAppMode
@@ -902,13 +912,144 @@ RCT_EXPORT_METHOD(disableSingleAppMode
                   :(RCTPromiseRejectBlock)reject) {
     UIAccessibilityRequestGuidedAccessSession(NO, ^(BOOL didSucceed) {
         if (didSucceed) {
-            NSLog(@"SUCCESS DISABLING !!!")
+            NSLog(@"SUCCESS DISABLING !!!");
         } else {
-            NSLog(@"SOMETHING WRONG PLEASE CHECK DEVICE ELIGIBILITY INCLUDING MDM (REGISTERED OR NOT) !!!")
+            NSLog(@"SOMETHING WRONG PLEASE CHECK DEVICE ELIGIBILITY INCLUDING MDM (REGISTERED OR NOT) !!!");
         }
-    })
+    });
+}
+
+RCT_EXPORT_METHOD(getBatteryLevel
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    UIDevice *myDevice = [UIDevice currentDevice];
+    [myDevice setBatteryMonitoringEnabled:YES];
+    
+    int state = [myDevice batteryState];
+    NSLog(@"battery status: %d",state); // 0 unknown, 1 unplegged, 2 charging, 3 full
+    
+    double batLeft = (float)[myDevice batteryLevel] * 100;
+    NSString *batleft = [NSString stringWithFormat:@"%f", batLeft];
+    resolve(batleft);
+}
+
+RCT_EXPORT_METHOD(getUptimeMillis
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    NSTimeInterval uptime = [[NSProcessInfo processInfo] systemUptime];
+    NSString *upTime = [NSString stringWithFormat:@"%f", uptime];
+    resolve(upTime);
+}
+
+RCT_EXPORT_METHOD(getWifiSignalStrength
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    double signalStrength;
+    for(NEHotspotNetwork *hotspotNetwork in [NEHotspotHelper supportedNetworkInterfaces]) {
+        signalStrength = hotspotNetwork.signalStrength;
+    }
+    NSString *signal = [NSString stringWithFormat:@"%f", signalStrength];
+    resolve(signal);
+}
+
+RCT_EXPORT_METHOD(getWifiSSID
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    NSString *ssid;
+    for(NEHotspotNetwork *hotspotNetwork in [NEHotspotHelper supportedNetworkInterfaces]) {
+        ssid = hotspotNetwork.SSID;
+    }
+    resolve(ssid);
+}
+
+RCT_EXPORT_METHOD(getIPv4
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    NSArray *searchArray = @[ /*IOS_VPN @"/" IP_ADDR_IPv4, IOS_VPN @"/" IP_ADDR_IPv6,*/ IOS_WIFI @"/" IP_ADDR_IPv4, IOS_WIFI @"/" IP_ADDR_IPv6, IOS_CELLULAR @"/" IP_ADDR_IPv4, IOS_CELLULAR @"/" IP_ADDR_IPv6 ];
+    
+    NSDictionary *addresses = [self getIPAddresses];
+    NSLog(@"addresses: %@", addresses);
+    
+    __block NSString *address;
+    [searchArray enumerateObjectsUsingBlock:^(NSString *key, NSUInteger idx, BOOL *stop)
+     {
+         address = addresses[key];
+         if(address) *stop = YES;
+     } ];
+    
+    resolve(address ? address : @"0.0.0.0");
+}
+
+RCT_EXPORT_METHOD(getIPv6
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    NSArray *searchArray = @[ /*IOS_VPN @"/" IP_ADDR_IPv6, IOS_VPN @"/" IP_ADDR_IPv4,*/ IOS_WIFI @"/" IP_ADDR_IPv6, IOS_WIFI @"/" IP_ADDR_IPv4, IOS_CELLULAR @"/" IP_ADDR_IPv6, IOS_CELLULAR @"/" IP_ADDR_IPv4 ];
+    
+    NSDictionary *addresses = [self getIPAddresses];
+    NSLog(@"addresses: %@", addresses);
+    
+    __block NSString *address;
+    [searchArray enumerateObjectsUsingBlock:^(NSString *key, NSUInteger idx, BOOL *stop)
+     {
+         address = addresses[key];
+         if(address) *stop = YES;
+     } ];
+    
+    resolve(address ? address : @"0.0.0.0");
+}
+
+RCT_EXPORT_METHOD(getWifiMac
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    resolve(@"Permission Denied by Apple");
+}
+
+RCT_EXPORT_METHOD(getLastReceivedPushNotification
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    BOOL status = [[UIApplication sharedApplication] isRegisteredForRemoteNotifications];
+    resolve(@(status));
 }
 
 
+- (NSDictionary *)getIPAddresses
+{
+    NSMutableDictionary *addresses = [NSMutableDictionary dictionaryWithCapacity:8];
+    
+    // retrieve the current interfaces - returns 0 on success
+    struct ifaddrs *interfaces;
+    if(!getifaddrs(&interfaces)) {
+        // Loop through linked list of interfaces
+        struct ifaddrs *interface;
+        for(interface=interfaces; interface; interface=interface->ifa_next) {
+            if(!(interface->ifa_flags & IFF_UP) /* || (interface->ifa_flags & IFF_LOOPBACK) */ ) {
+                continue; // deeply nested code harder to read
+            }
+            const struct sockaddr_in *addr = (const struct sockaddr_in*)interface->ifa_addr;
+            char addrBuf[ MAX(INET_ADDRSTRLEN, INET6_ADDRSTRLEN) ];
+            if(addr && (addr->sin_family==AF_INET || addr->sin_family==AF_INET6)) {
+                NSString *name = [NSString stringWithUTF8String:interface->ifa_name];
+                NSString *type;
+                if(addr->sin_family == AF_INET) {
+                    if(inet_ntop(AF_INET, &addr->sin_addr, addrBuf, INET_ADDRSTRLEN)) {
+                        type = IP_ADDR_IPv4;
+                    }
+                } else {
+                    const struct sockaddr_in6 *addr6 = (const struct sockaddr_in6*)interface->ifa_addr;
+                    if(inet_ntop(AF_INET6, &addr6->sin6_addr, addrBuf, INET6_ADDRSTRLEN)) {
+                        type = IP_ADDR_IPv6;
+                    }
+                }
+                if(type) {
+                    NSString *key = [NSString stringWithFormat:@"%@/%@", name, type];
+                    addresses[key] = [NSString stringWithUTF8String:addrBuf];
+                }
+            }
+        }
+        // Free memory
+        freeifaddrs(interfaces);
+    }
+    return [addresses count] ? addresses : nil;
+}
 
 @end
