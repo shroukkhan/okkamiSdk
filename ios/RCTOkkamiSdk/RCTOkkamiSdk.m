@@ -929,7 +929,7 @@ RCT_EXPORT_METHOD(getBatteryLevel
     NSLog(@"battery status: %d",state); // 0 unknown, 1 unplegged, 2 charging, 3 full
     
     double batLeft = (float)[myDevice batteryLevel] * 100;
-    NSString *batleft = [NSString stringWithFormat:@"%f", batLeft];
+    NSString *batleft = [NSString stringWithFormat:@"%f", fabs(batLeft)];
     resolve(batleft);
 }
 
@@ -944,7 +944,7 @@ RCT_EXPORT_METHOD(getUptimeMillis
 RCT_EXPORT_METHOD(getWifiSignalStrength
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject) {
-    double signalStrength;
+    double signalStrength = 100;
     for(NEHotspotNetwork *hotspotNetwork in [NEHotspotHelper supportedNetworkInterfaces]) {
         signalStrength = hotspotNetwork.signalStrength;
     }

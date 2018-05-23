@@ -269,8 +269,7 @@ class OkkamiSdk {
    */
   async getLastReceivedPushNotification () {
     try {
-      let {lastPush} = await OkkamiSdkManager.getLastReceivedPushNotification()
-      return lastPush
+      return await OkkamiSdkManager.getLastReceivedPushNotification()
     } catch (e) {
       return e
     }
@@ -294,8 +293,7 @@ class OkkamiSdk {
    */
   async getBatteryLevel () {
     try {
-      let {bLevel} = await OkkamiSdkManager.getBatteryLevel()
-      return bLevel
+      return await OkkamiSdkManager.getBatteryLevel()
     } catch (e) {
       return e
     }
@@ -306,9 +304,7 @@ class OkkamiSdk {
    */
   async getUptimeMillis () {
     try {
-      let {uptime} = await OkkamiSdkManager.getUptimeMillis()
-      uptime = moment().subtract(uptime, 'ms').fromNow(true)
-      return uptime
+      return await moment().subtract(OkkamiSdkManager.getUptimeMillis(), 'ms').fromNow(true)
     } catch (e) {
       return e
     }
@@ -319,8 +315,7 @@ class OkkamiSdk {
    */
   async getWifiSignalStrength () {
     try {
-      let {strength} = await OkkamiSdkManager.getWifiSignalStrength()
-      return strength
+      return await OkkamiSdkManager.getWifiSignalStrength()
     } catch (e) {
       return e
     }
@@ -331,8 +326,7 @@ class OkkamiSdk {
    */
   async getWifiSSID () {
     try {
-      let {ssid} = await OkkamiSdkManager.getWifiSSID()
-      return ssid
+      return await OkkamiSdkManager.getWifiSSID()
     } catch (e) {
       return e
     }
@@ -343,8 +337,7 @@ class OkkamiSdk {
    */
   async getIPv4 () {
     try {
-      let {ipv4} = await OkkamiSdkManager.getIPv4()
-      return ipv4
+      return await OkkamiSdkManager.getIPv4()
     } catch (e) {
       return e
     }
@@ -355,8 +348,7 @@ class OkkamiSdk {
    */
   async getIPv6 () {
     try {
-      let {ipv6} = await OkkamiSdkManager.getIPv6()
-      return ipv6
+      return await OkkamiSdkManager.getIPv6()
     } catch (e) {
       return e
     }
@@ -367,8 +359,7 @@ class OkkamiSdk {
    */
   async getWifiMac () {
     try {
-      let {mac} = await OkkamiSdkManager.getWifiMac()
-      return mac
+      return await OkkamiSdkManager.getWifiMac()
     } catch (e) {
       return e
     }
