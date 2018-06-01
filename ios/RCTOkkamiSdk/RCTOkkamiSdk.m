@@ -827,16 +827,18 @@ RCT_EXPORT_METHOD(setUserId
                   :(RCTPromiseRejectBlock)reject) {
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     self.appdel = appDelegate;
-    
-    if (self.appdel.channel_name) {
-        [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.channel_name];
-        if (self.appdel.brand_name) {
-            [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.brand_name];
-        }
-    }
-    
     NSString *channelName = [NSString stringWithFormat:@"mobile_user_%@", userId];
     NSString *brandName = [NSString stringWithFormat:@"mobile_user_%@_%@", userId, brandId];
+    NSString * unsubscribeFrom = self.appdel.channel_name;
+    if (unsubscribeFrom && ![unsubscribeFrom isEqualToString:channelName]) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ //do it in a thread as it seems to hang sometimes triyng to unsubscribe..
+            NSLog(@"attempting to unsubscribe from : %@",unsubscribeFrom);
+            [[self.appdel.pusher nativePusher] unsubscribe:unsubscribeFrom];
+        });
+       
+    }
+    
+
     self.smoochUserId = userId;
     [self.appdel setUser_id:userId];
     [self.appdel setChannel_name:channelName];
