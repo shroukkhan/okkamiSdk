@@ -931,7 +931,7 @@ RCT_EXPORT_METHOD(getBatteryLevel
     NSLog(@"battery status: %d",state); // 0 unknown, 1 unplegged, 2 charging, 3 full
     
     double batLeft = (float)[myDevice batteryLevel] * 100;
-    NSString *batleft = [NSString stringWithFormat:@"%f", fabs(batLeft)];
+    NSString *batleft = [NSString stringWithFormat:@"%.0f", fabs(floor(batLeft))];
     resolve(batleft);
 }
 
@@ -939,7 +939,8 @@ RCT_EXPORT_METHOD(getUptimeMillis
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject) {
     NSTimeInterval uptime = [[NSProcessInfo processInfo] systemUptime];
-    NSString *upTime = [NSString stringWithFormat:@"%f", uptime];
+    double milliseconds = uptime * 1000;
+    NSString *upTime = [NSString stringWithFormat:@"%f", milliseconds];
     resolve(upTime);
 }
 
