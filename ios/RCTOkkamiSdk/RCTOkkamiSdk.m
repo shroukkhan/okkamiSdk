@@ -781,6 +781,7 @@ RCT_EXPORT_METHOD(openChatWindow
         [[Smooch conversation] setDelegate:self];
         [Smooch login:self.smoochUserId jwt:self.smoochUserJwt completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
             [Smooch show];
+            resolve(@"");
         }];
         [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
         [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber - 1;
