@@ -928,6 +928,8 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
             mContext.startActivity(chatWindow);
         } catch (Exception e) {
             Log.e(TAG, "" + e);
+        } finally {
+            openChatWindowPromise.resolve(true);
         }
     }
 
