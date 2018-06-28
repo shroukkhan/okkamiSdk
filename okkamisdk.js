@@ -240,6 +240,26 @@ class OkkamiSdk {
   }
 
   /**
+   * Subscribe pusher channel with array of property id
+   * @param pIdArray
+   */
+  subscribePusherPropertyChannel (pIdArray) {
+    console.log('subscribing pusher with property id array: ', pIdArray)
+    let pIdArrayString = {'properties_info': JSON.stringify(pIdArray)}
+    OkkamiSdkManager.subscribePushserPropertyChannel(JSON.stringify(pIdArrayString))
+  }
+
+  /**
+   * Unsubscribe pusher channel with array of property id
+   * @param pIdArray
+   */
+  unsubscribePusherPropertyChannel (pIdArray) {
+    console.log('unsubscribing pusher with property id array: ', pIdArray)
+    let pIdArrayString = {'properties_info': JSON.stringify(pIdArray)}
+    OkkamiSdkManager.unsubscribePushserPropertyChannel(JSON.stringify(pIdArrayString))
+  }
+
+  /**
    * Use to indicate user is on my request screen
    * @param isUserInMyRequesScreen - boolean to indicate whether user is on my request screen
    */
