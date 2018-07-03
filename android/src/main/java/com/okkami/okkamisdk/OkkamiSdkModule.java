@@ -32,6 +32,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.google.gson.JsonObject;
 import com.linecorp.linesdk.auth.LineLoginApi;
 import com.linecorp.linesdk.auth.LineLoginResult;
 import com.okkami.android.sdk.SDK;
@@ -82,9 +83,11 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
 
     public interface MethodInvokeListener {
         void invokeSubscribePusher(String methodName, String userId, String brandId);
-        void invokeSubscribePusher(String deviceId);
+        void invokeSubscribePusherDeviceChannel(String deviceId);
+        void invokeSubscribePusherPropertyChannel(String propertyId);
         void invokeUnsubscribePusher();
-        void invokeUnsubscribePusher(String deviceId);
+        void invokeUnsubscribePusherDeviceChannel(String deviceId);
+        void invokeUnsubscribePusherPropertyChannel(String propertyId);
         void onAppLanded();
         void invokeInitSmooch(String token, String userId, String smoochAppId, String smoochJwt);
         void setIsUserInMyRequestScreen(boolean isUserOnMyRequestScreen);
@@ -1063,7 +1066,30 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
      */
     @ReactMethod
     public void subscribePushser(String deviceId, Promise subscribePushser) {
-        mMethodInvoker.invokeSubscribePusher(deviceId);
+        mMethodInvoker.invokeSubscribePusherDeviceChannel(deviceId);
+    }
+
+    /**
+     * Subscribe pusher property channel with array of property channel
+     * @param propertiesJsonArrayString
+     * @param subscribePushser
+     */
+    @ReactMethod
+    public void subscribePushserPropertyChannel(String propertiesJsonArrayString, Promise subscribePushser) {
+
+        try {
+            String pJsonStr = new JSONObject(propertiesJsonArrayString).getString("properties_info");
+            JSONArray pJsonArray = new JSONArray(pJsonStr);
+            int pLength = pJsonArray.length();
+            for (int i = 0; i < pLength; i++) {
+                String pIdJsonStr = pJsonArray.getString(i);
+                JSONObject pJsonObj = new JSONObject(pIdJsonStr);
+                String pId = String.valueOf(pJsonObj.getInt("property_id"));
+                mMethodInvoker.invokeSubscribePusherPropertyChannel(pId);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -1071,9 +1097,31 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
      * @param deviceId
      * @param unsubscribePushser
      */
-    @ReactMethod
     public void unsubscribePushser(String deviceId, Promise unsubscribePushser) {
-        mMethodInvoker.invokeUnsubscribePusher(deviceId);
+        mMethodInvoker.invokeUnsubscribePusherDeviceChannel(deviceId);
+    }
+
+    /**
+     * Unsubscribe pusher property channel with array of property channel
+     * @param propertiesJsonArrayString
+     * @param unsubscribePushser
+     */
+    @ReactMethod
+    public void unsubscribePushserPropertyChannel(String propertiesJsonArrayString, Promise unsubscribePushser) {
+        try {
+//            JSONArray pJsonArray = new JSONObject(propertiesJsonArrayString).getJSONArray("properties_info");
+            String pJsonStr = new JSONObject(propertiesJsonArrayString).getString("properties_info");
+            JSONArray pJsonArray = new JSONArray(pJsonStr);
+            int pLength = pJsonArray.length();
+            for (int i = 0; i < pLength; i++) {
+                String pIdJsonStr = pJsonArray.getString(i);
+                JSONObject pJsonObj = new JSONObject(pIdJsonStr);
+                String pId = String.valueOf(pJsonObj.getInt("property_id"));
+                mMethodInvoker.invokeUnsubscribePusherPropertyChannel(pId);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
