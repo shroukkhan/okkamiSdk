@@ -952,7 +952,7 @@ RCT_EXPORT_METHOD(getWifiSignalStrength
         signalStrength = hotspotNetwork.signalStrength;
     }
     NSString *signal = [NSString stringWithFormat:@"%f", signalStrength];
-    resolve(signal);
+    resolve(@"");
 }
 
 RCT_EXPORT_METHOD(getWifiSSID
