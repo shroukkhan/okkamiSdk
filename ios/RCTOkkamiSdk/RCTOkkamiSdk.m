@@ -77,8 +77,9 @@ RCT_EXPORT_MODULE();
     settings.enableUserNotificationCenterDelegateOverride = NO;
     [Smooch initWithSettings:settings completionHandler:nil];
     [[Smooch conversation] setDelegate:self];
-    [Smooch login:self.smoochUserId jwt:self.smoochUserJwt completionHandler:nil];
-    [Smooch show];
+    [Smooch login:self.smoochUserId jwt:self.smoochUserJwt completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+        [Smooch show];
+    }];
 }
 
 
@@ -248,8 +249,9 @@ RCT_EXPORT_MODULE();
         settings.enableUserNotificationCenterDelegateOverride = NO;
         [Smooch initWithSettings:settings completionHandler:nil];
         [[Smooch conversation] setDelegate:self];
-        [Smooch login:self.smoochUserId jwt:self.smoochUserJwt completionHandler:nil];
-        [Smooch show];
+        [Smooch login:self.smoochUserId jwt:self.smoochUserJwt completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+            [Smooch show];
+        }];
         completionHandler( UIBackgroundFetchResultNewData );
     }
     else if( [UIApplication sharedApplication].applicationState == UIApplicationStateBackground )
@@ -329,8 +331,9 @@ RCT_EXPORT_MODULE();
         settings.enableUserNotificationCenterDelegateOverride = NO;
         [Smooch initWithSettings:settings completionHandler:nil];
         [[Smooch conversation] setDelegate:self];
-        [Smooch login:self.smoochUserId jwt:self.smoochUserJwt completionHandler:nil];
-        [Smooch show];
+        [Smooch login:self.smoochUserId jwt:self.smoochUserJwt completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+            [Smooch show];
+        }];
         [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
     }else if(response.notification.request.content.userInfo[@"data"][@"command"]){
         [self.bridge.eventDispatcher sendAppEventWithName:response.notification.request.content.userInfo[@"data"][@"command"] body:nil];
@@ -399,8 +402,9 @@ RCT_EXPORT_METHOD(checkNotif:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectB
                 settings.enableUserNotificationCenterDelegateOverride = NO;
                 [Smooch initWithSettings:settings completionHandler:nil];
                 [[Smooch conversation] setDelegate:self];
-                [Smooch login:[userInfo objectForKey:@"userId"] jwt:self.smoochUserJwt completionHandler:nil];
-                [Smooch show];
+                [Smooch login:[userInfo objectForKey:@"userId"] jwt:self.smoochUserJwt completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+                    [Smooch show];
+                }];
                 [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
                 [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:notification[@"data"]];
             });
@@ -775,8 +779,10 @@ RCT_EXPORT_METHOD(openChatWindow
         settings.enableUserNotificationCenterDelegateOverride = NO;
         [Smooch initWithSettings:settings completionHandler:nil];
         [[Smooch conversation] setDelegate:self];
-        [Smooch login:self.smoochUserId jwt:self.smoochUserJwt completionHandler:nil];
-        [Smooch show];
+        [Smooch login:self.smoochUserId jwt:self.smoochUserJwt completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+            [Smooch show];
+            resolve(@"");
+        }];
         [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
         [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber - 1;
     });

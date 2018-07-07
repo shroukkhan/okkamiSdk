@@ -1,4 +1,5 @@
 import {NativeModules, DeviceEventEmitter} from 'react-native'
+import Metrics from '../App/Themes/Metrics'
 import moment from 'moment'
 // import {convertRgbaToHex} from '../App/Lib/Utilities'
 const OkkamiSdkManager = NativeModules.OkkamiSdk
@@ -239,6 +240,26 @@ class OkkamiSdk {
   }
 
   /**
+   * Subscribe pusher channel with array of property id
+   * @param pIdArray
+   */
+  subscribePusherPropertyChannel (pIdArray) {
+    console.log('subscribing pusher with property id array: ', pIdArray)
+    let pIdArrayString = {'properties_info': JSON.stringify(pIdArray)}
+    OkkamiSdkManager.subscribePushserPropertyChannel(JSON.stringify(pIdArrayString))
+  }
+
+  /**
+   * Unsubscribe pusher channel with array of property id
+   * @param pIdArray
+   */
+  unsubscribePusherPropertyChannel (pIdArray) {
+    console.log('unsubscribing pusher with property id array: ', pIdArray)
+    let pIdArrayString = {'properties_info': JSON.stringify(pIdArray)}
+    OkkamiSdkManager.unsubscribePushserPropertyChannel(JSON.stringify(pIdArrayString))
+  }
+
+  /**
    * Use to indicate user is on my request screen
    * @param isUserInMyRequesScreen - boolean to indicate whether user is on my request screen
    */
@@ -293,7 +314,12 @@ class OkkamiSdk {
    */
   async getBatteryLevel () {
     try {
-      return await OkkamiSdkManager.getBatteryLevel()
+      if (Metrics.platform === 'android') {
+        let batt = await OkkamiSdkManager.getBatteryLevel()
+        return batt.bLevel
+      } else {
+        return await OkkamiSdkManager.getBatteryLevel()
+      }
     } catch (e) {
       return e
     }
@@ -304,7 +330,12 @@ class OkkamiSdk {
    */
   async getUptimeMillis () {
     try {
-      return await moment().subtract(OkkamiSdkManager.getUptimeMillis(), 'ms').fromNow(true)
+      if (Metrics.platform === 'android') {
+        let uptime = await OkkamiSdkManager.getUptimeMillis()
+        return moment().subtract(uptime.uptime, 'ms').fromNow(true)
+      } else {
+        return await moment().subtract(OkkamiSdkManager.getUptimeMillis(), 'ms').fromNow(true)
+      }
     } catch (e) {
       return e
     }
@@ -315,7 +346,12 @@ class OkkamiSdk {
    */
   async getWifiSignalStrength () {
     try {
-      return await OkkamiSdkManager.getWifiSignalStrength()
+      if (Metrics.platform === 'android') {
+        let s = await OkkamiSdkManager.getWifiSignalStrength()
+        return s.strength
+      } else {
+        return await OkkamiSdkManager.getWifiSignalStrength()
+      }
     } catch (e) {
       return e
     }
@@ -326,7 +362,12 @@ class OkkamiSdk {
    */
   async getWifiSSID () {
     try {
-      return await OkkamiSdkManager.getWifiSSID()
+      if (Metrics.platform === 'android') {
+        let ssid = await OkkamiSdkManager.getWifiSSID()
+        return  ssid.ssid
+      } else {
+        return await OkkamiSdkManager.getWifiSSID()
+      }
     } catch (e) {
       return e
     }
@@ -337,7 +378,12 @@ class OkkamiSdk {
    */
   async getIPv4 () {
     try {
-      return await OkkamiSdkManager.getIPv4()
+      if (Metrics.platform === 'android') {
+        let ipv4 = await OkkamiSdkManager.getIPv4()
+        return ipv4.ipv4
+      } else {
+        return await OkkamiSdkManager.getIPv4()
+      }
     } catch (e) {
       return e
     }
@@ -348,7 +394,12 @@ class OkkamiSdk {
    */
   async getIPv6 () {
     try {
-      return await OkkamiSdkManager.getIPv6()
+      if (Metrics.platform === 'android') {
+        let ipv6 = await OkkamiSdkManager.getIPv6()
+        return ipv6.ipv6
+      } else {
+        return await OkkamiSdkManager.getIPv6()
+      }
     } catch (e) {
       return e
     }
@@ -359,7 +410,12 @@ class OkkamiSdk {
    */
   async getWifiMac () {
     try {
-      return await OkkamiSdkManager.getWifiMac()
+      if (Metrics.platform === 'android') {
+        let mac = await OkkamiSdkManager.getWifiMac()
+        return mac.mac
+      } else {
+        return await OkkamiSdkManager.getWifiMac()
+      }
     } catch (e) {
       return e
     }
