@@ -44,10 +44,10 @@ RCT_EXPORT_MODULE();
         self.appdel = appDelegate;
         
         /*if (!self.appdel.isOkkami) {
-            RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
-            self.main = main;
-            //[self registerInstanceId:self.appdel.pusher_instance_id];
-        }*/
+         RCTOkkamiMain *main = [RCTOkkamiMain newInstance];
+         self.main = main;
+         //[self registerInstanceId:self.appdel.pusher_instance_id];
+         }*/
     }
     return self;
 }
@@ -56,7 +56,7 @@ RCT_EXPORT_MODULE();
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *path = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.plist", plistname]];
-        NSError *error;
+    NSError *error;
     if(![[NSFileManager defaultManager] removeItemAtPath:path error:&error])
     {
         
@@ -174,11 +174,11 @@ RCT_EXPORT_MODULE();
 
 #pragma mark Pusher Delegate
 -(void) pusher:(PTPusher *)pusher didSubscribeToChannel:(PTPusherChannel *)channel{
-
+    
 }
 
 -(void) pusher:(PTPusher *)pusher didUnsubscribeFromChannel:(PTPusherChannel *)channel{
-
+    
 }
 
 -(void) nativePusher:(PTNativePusher *)nativePusher didRegisterForPushNotificationsWithClientId:(NSString *)clientId{
@@ -186,32 +186,32 @@ RCT_EXPORT_MODULE();
 }
 
 -(void) nativePusher:(PTNativePusher *)nativePusher didSubscribeToInterest:(NSString *)interestName{
-
+    
 }
 
 -(void) nativePusher:(PTNativePusher *)nativePusher didUnsubscribeFromInterest:(NSString *)interestName{
-
+    
 }
 
 #pragma mark Notif Delegate
 
 -(void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error{
-
+    
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     [Smooch logoutWithCompletionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
-       [Smooch destroy];
+        [Smooch destroy];
     }];
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     self.appdel = appDelegate;
     [[self.appdel.pusher nativePusher] registerWithDeviceToken:deviceToken];
-
+    
     /*if (!self.appdel.isOkkami) {
-        [self registerForPusher:deviceToken];
-    } else {        
-        [[self.appdel.pusher nativePusher] registerWithDeviceToken:deviceToken];
-    }*/
+     [self registerForPusher:deviceToken];
+     } else {
+     [[self.appdel.pusher nativePusher] registerWithDeviceToken:deviceToken];
+     }*/
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
@@ -317,7 +317,7 @@ RCT_EXPORT_MODULE();
         }else{
             [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:response.notification.request.content.userInfo[@"data"]];
         }
-
+        
         [Smooch destroy];
         if([response.notification.request.content.userInfo[@"aps"][@"alert"][@"title"] isEqualToString:@""] || response.notification.request.content.userInfo[@"aps"][@"alert"][@"title"] == nil){
             self.hotelName = SMOOCH_NAME;
@@ -351,7 +351,7 @@ RCT_EXPORT_MODULE();
            error:(NSError *)error
 {
     if (error) {
-         self.loginRejecter([NSString stringWithFormat:@"%ld", error.code],error.description, error);
+        self.loginRejecter([NSString stringWithFormat:@"%ld", error.code],error.description, error);
     } else {
         self.accessToken = credential.accessToken.accessToken;
         self.userId = profile.userID;
@@ -600,7 +600,7 @@ RCT_EXPORT_METHOD(connectToHub
     self.main = main;
     self.secretKey = secret;
     NSNotificationCenter *defaultNotif = [NSNotificationCenter defaultCenter];
-
+    
     [defaultNotif addObserver:self selector:@selector(listenerOkkami:) name:self.main.notificationName object:nil];
     
     NSNumberFormatter* formatter = [[NSNumberFormatter alloc] init];
@@ -651,7 +651,7 @@ RCT_EXPORT_METHOD(reconnectToHub
         reject([NSString stringWithFormat:@"%ld", error.code],error.description, error);
     }else{
         NSNotificationCenter *defaultNotif = [NSNotificationCenter defaultCenter];
-        [defaultNotif addObserver:self selector:@selector(listenerOkkami:) name:self.main.notificationName object:nil];    
+        [defaultNotif addObserver:self selector:@selector(listenerOkkami:) name:self.main.notificationName object:nil];
         [self.main reconnectToHubWithNotif: defaultNotif completion:^(NSError * error) {
             if (error == nil) {
                 [self.bridge.eventDispatcher sendAppEventWithName:@"reconnectToHub" body:nil];
@@ -689,7 +689,7 @@ RCT_EXPORT_METHOD(sendCommandToHub
             }
         }];
     }
-
+    
     
 }
 
@@ -766,7 +766,7 @@ RCT_EXPORT_METHOD(openChatWindow
                   :(BOOL) rgbColor
                   :(BOOL) rgbTextColor
                   :(NSString*) smoochUserJwt
-                                    
+                  
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject) {
     self.hotelName = hotelName;
@@ -806,21 +806,21 @@ RCT_EXPORT_METHOD(logoutChatWindow
         [Smooch destroy];
     }];
     @try{
-    [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.channel_name];
-         if (self.appdel.brand_name) {
-             [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.brand_name];
-             
-         }
+        [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.channel_name];
+        if (self.appdel.brand_name) {
+            [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.brand_name];
+            
+        }
     }
     @catch( NSException *exception){
         NSLog(@"[logoutChatWindow] Failed with error :  %@", exception.reason);
     }
     [self deletePList:@"UserInfo"];
     [self deletePList:@"Notifications"];
-
+    
     /*if (!self.appdel.isOkkami) {
-        [self unsubscribeAll];
-    }*/
+     [self unsubscribeAll];
+     }*/
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
 }
 
@@ -841,10 +841,10 @@ RCT_EXPORT_METHOD(setUserId
             NSLog(@"attempting to unsubscribe from : %@",unsubscribeFrom);
             [[self.appdel.pusher nativePusher] unsubscribe:unsubscribeFrom];
         });
-       
+        
     }
     
-
+    
     self.smoochUserId = userId;
     [self.appdel setUser_id:userId];
     [self.appdel setChannel_name:channelName];
@@ -852,11 +852,11 @@ RCT_EXPORT_METHOD(setUserId
     
     [[self.appdel.pusher nativePusher] subscribe:channelName];
     [[self.appdel.pusher nativePusher] subscribe:brandName];
-
+    
     /*if (!self.appdel.isOkkami) {
-        [self subscribeToInterest:channelName];
-        [self subscribeToInterest:brandName];
-    }*/
+     [self subscribeToInterest:channelName];
+     [self subscribeToInterest:brandName];
+     }*/
     
     NSError *error;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -897,9 +897,73 @@ RCT_EXPORT_METHOD(subscribePushser
     
     
     if (self.appdel) {
-         [[self.appdel.pusher nativePusher] subscribe:[NSString stringWithFormat:@"mobile_device_%@", lastIdentifier]];
+        [[self.appdel.pusher nativePusher] subscribe:[NSString stringWithFormat:@"mobile_device_%@", lastIdentifier]];
     }
 }
+
+RCT_EXPORT_METHOD(subscribePushserPropertyChannel
+                  :(NSString *) propertiesJsonArrayString
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+
+    NSError* error = nil;
+    NSDictionary *JSON =
+    [NSJSONSerialization JSONObjectWithData: [(NSString *) propertiesJsonArrayString dataUsingEncoding:NSUTF8StringEncoding] options: NSJSONReadingMutableContainers
+                                      error: &error];
+    if (!JSON)
+    {
+        NSLog(@"%@", [error localizedDescription]);
+    }
+    else
+    {
+        NSString *properties = [JSON valueForKey:@"properties_info"];
+        if(self.appdel){
+            NSData *data = [properties dataUsingEncoding:NSUTF8StringEncoding];
+            NSError *e = nil;
+            NSArray *jsArray = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&e];
+            // Parse and loop through the JSON
+            for (NSDictionary * property in jsArray) {
+                NSString * propertyId = [property objectForKey:@"property_id"];
+                NSString * propertyName = [property objectForKey:@"property_name"];
+                [[self.appdel.pusher nativePusher] subscribe:[NSString stringWithFormat:@"mobile_message_property_%@", propertyId]];
+            }
+        }
+    }
+    
+}
+
+RCT_EXPORT_METHOD(unsubscribePushserPropertyChannel
+                  :(NSString *) propertiesJsonArrayString
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    
+    NSError* error = nil;
+    NSDictionary *JSON =
+    [NSJSONSerialization JSONObjectWithData: [(NSString *) propertiesJsonArrayString dataUsingEncoding:NSUTF8StringEncoding] options: NSJSONReadingMutableContainers
+                                      error: &error];
+    if (!JSON)
+    {
+        NSLog(@"%@", [error localizedDescription]);
+    }
+    else
+    {
+        NSString *properties = [JSON valueForKey:@"properties_info"];
+        if(self.appdel){
+            NSData *data = [properties dataUsingEncoding:NSUTF8StringEncoding];
+            NSError *e = nil;
+            NSArray *jsArray = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&e];
+            // Parse and loop through the JSON
+            for (NSDictionary * property in jsArray) {
+                NSString * propertyId = [property objectForKey:@"property_id"];
+                NSString * propertyName = [property objectForKey:@"property_name"];
+                [[self.appdel.pusher nativePusher] unsubscribe:[NSString stringWithFormat:@"mobile_message_property_%@", propertyId]];
+            }
+        }
+    }
+    
+}
+
+
 
 
 RCT_EXPORT_METHOD(enableSingleAppMode
