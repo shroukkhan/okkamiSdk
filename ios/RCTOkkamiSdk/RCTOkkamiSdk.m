@@ -1125,4 +1125,29 @@ RCT_EXPORT_METHOD(getLastReceivedPushNotification
     return [addresses count] ? addresses : nil;
 }
 
+RCT_EXPORT_METHOD(subscribePusherWithArray
+                  :(NSArray *) arrayOfIds
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+
+    
+    
+    if (self.appdel) {
+        for (int i=0; i<arrayOfIds.count; i++) {
+             [[self.appdel.pusher nativePusher] subscribe:[NSString stringWithFormat:@"mobile_device_%@", arrayOfIds[i]]];
+        }
+    }
+}
+
+RCT_EXPORT_METHOD(unsubscribePusherWithArray
+                  :(NSArray *) arrayOfIds
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    
+    if (self.appdel) {
+        for (int i=0; i<arrayOfIds.count; i++) {
+            [[self.appdel.pusher nativePusher] unsubscribe:[NSString stringWithFormat:@"mobile_device_%@", arrayOfIds[i]]];
+        }
+    }
+}
 @end
