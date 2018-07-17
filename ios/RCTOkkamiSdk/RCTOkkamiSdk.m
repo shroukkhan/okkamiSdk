@@ -237,6 +237,12 @@ RCT_EXPORT_MODULE();
     if( [UIApplication sharedApplication].applicationState == UIApplicationStateInactive )
     {
         [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:userInfo[@"data"]];
+        
+        if ([userInfo[@"data"][@"command"] isEqualToString:@"live_chat"]) {
+            completionHandler( UIBackgroundFetchResultNewData );
+            return;
+        }
+        
         if([userInfo[@"aps"][@"alert"][@"title"] isEqualToString:@""] || userInfo[@"aps"][@"alert"][@"title"] == nil){
             self.hotelName = SMOOCH_NAME;
         }else{
@@ -290,7 +296,7 @@ RCT_EXPORT_MODULE();
     }else{
         self.status = @"foreground";
         if(notification.request.content.userInfo[@"data"][@"command"]){
-            [self.bridge.eventDispatcher sendAppEventWithName:notification.request.content.userInfo[@"data"][@"command"] body:nil];
+            [self.bridge.eventDispatcher sendAppEventWithName:notification.request.content.userInfo[@"data"][@"command"] body:notification.request.content.userInfo[@"data"]];
         }else if(notification.request.content.userInfo[@"data"][@"status"] && notification.request.content.userInfo[@"data"][@"room_number"]){
             [self.bridge.eventDispatcher sendAppEventWithName:notification.request.content.userInfo[@"data"][@"status"] body:notification.request.content.userInfo[@"data"]];
         }else{
@@ -336,7 +342,7 @@ RCT_EXPORT_MODULE();
         }];
         [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
     }else if(response.notification.request.content.userInfo[@"data"][@"command"]){
-        [self.bridge.eventDispatcher sendAppEventWithName:response.notification.request.content.userInfo[@"data"][@"command"] body:nil];
+        [self.bridge.eventDispatcher sendAppEventWithName:response.notification.request.content.userInfo[@"data"][@"command"] body:response.notification.request.content.userInfo[@"data"]];
         [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:response.notification.request.content.userInfo[@"data"]];
     }else if(response.notification.request.content.userInfo[@"data"][@"status"] && response.notification.request.content.userInfo[@"data"][@"room_number"]){
         [self.bridge.eventDispatcher sendAppEventWithName:response.notification.request.content.userInfo[@"data"][@"status"] body:response.notification.request.content.userInfo[@"data"]];
@@ -409,7 +415,7 @@ RCT_EXPORT_METHOD(checkNotif:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectB
                 [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:notification[@"data"]];
             });
         } else if(notification[@"data"][@"command"]) {
-            [self.bridge.eventDispatcher sendAppEventWithName:notification[@"data"][@"command"] body:nil];
+            [self.bridge.eventDispatcher sendAppEventWithName:notification[@"data"][@"command"] body:notification[@"data"]];
             [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:notification[@"data"]];
         } else {
             [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:notification[@"data"]];
@@ -1125,29 +1131,4 @@ RCT_EXPORT_METHOD(getLastReceivedPushNotification
     return [addresses count] ? addresses : nil;
 }
 
-RCT_EXPORT_METHOD(subscribePusherWithArray
-                  :(NSArray *) arrayOfIds
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject) {
-
-    
-    
-    if (self.appdel) {
-        for (int i=0; i<arrayOfIds.count; i++) {
-             [[self.appdel.pusher nativePusher] subscribe:[NSString stringWithFormat:@"mobile_device_%@", arrayOfIds[i]]];
-        }
-    }
-}
-
-RCT_EXPORT_METHOD(unsubscribePusherWithArray
-                  :(NSArray *) arrayOfIds
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject) {
-    
-    if (self.appdel) {
-        for (int i=0; i<arrayOfIds.count; i++) {
-            [[self.appdel.pusher nativePusher] unsubscribe:[NSString stringWithFormat:@"mobile_device_%@", arrayOfIds[i]]];
-        }
-    }
-}
 @end
