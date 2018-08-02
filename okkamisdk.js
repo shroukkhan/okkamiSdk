@@ -421,6 +421,22 @@ class OkkamiSdk {
     }
   }
 
+  /*---------------------------------------------------------------------------------------------------*/
+
+  handleAuthOpenKey (token) {
+    return OkkamiSdkManager.handleAuthOpenKey(token)
+  }
+  handleInitOpenKey () {
+    return OkkamiSdkManager.handleInitOpenKey()
+  }
+  handleGetKey () {
+    return OkkamiSdkManager.handleGetKey()
+  }
+  handleOpenDoor () {
+    return OkkamiSdkManager.handleOpenDoor()
+  }
+  /*---------------------------------------------------------------------------------------------------*/
+
 }
 let okkamiSdk = new OkkamiSdk()
 export default okkamiSdk

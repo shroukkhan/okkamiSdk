@@ -5,6 +5,7 @@
 #include <ifaddrs.h>
 #include <arpa/inet.h>
 #include <net/if.h>
+#import <OpenKeySDK/OpenKeySDK.h>
 
 #define IOS_CELLULAR    @"pdp_ip0"
 #define IOS_WIFI        @"en0"
@@ -1130,5 +1131,55 @@ RCT_EXPORT_METHOD(getLastReceivedPushNotification
     }
     return [addresses count] ? addresses : nil;
 }
+#if TARGET_OS_SIMULATOR
+#else
+RCT_EXPORT_METHOD(handleAuthOpenKey
+                  
+                  :(NSString *) token
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    // Authenticate
+    [[OpenKeyManager shared] authenticate:token withDelegate:self];
+}
+RCT_EXPORT_METHOD(handleInitOpenKey
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    // Init
+    [[OpenKeyManager shared] initializeSDK:self];
+}
+RCT_EXPORT_METHOD(handleGetKey
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    // Get Keys
+    [[OpenKeyManager shared] fetchMobileKeys:self];
+}
+RCT_EXPORT_METHOD(handleOpenDoor
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    // Scan
+    [[OpenKeyManager shared] startScanning:self];
+}
+#pragma mark Open Key Delegate
+- (void)authenticateResponse:(NSString *)response status:(BOOL)status {
+    
+}
+- (void)initializeSDKResponse:(NSString *)response status:(BOOL)endpointStatus {
+    
+}
+- (void)fetchMobileKeysResponse:(NSString *)response status:(BOOL)keysStatus {
+    
+}
+- (void)stopScanningResponse:(NSString *)response status:(BOOL)scanStatus {
+    
+}
+#endif
 
 @end

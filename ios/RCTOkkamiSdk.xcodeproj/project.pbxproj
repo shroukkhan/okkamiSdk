@@ -33,6 +33,13 @@
 		FA7FD0A41EC09CAA00C7D8B9 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7FD0A31EC09CAA00C7D8B9 /* FBSDKCoreKit.framework */; };
 		FAF109061E48E2A0000B1E84 /* RCTOkkamiSdkImplementation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAF109051E48E2A0000B1E84 /* RCTOkkamiSdkImplementation.framework */; };
 		FAF109081E48E2B9000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAF109071E48E2B9000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework */; };
+		FFE595D321134A3A0076FECB /* SeosMobileKeysSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFE595CC21134A390076FECB /* SeosMobileKeysSDK.framework */; };
+		FFE595D421134A3A0076FECB /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFE595CD21134A390076FECB /* CocoaLumberjack.framework */; };
+		FFE595D521134A3A0076FECB /* OpenSSL-Universal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFE595CE21134A390076FECB /* OpenSSL-Universal.framework */; };
+		FFE595D621134A3A0076FECB /* BerTlv.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFE595CF21134A390076FECB /* BerTlv.framework */; };
+		FFE595D721134A3A0076FECB /* OpenKeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFE595D021134A390076FECB /* OpenKeySDK.framework */; };
+		FFE595D821134A3A0076FECB /* Mixpanel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFE595D121134A3A0076FECB /* Mixpanel.framework */; };
+		FFE595D921134A3A0076FECB /* JSONModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFE595D221134A3A0076FECB /* JSONModel.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -129,6 +136,20 @@
 		FAC9F8F31E14F38100EEFC1B /* RCTOkkamiSdkImplementation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RCTOkkamiSdkImplementation.framework; path = "RCTOkkamiSdkImplementation/build/Debug-iphoneos/RCTOkkamiSdkImplementation.framework"; sourceTree = "<group>"; };
 		FAF109051E48E2A0000B1E84 /* RCTOkkamiSdkImplementation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RCTOkkamiSdkImplementation.framework; path = ../../../../../Desktop/RCTOkkamiSdkImplementation.framework; sourceTree = "<group>"; };
 		FAF109071E48E2B9000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pods_RCTOkkamiSdkImplementation.framework; path = ../../../../../Desktop/Pods_RCTOkkamiSdkImplementation.framework; sourceTree = "<group>"; };
+		FFE595BE211347960076FECB /* CocoaLumberjack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CocoaLumberjack.framework; path = ../../ios/SDK/CocoaLumberjack.framework; sourceTree = "<group>"; };
+		FFE595BF211347970076FECB /* JSONModel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JSONModel.framework; path = ../../ios/SDK/JSONModel.framework; sourceTree = "<group>"; };
+		FFE595C0211347970076FECB /* BerTlv.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BerTlv.framework; path = ../../ios/SDK/BerTlv.framework; sourceTree = "<group>"; };
+		FFE595C1211347970076FECB /* Mixpanel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Mixpanel.framework; path = ../../ios/SDK/Mixpanel.framework; sourceTree = "<group>"; };
+		FFE595C2211347970076FECB /* OpenKeySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenKeySDK.framework; path = ../../ios/SDK/OpenKeySDK.framework; sourceTree = "<group>"; };
+		FFE595C3211347970076FECB /* OpenSSL-Universal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "OpenSSL-Universal.framework"; path = "../../ios/SDK/OpenSSL-Universal.framework"; sourceTree = "<group>"; };
+		FFE595C4211347970076FECB /* SeosMobileKeysSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SeosMobileKeysSDK.framework; path = ../../ios/SDK/SeosMobileKeysSDK.framework; sourceTree = "<group>"; };
+		FFE595CC21134A390076FECB /* SeosMobileKeysSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SeosMobileKeysSDK.framework; path = ../../ios/SDK/SeosMobileKeysSDK.framework; sourceTree = "<group>"; };
+		FFE595CD21134A390076FECB /* CocoaLumberjack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CocoaLumberjack.framework; path = ../../ios/SDK/CocoaLumberjack.framework; sourceTree = "<group>"; };
+		FFE595CE21134A390076FECB /* OpenSSL-Universal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "OpenSSL-Universal.framework"; path = "../../ios/SDK/OpenSSL-Universal.framework"; sourceTree = "<group>"; };
+		FFE595CF21134A390076FECB /* BerTlv.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BerTlv.framework; path = ../../ios/SDK/BerTlv.framework; sourceTree = "<group>"; };
+		FFE595D021134A390076FECB /* OpenKeySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenKeySDK.framework; path = ../../ios/SDK/OpenKeySDK.framework; sourceTree = "<group>"; };
+		FFE595D121134A3A0076FECB /* Mixpanel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Mixpanel.framework; path = ../../ios/SDK/Mixpanel.framework; sourceTree = "<group>"; };
+		FFE595D221134A3A0076FECB /* JSONModel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JSONModel.framework; path = ../../ios/SDK/JSONModel.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,10 +157,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FFE595D921134A3A0076FECB /* JSONModel.framework in Frameworks */,
 				651237371EE48026004CD7F1 /* RCTokkamiiossdk.framework in Frameworks */,
 				65F9CF4C1ED2948500315693 /* Foundation.framework in Frameworks */,
 				65F9CF561ED294A300315693 /* AssetsLibrary.framework in Frameworks */,
+				FFE595D621134A3A0076FECB /* BerTlv.framework in Frameworks */,
 				65F9CF541ED2949E00315693 /* AVFoundation.framework in Frameworks */,
+				FFE595D821134A3A0076FECB /* Mixpanel.framework in Frameworks */,
 				451B6BE820B329F100963CE4 /* Smooch.framework in Frameworks */,
 				65F9CF521ED2949900315693 /* CFNetwork.framework in Frameworks */,
 				65F9CF501ED2949300315693 /* CoreGraphics.framework in Frameworks */,
@@ -148,10 +172,14 @@
 				65F9CF4A1ED2946F00315693 /* Photos.framework in Frameworks */,
 				65F9CF461ED2946200315693 /* QuartzCore.framework in Frameworks */,
 				65F9CF441ED2945E00315693 /* SystemConfiguration.framework in Frameworks */,
+				FFE595D721134A3A0076FECB /* OpenKeySDK.framework in Frameworks */,
 				657817CE1ED573790079B076 /* UserNotifications.framework in Frameworks */,
 				657817CF1ED573790079B076 /* UserNotificationsUI.framework in Frameworks */,
 				65F9CF421ED2945700315693 /* UIKit.framework in Frameworks */,
+				FFE595D521134A3A0076FECB /* OpenSSL-Universal.framework in Frameworks */,
+				FFE595D321134A3A0076FECB /* SeosMobileKeysSDK.framework in Frameworks */,
 				65F9CF401ED2945100315693 /* OpenGLES.framework in Frameworks */,
+				FFE595D421134A3A0076FECB /* CocoaLumberjack.framework in Frameworks */,
 				658956401ECFFAB30080F354 /* Pods_OKKAMI.framework in Frameworks */,
 				6589563E1ECFF9F70080F354 /* SocketRocket.framework in Frameworks */,
 				6589563C1ECFF9F00080F354 /* Pusher.framework in Frameworks */,
@@ -284,6 +312,20 @@
 		FAF229A71E141BE800F3C9C1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FFE595C0211347970076FECB /* BerTlv.framework */,
+				FFE595CF21134A390076FECB /* BerTlv.framework */,
+				FFE595BE211347960076FECB /* CocoaLumberjack.framework */,
+				FFE595BF211347970076FECB /* JSONModel.framework */,
+				FFE595D221134A3A0076FECB /* JSONModel.framework */,
+				FFE595C1211347970076FECB /* Mixpanel.framework */,
+				FFE595D121134A3A0076FECB /* Mixpanel.framework */,
+				FFE595C2211347970076FECB /* OpenKeySDK.framework */,
+				FFE595D021134A390076FECB /* OpenKeySDK.framework */,
+				FFE595C3211347970076FECB /* OpenSSL-Universal.framework */,
+				FFE595CD21134A390076FECB /* CocoaLumberjack.framework */,
+				FFE595CE21134A390076FECB /* OpenSSL-Universal.framework */,
+				FFE595C4211347970076FECB /* SeosMobileKeysSDK.framework */,
+				FFE595CC21134A390076FECB /* SeosMobileKeysSDK.framework */,
 				451B6BE720B329F100963CE4 /* Smooch.framework */,
 				652ED7D51EE9A4960036635E /* libReactNativeConfig.a */,
 				651237361EE48026004CD7F1 /* RCTokkamiiossdk.framework */,
@@ -474,6 +516,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/RCTOkkamiSdkImplementation/build/Debug-iphoneos",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/../../ios/SDK/**",
 					"$(PROJECT_DIR)/okkami-ios-sdk",
 					"$(PROJECT_DIR)/okkami-ios-sdk/build/Release-iphoneos",
 				);
@@ -503,6 +546,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/RCTOkkamiSdkImplementation/build/Debug-iphoneos",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/../../ios/SDK/**",
 					"$(PROJECT_DIR)/okkami-ios-sdk",
 					"$(PROJECT_DIR)/okkami-ios-sdk/build/Release-iphoneos",
 				);
