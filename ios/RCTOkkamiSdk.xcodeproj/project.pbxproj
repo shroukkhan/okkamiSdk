@@ -35,7 +35,6 @@
 		FAF109081E48E2B9000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAF109071E48E2B9000B1E84 /* Pods_RCTOkkamiSdkImplementation.framework */; };
 		FFE595D321134A3A0076FECB /* SeosMobileKeysSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFE595CC21134A390076FECB /* SeosMobileKeysSDK.framework */; };
 		FFE595D421134A3A0076FECB /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFE595CD21134A390076FECB /* CocoaLumberjack.framework */; };
-		FFE595D521134A3A0076FECB /* OpenSSL-Universal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFE595CE21134A390076FECB /* OpenSSL-Universal.framework */; };
 		FFE595D621134A3A0076FECB /* BerTlv.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFE595CF21134A390076FECB /* BerTlv.framework */; };
 		FFE595D721134A3A0076FECB /* OpenKeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFE595D021134A390076FECB /* OpenKeySDK.framework */; };
 		FFE595D821134A3A0076FECB /* Mixpanel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFE595D121134A3A0076FECB /* Mixpanel.framework */; };
@@ -176,7 +175,6 @@
 				657817CE1ED573790079B076 /* UserNotifications.framework in Frameworks */,
 				657817CF1ED573790079B076 /* UserNotificationsUI.framework in Frameworks */,
 				65F9CF421ED2945700315693 /* UIKit.framework in Frameworks */,
-				FFE595D521134A3A0076FECB /* OpenSSL-Universal.framework in Frameworks */,
 				FFE595D321134A3A0076FECB /* SeosMobileKeysSDK.framework in Frameworks */,
 				65F9CF401ED2945100315693 /* OpenGLES.framework in Frameworks */,
 				FFE595D421134A3A0076FECB /* CocoaLumberjack.framework in Frameworks */,
