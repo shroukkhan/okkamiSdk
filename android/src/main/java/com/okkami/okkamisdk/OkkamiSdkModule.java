@@ -32,7 +32,6 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.google.gson.JsonObject;
 import com.linecorp.linesdk.auth.LineLoginApi;
 import com.linecorp.linesdk.auth.LineLoginResult;
 import com.okkami.android.sdk.SDK;
@@ -82,7 +81,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
 
 
     public interface MethodInvokeListener {
-        void invokeSubscribePusher(String methodName, String userId, String brandId);
+        void invokeSubscribePusherUserChannel(String userId, String brandId);
         void invokeSubscribePusherDeviceChannel(String deviceId);
         void invokeSubscribePusherPropertyChannel(String propertyId);
         void invokeUnsubscribePusher();
@@ -958,12 +957,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
             Log.e(TAG, "Failed saving userId");
         }
 
-        invokeInitPushNoti(userId, brandId);
-    }
-
-    private void invokeInitPushNoti(String userId, String brandId) {
-        // Method name is currently optional.
-        mMethodInvoker.invokeSubscribePusher("initPusherFcmService", userId, brandId);
+        mMethodInvoker.invokeSubscribePusherUserChannel(userId, brandId);
     }
 
     /**
