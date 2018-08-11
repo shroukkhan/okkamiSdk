@@ -457,9 +457,19 @@ class OkkamiSdk {
    *
    * @returns {Promise<*>}
    */
-  async handleOpenDoor () {
+  async handleStartScanning () {
     if (Metrics.platform === 'ios') {
-      return OkkamiSdkManager.handleOpenDoor()
+      return OkkamiSdkManager.handleStartScanning()
+    }
+  }
+
+  /**
+   *
+   * @returns {Promise<*>}
+   */
+  async handleStopScanning () {
+    if (Metrics.platform === 'ios') {
+      return OkkamiSdkManager.handleStopScanning()
     }
   }
 
