@@ -914,7 +914,7 @@ RCT_EXPORT_METHOD(subscribePushserPropertyChannel
                   :(NSString *) propertiesJsonArrayString
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject) {
-
+    
     NSError* error = nil;
     NSDictionary *JSON =
     [NSJSONSerialization JSONObjectWithData: [(NSString *) propertiesJsonArrayString dataUsingEncoding:NSUTF8StringEncoding] options: NSJSONReadingMutableContainers
@@ -1133,8 +1133,9 @@ RCT_EXPORT_METHOD(getLastReceivedPushNotification
     }
     return [addresses count] ? addresses : nil;
 }
-#if TARGET_OS_SIMULATOR
-#else
+
+
+
 RCT_EXPORT_METHOD(handleAuthOpenKey
                   
                   :(NSString *) token
@@ -1143,45 +1144,129 @@ RCT_EXPORT_METHOD(handleAuthOpenKey
                   :(RCTPromiseRejectBlock)reject)
 {
     // Authenticate
+    NSLog(@"[OPEN_KEY] Authenticating with token : %@", token);
+#if TARGET_OS_SIMULATOR
+    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2); //dispatch after X second
+    dispatch_after(delay, dispatch_get_main_queue(), ^(void){
+        // do work in the UI thread here
+        [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_KEY_EVENT" body:@{@"type":@"authenticateResponse",@"response":@"xxxxxxxxx",@"status":@YES}];
+    });
+#else
     [[OpenKeyManager shared] authenticate:token withDelegate:self];
+#endif
+    resolve(@"");
+    
 }
 RCT_EXPORT_METHOD(handleInitOpenKey
                   
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
+    NSLog(@"[OPEN_KEY] Initializing open key sdk");
+#if TARGET_OS_SIMULATOR
+    
+    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 5);
+    dispatch_after(delay, dispatch_get_main_queue(), ^(void){
+        // do work in the UI thread here
+        [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_KEY_EVENT" body:@{@"type":@"initializeSDKResponse",@"response":@"MOCK_RESPONSE",@"status":@YES}];
+    });
+    
+#else
     // Init
     [[OpenKeyManager shared] initializeSDK:self];
+#endif
+    resolve(@"");
 }
 RCT_EXPORT_METHOD(handleGetKey
                   
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
+    
+    NSLog(@"[OPEN_KEY] Getting key from server");
+#if TARGET_OS_SIMULATOR
+    
+    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 3);
+    dispatch_after(delay, dispatch_get_main_queue(), ^(void){
+        // do work in the UI thread here
+        [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_KEY_EVENT" body:@{@"type":@"fetchMobileKeysResponse",@"response":@"MOCK_RESPONSE",@"status":@YES}];
+    });
+    
+#else
     // Get Keys
     [[OpenKeyManager shared] fetchMobileKeys:self];
+#endif
+    resolve(@"");
 }
-RCT_EXPORT_METHOD(handleOpenDoor
+
+
+RCT_EXPORT_METHOD(handleStartScanning
                   
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject)
 {
+    NSLog(@"[OPEN_KEY] Starting scanning door to open");
+#if TARGET_OS_SIMULATOR
+    
+    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 1); //dispatch after 60 second
+    dispatch_after(delay, dispatch_get_main_queue(), ^(void){
+        // do work in the UI thread here
+        [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_KEY_EVENT" body:@{@"type":@"startScanningResponse",@"response":@"MOCK_RESPONSE",@"status":@YES}];
+    });
+    
+    
+#else
     // Scan
     [[OpenKeyManager shared] startScanning:self];
+    resolve(@"");
+#endif
 }
+
+RCT_EXPORT_METHOD(handleStopScanning
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject)
+{
+    NSLog(@"[OPEN_KEY] Stopping scanner");
+#if TARGET_OS_SIMULATOR
+    
+    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 1); //dispatch after 60 second
+    dispatch_after(delay, dispatch_get_main_queue(), ^(void){
+        // do work in the UI thread here
+        [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_KEY_EVENT" body:@{@"type":@"stopScanningResponse",@"response":@"MOCK_RESPONSE",@"status":@YES}];
+    });
+    
+    
+#else
+    // Scan
+    [[OpenKeyManager shared] stopScanning];
+    resolve(@"");
+#endif
+}
+
 #pragma mark Open Key Delegate
 - (void)authenticateResponse:(NSString *)response status:(BOOL)status {
-    
+    NSLog( @"[OPEN_KEY] authenticateResponse : %@ / %d",response, status?1:0);
+    [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_KEY_EVENT" body:@{@"type":@"authenticateResponse",@"response":response,@"status":status?@YES:@NO}];
 }
-- (void)initializeSDKResponse:(NSString *)response status:(BOOL)endpointStatus {
-    
+- (void)initializeSDKResponse:(NSString *)response status:(BOOL)status {
+    NSLog( @"[OPEN_KEY] initializeSDKResponse : %@ / %d",response, status?1:0);
+    [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_KEY_EVENT" body:@{@"type":@"initializeSDKResponse",@"response":response,@"status":status?@YES:@NO}];
 }
-- (void)fetchMobileKeysResponse:(NSString *)response status:(BOOL)keysStatus {
-    
+- (void)fetchMobileKeysResponse:(NSString *)response status:(BOOL)status {
+    NSLog( @"[OPEN_KEY] fetchMobileKeysResponse : %@ / %d",response, status?1:0);
+    [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_KEY_EVENT" body:@{@"type":@"fetchMobileKeysResponse",@"response":response,@"status":status?@YES:@NO}];
 }
-- (void)stopScanningResponse:(NSString *)response status:(BOOL)scanStatus {
-    
+- (void)stopScanningResponse:(NSString *)response status:(BOOL)status {
+    NSLog( @"[OPEN_KEY] stopScanningResponse : %@ / %d",response, status?1:0);
+    [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_KEY_EVENT" body:@{@"type":@"stopScanningResponse",@"response":response,@"status":status?@YES:@NO}];
 }
-#endif
+
+- (void)startScanningResponse:(NSString *)response status:(BOOL)status {
+    NSLog( @"[OPEN_KEY] startScanningResponse : %@ / %d",response, status?1:0);
+    [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_KEY_EVENT" body:@{@"type":@"startScanningResponse",@"response":response,@"status":status?@YES:@NO}];
+}
+
+
 
 @end

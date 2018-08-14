@@ -1,4 +1,4 @@
-import {NativeModules, DeviceEventEmitter} from 'react-native'
+import { NativeModules, DeviceEventEmitter } from 'react-native'
 import Metrics from '../App/Themes/Metrics'
 import moment from 'moment'
 // import {convertRgbaToHex} from '../App/Lib/Utilities'
@@ -12,6 +12,7 @@ class OkkamiSdk {
   /* -------------------------------------- Utility   -------------------------------------------------- */
 
   /* --------------------------------------------------------------------------------------------------- */
+
   /* -------------------------------------- Hub & Core ------------------------------------------------- */
 
   lineLogin () {
@@ -69,6 +70,7 @@ class OkkamiSdk {
   setLanguage (language) {
     return OkkamiSdkManager.setLanguage(language)
   }
+
   /* --------------------------------------------------------------------------------------------------- */
 
   /* -------------------------------------- SMOOCH -------------------------------------------- */
@@ -275,7 +277,6 @@ class OkkamiSdk {
     OkkamiSdkManager.enableSingleAppMode()
   }
 
-
   /**
    * Use to disable single app
    */
@@ -296,11 +297,10 @@ class OkkamiSdk {
     }
   }
 
-
   /**
    * Return last received push notification string
    */
-  async getLastFCMRegistrationStatus() {
+  async getLastFCMRegistrationStatus () {
     try {
       let {lastFcmStatus} = await OkkamiSdkManager.getLastFcmRegistrationStatus()
       return lastFcmStatus
@@ -364,7 +364,7 @@ class OkkamiSdk {
     try {
       if (Metrics.platform === 'android') {
         let ssid = await OkkamiSdkManager.getWifiSSID()
-        return  ssid.ssid
+        return ssid.ssid
       } else {
         return await OkkamiSdkManager.getWifiSSID()
       }
@@ -422,22 +422,61 @@ class OkkamiSdk {
   }
 
   /*---------------------------------------------------------------------------------------------------*/
+  /**
+   * Authenticate the sdk . Strangely, this needs to run before initializing..??
+   * @param token
+   * @returns {Promise<*>}
+   */
+  async handleAuthOpenKey (token) {
+    if (Metrics.platform === 'ios') {
+      return OkkamiSdkManager.handleAuthOpenKey(token)
+    }
+  }
 
-  handleAuthOpenKey (token) {
-    return OkkamiSdkManager.handleAuthOpenKey(token)
+  /**
+   * Initialize the sdk with the token.
+   * @returns {Promise<*>}
+   */
+  async handleInitOpenKey () {
+    if (Metrics.platform === 'ios') {
+      return OkkamiSdkManager.handleInitOpenKey()
+    }
   }
-  handleInitOpenKey () {
-    return OkkamiSdkManager.handleInitOpenKey()
+
+  /**
+   * Fetch the key from the server NOW
+   * @returns {Promise<*>}
+   */
+  async handleGetKey () {
+    if (Metrics.platform === 'ios') {
+      return OkkamiSdkManager.handleGetKey()
+    }
   }
-  handleGetKey () {
-    return OkkamiSdkManager.handleGetKey()
+
+  /**
+   *
+   * @returns {Promise<*>}
+   */
+  async handleStartScanning () {
+    if (Metrics.platform === 'ios') {
+      return OkkamiSdkManager.handleStartScanning()
+    }
   }
-  handleOpenDoor () {
-    return OkkamiSdkManager.handleOpenDoor()
+
+  /**
+   *
+   * @returns {Promise<*>}
+   */
+  async handleStopScanning () {
+    if (Metrics.platform === 'ios') {
+      return OkkamiSdkManager.handleStopScanning()
+    }
   }
+
   /*---------------------------------------------------------------------------------------------------*/
 
 }
+
 let okkamiSdk = new OkkamiSdk()
 export default okkamiSdk
 
