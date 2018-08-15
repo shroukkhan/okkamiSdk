@@ -1037,7 +1037,12 @@ RCT_EXPORT_METHOD(getWifiSignalStrength
 RCT_EXPORT_METHOD(getMobicontrolStatus
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject) {
-    resolve(@{@"connectionStatus":self.appdel.mobiControlConnected,@"enrollmentStatus":self.appdel.mobiControlEnrolled,@"deviceId":self.appdel.deviceId});
+    @try{
+        resolve(@{@"connectionStatus":self.appdel.mobiControlConnected,@"enrollmentStatus":self.appdel.mobiControlEnrolled,@"deviceId":self.appdel.deviceId});
+    }
+    @catch( NSException *exception){
+        resolve(@{@"connectionStatus":@"",@"enrollmentStatus":@"",@"deviceId":@""});
+    }
 }
 
 RCT_EXPORT_METHOD(getWifiSSID
@@ -1267,7 +1272,7 @@ RCT_EXPORT_METHOD(handleStopScanning
     
 #else
     // Scan
-     self.isScanning=@NO;
+    self.isScanning=@NO;
     [[OpenKeyManager shared] stopScanning];
     resolve(@"");
 #endif
