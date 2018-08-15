@@ -1236,7 +1236,7 @@ RCT_EXPORT_METHOD(handleStartScanning
     self.isScanning=@NO;
     [[OpenKeyManager shared] startScanning:self];
     
-    dispatch_time_t delay2 = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 9); // FD-7393
+    dispatch_time_t delay2 = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 7); // FD-7393
     dispatch_after(delay2, dispatch_get_main_queue(), ^(void){
         if ( self.isScanning ){
             [[OpenKeyManager shared] stopScanning];
@@ -1267,6 +1267,7 @@ RCT_EXPORT_METHOD(handleStopScanning
     
 #else
     // Scan
+     self.isScanning=@NO;
     [[OpenKeyManager shared] stopScanning];
     resolve(@"");
 #endif
