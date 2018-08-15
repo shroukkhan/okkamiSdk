@@ -1152,7 +1152,7 @@ RCT_EXPORT_METHOD(handleAuthOpenKey
     // Authenticate
     NSLog(@"[OPEN_KEY] Authenticating with token : %@", token);
 #if TARGET_OS_SIMULATOR
-    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2); //dispatch after X second
+    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 15); //dispatch after X second
     dispatch_after(delay, dispatch_get_main_queue(), ^(void){
         // do work in the UI thread here
         [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_KEY_EVENT" body:@{@"type":@"authenticateResponse",@"response":@"xxxxxxxxx",@"status":@YES}];
@@ -1212,18 +1212,38 @@ RCT_EXPORT_METHOD(handleStartScanning
                   :(RCTPromiseRejectBlock)reject)
 {
     NSLog(@"[OPEN_KEY] Starting scanning door to open");
+    
 #if TARGET_OS_SIMULATOR
     
-    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 1); //dispatch after 60 second
+    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2); //dispatch after 60 second
     dispatch_after(delay, dispatch_get_main_queue(), ^(void){
         // do work in the UI thread here
         [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_KEY_EVENT" body:@{@"type":@"startScanningResponse",@"response":@"MOCK_RESPONSE",@"status":@YES}];
+        
+        dispatch_time_t delay2 = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 5); //dispatch after 60 second
+        dispatch_after(delay2, dispatch_get_main_queue(), ^(void){
+            // do work in the UI thread here
+            [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_KEY_EVENT" body:@{@"type":@"stopScanningResponse",@"response":@"MOCK_RESPONSE",@"status":@YES}];
+        });
+        
     });
+    
+    
     
     
 #else
     // Scan
+    self.isScanning=@NO;
     [[OpenKeyManager shared] startScanning:self];
+    
+    dispatch_time_t delay2 = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 9); // FD-7393
+    dispatch_after(delay2, dispatch_get_main_queue(), ^(void){
+        if ( self.isScanning ){
+            [[OpenKeyManager shared] stopScanning];
+        }
+    });
+    
+    
     resolve(@"");
 #endif
 }
@@ -1236,11 +1256,13 @@ RCT_EXPORT_METHOD(handleStopScanning
     NSLog(@"[OPEN_KEY] Stopping scanner");
 #if TARGET_OS_SIMULATOR
     
-    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 1); //dispatch after 60 second
+    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2); //dispatch after 60 second
     dispatch_after(delay, dispatch_get_main_queue(), ^(void){
         // do work in the UI thread here
         [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_KEY_EVENT" body:@{@"type":@"stopScanningResponse",@"response":@"MOCK_RESPONSE",@"status":@YES}];
     });
+    
+    
     
     
 #else
@@ -1265,11 +1287,13 @@ RCT_EXPORT_METHOD(handleStopScanning
 }
 - (void)stopScanningResponse:(NSString *)response status:(BOOL)status {
     NSLog( @"[OPEN_KEY] stopScanningResponse : %@ / %d",response, status?1:0);
+    self.isScanning=@NO;
     [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_KEY_EVENT" body:@{@"type":@"stopScanningResponse",@"response":response,@"status":status?@YES:@NO}];
 }
 
 - (void)startScanningResponse:(NSString *)response status:(BOOL)status {
     NSLog( @"[OPEN_KEY] startScanningResponse : %@ / %d",response, status?1:0);
+    self.isScanning=status;
     [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_KEY_EVENT" body:@{@"type":@"startScanningResponse",@"response":response,@"status":status?@YES:@NO}];
 }
 

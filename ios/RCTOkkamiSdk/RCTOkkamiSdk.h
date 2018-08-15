@@ -31,6 +31,7 @@
 @property (nonatomic, copy)NSString * currentSmoochToken;
 @property (nonatomic, copy)NSString * secretKey;
 @property (copy, nonatomic) NSDictionary * lineData;
+@property (nonatomic, assign) BOOL isScanning;
 @property (nonatomic,retain) CLLocationManager *locationManager;
 @property (strong, nonatomic) RCTPromiseResolveBlock loginResolver;
 @property (strong, nonatomic) RCTPromiseRejectBlock loginRejecter;
