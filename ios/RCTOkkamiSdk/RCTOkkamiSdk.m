@@ -1034,6 +1034,12 @@ RCT_EXPORT_METHOD(getWifiSignalStrength
     resolve(@"");
 }
 
+RCT_EXPORT_METHOD(getMobicontrolStatus
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    resolve(@{@"connectionStatus":self.appdel.mobiControlConnected,@"enrollmentStatus":self.appdel.mobiControlEnrolled,@"deviceId":self.appdel.deviceId});
+}
+
 RCT_EXPORT_METHOD(getWifiSSID
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject) {

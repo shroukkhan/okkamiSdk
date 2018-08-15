@@ -475,6 +475,16 @@ class OkkamiSdk {
 
   /*---------------------------------------------------------------------------------------------------*/
 
+  /**
+   *
+   * @returns {Promise<*>}
+   */
+  async getMobiControlStatus () {
+    if (Metrics.platform === 'ios') {
+      return OkkamiSdkManager.getMobicontrolStatus()
+    }
+  }
+
 }
 
 let okkamiSdk = new OkkamiSdk()
