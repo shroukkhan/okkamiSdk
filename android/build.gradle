@@ -64,7 +64,8 @@ dependencies {
     compile(name:'line-sdk-4.0.0', ext:'aar')
     compile 'com.android.support:customtabs:23.2.1'
 
-    compile 'com.facebook.android:facebook-android-sdk:4.+'
+//    compile 'com.facebook.android:facebook-android-sdk:4.+'
+    compile 'com.facebook.android:facebook-android-sdk:4.35.0'
 
     // Badges for Android
     compile "me.leolin:ShortcutBadger:1.1.16@aar"
