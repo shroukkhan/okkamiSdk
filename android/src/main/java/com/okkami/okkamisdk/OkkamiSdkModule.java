@@ -1349,11 +1349,13 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
                 (this)) {
             if (mBluetoothAdapter.enable()) {
 //                showMessage("Scanning..");
+                Log.e(TAG, "openDoor: Scanning...");
                 startScanning();
             } else {
                 mContext.startActivity(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
             }
         } else {
+            Log.e(TAG, "openDoor: No key issued");
             Utilities.getInstance().showToast(mContext, "No key issued");
         }
     }
@@ -1445,6 +1447,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
             if (!TextUtils.isEmpty(token)) {
 //                showMessage("Authenticating...");
                 OpenKeyManager.getInstance(mContext).authenticate(token, this, false);
+                Log.e(TAG, "handleAuthOpenKey: Authenticating...");
             } else {
 //                Utilities.getInstance().showToast(this, "Token should not be empty.");
             }
@@ -1492,8 +1495,8 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
      * @param handleGetKeyPromise - Promise
      */
     @ReactMethod
-    public void handleGetKey(String token, Promise handleGetKeyPromise) {
-        Log.e(TAG, "handleGetKey: "+token);
+    public void handleGetKey(Promise handleGetKeyPromise) {
+        Log.e(TAG, "handleGetKey: ");
         try {
             OpenKeyManager.getInstance(mContext).getKey(this);
 
@@ -1519,6 +1522,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void handleStartScanning(Promise handleStartScanningPromise) {
         try {
+            Log.e(TAG, "handleStartScanning: ");
             openDoor();
 
             WritableMap params = Arguments.createMap();
