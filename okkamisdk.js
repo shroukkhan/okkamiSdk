@@ -428,7 +428,7 @@ class OkkamiSdk {
    * @returns {Promise<*>}
    */
   async handleAuthOpenKey (token) {
-    if (Metrics.platform === 'ios') {
+    if (true) {
       return OkkamiSdkManager.handleAuthOpenKey(token)
     }
   }
@@ -438,7 +438,7 @@ class OkkamiSdk {
    * @returns {Promise<*>}
    */
   async handleInitOpenKey () {
-    if (Metrics.platform === 'ios') {
+    if (true) {
       return OkkamiSdkManager.handleInitOpenKey()
     }
   }
@@ -448,7 +448,7 @@ class OkkamiSdk {
    * @returns {Promise<*>}
    */
   async handleGetKey () {
-    if (Metrics.platform === 'ios') {
+    if (true) {
       return OkkamiSdkManager.handleGetKey()
     }
   }
@@ -458,7 +458,7 @@ class OkkamiSdk {
    * @returns {Promise<*>}
    */
   async handleStartScanning () {
-    if (Metrics.platform === 'ios') {
+    if (true) {
       return OkkamiSdkManager.handleStartScanning()
     }
   }
@@ -468,7 +468,7 @@ class OkkamiSdk {
    * @returns {Promise<*>}
    */
   async handleStopScanning () {
-    if (Metrics.platform === 'ios') {
+    if (true) {
       return OkkamiSdkManager.handleStopScanning()
     }
   }

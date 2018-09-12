@@ -1,20 +1,26 @@
 package com.okkami.okkamisdk;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
+import android.bluetooth.BluetoothAdapter;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -47,6 +53,9 @@ import com.okkami.android.sdk.model.BaseAuthentication;
 import com.okkami.android.sdk.model.CompanyAuth;
 import com.okkami.android.sdk.model.DeviceAuth;
 import com.okkami.android.sdk.module.HubModule;
+import com.openkey.sdk.OpenKeyManager;
+import com.openkey.sdk.Utilities.Utilities;
+import com.openkey.sdk.interfaces.OpenKeyCallBack;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -77,8 +86,24 @@ import okhttp3.ResponseBody;
 import retrofit2.Response;
 
 public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
-        OnHubCommandReceivedListener {
+        OnHubCommandReceivedListener, OpenKeyCallBack {
 
+
+    private static final int MY_LOCATION_PERMISSIONS_REQUEST = 999;
+    private static final String OPEN_KEY_EVENT = "OPEN_KEY_EVENT";
+    private BluetoothAdapter mBluetoothAdapter;
+    private boolean isScanning;
+    private Handler handler;
+    Runnable stopper = new Runnable() {
+        @Override
+        public void run() {
+            if (isScanning) {
+                stopScanning();
+            }
+        }
+    };
+    //It should not be null
+    private String mToken = "";
 
     public interface MethodInvokeListener {
         void invokeSubscribePusherUserChannel(String userId, String brandId);
@@ -207,6 +232,8 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
 
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
 //        mBatteryStatusIntent = mContext.registerReceiver(null, ifilter);
+
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     }
 
     private static JSONObject createConversationJsonObj(int unreadMsgCount, String iconUrl,
@@ -769,6 +796,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     }
 
     private void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
+        Log.e(TAG, "sendEvent: "+eventName);
         reactContext
                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                 .emit(eventName, params);
@@ -1300,4 +1328,236 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
             getWifiMacPromise.reject("-1", e.getMessage());
         }
     }
+
+    /**
+     * ################################### OPEN KEY ############################################
+     */
+
+    public void openDoor() {
+        // Required for SDK
+        if (ContextCompat.checkSelfPermission(mContext,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(getCurrentActivity(),
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                    MY_LOCATION_PERMISSIONS_REQUEST);
+            return;
+        }
+
+        if (OpenKeyManager.getInstance(mContext).isKeyAvailable
+                (this)) {
+            if (mBluetoothAdapter.enable()) {
+//                showMessage("Scanning..");
+                Log.e(TAG, "openDoor: Scanning...");
+                startScanning();
+            } else {
+                mContext.startActivity(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
+            }
+        } else {
+            Log.e(TAG, "openDoor: No key issued");
+            Utilities.getInstance().showToast(mContext, "No key issued");
+        }
+    }
+
+    /**
+     * Start lock opening process
+     */
+    private void startScanning() {
+        isScanning = true;
+        handler = new Handler();
+        handler.postDelayed(stopper, 10000);
+        OpenKeyManager.getInstance(mContext).startScanning(this);
+    }
+
+    /**
+     * Stop lock opening process
+     */
+    private void stopScanning() {
+
+
+        isScanning = false;
+        if (handler != null) {
+            handler.removeCallbacks(stopper);
+        }
+    }
+
+
+    @Override
+    public void authenticated(boolean isAuthenticated, String description) {
+        Log.e(TAG, "authenticated: "+description);
+
+        WritableMap params = Arguments.createMap();
+        params.putString("type", "authenticateResponse");
+        params.putString("response", description);
+        params.putBoolean("status", isAuthenticated);
+        sendEvent((ReactContext) mContext, OPEN_KEY_EVENT, params);
+    }
+
+    @Override
+    public void initializationSuccess() {
+        Log.e(TAG, "initializationSuccess: ");
+        WritableMap params = Arguments.createMap();
+        params.putString("type", "initializeSDKResponse");
+        params.putString("response", "initializationSuccess");
+        params.putBoolean("status", true);
+        sendEvent((ReactContext) mContext, OPEN_KEY_EVENT, params);
+
+    }
+
+    @Override
+    public void initializationFailure(String errorDescription) {
+        Log.e(TAG, "initializationFailure: "+errorDescription);
+
+        WritableMap params = Arguments.createMap();
+        params.putString("type", "initializeSDKResponse");
+        params.putString("response", errorDescription);
+        params.putBoolean("status", false);
+        sendEvent((ReactContext) mContext, OPEN_KEY_EVENT, params);
+    }
+
+    @Override
+    public void stopScan(boolean b, String s) {
+        Log.e(TAG, "stopScan: "+s);
+        WritableMap params = Arguments.createMap();
+        params.putString("type", "stopScanningResponse");
+        params.putString("response", s);
+        params.putBoolean("status", b);
+        sendEvent((ReactContext) mContext, OPEN_KEY_EVENT, params);
+    }
+
+    @Override
+    public void isKeyAvailable(boolean haveKey, String description) {
+        Log.e(TAG, "isKeyAvailable: "+description);
+        WritableMap params = Arguments.createMap();
+        params.putString("type", "fetchMobileKeysResponse");
+        params.putString("response", description);
+        params.putBoolean("status", haveKey);
+        sendEvent((ReactContext) mContext, OPEN_KEY_EVENT, params);
+    }
+
+    /**
+     * Authenticate Open Key
+     * @param handleAuthOpenKeyPromise - Promise
+     */
+    @ReactMethod
+    public void handleAuthOpenKey(String token, Promise handleAuthOpenKeyPromise) {
+        Log.e(TAG, "handleAuthOpenKey: "+token);
+        try {
+            if (!TextUtils.isEmpty(token)) {
+//                showMessage("Authenticating...");
+                OpenKeyManager.getInstance(mContext).authenticate(token, this, false);
+                Log.e(TAG, "handleAuthOpenKey: Authenticating...");
+            } else {
+//                Utilities.getInstance().showToast(this, "Token should not be empty.");
+            }
+
+//            WritableMap params = Arguments.createMap();
+//            params.putString("type", "authenticateResponse");
+//            params.putString("response", "xxxxxxxxx");
+//            params.putBoolean("status", true);
+//            sendEvent((ReactContext) mContext, OPEN_KEY_EVENT, params);
+
+            WritableMap map = Arguments.createMap();
+            map.putString("Authenticating", "Authenticating");
+            handleAuthOpenKeyPromise.resolve(map);
+        } catch (Exception e) {
+            handleAuthOpenKeyPromise.reject("-1", e.getMessage());
+        }
+    }
+
+    /**
+     * Initialize Open Key
+     * @param handleInitOpenKeyPromise - Promise
+     */
+    @ReactMethod
+    public void handleInitOpenKey(Promise handleInitOpenKeyPromise) {
+        Log.e(TAG, "handleInitOpenKey: ");
+        try {
+            OpenKeyManager.getInstance(mContext).initialize(this);
+
+//            WritableMap params = Arguments.createMap();
+//            params.putString("type", "initializeSDKResponse");
+//            params.putString("response", "MOCK_RESPONSE");
+//            params.putBoolean("status", true);
+//            sendEvent((ReactContext) mContext, OPEN_KEY_EVENT, params);
+
+            WritableMap map = Arguments.createMap();
+            map.putString("Initializing", "Initializing");
+            handleInitOpenKeyPromise.resolve(map);
+        } catch (Exception e) {
+            handleInitOpenKeyPromise.reject("-1", e.getMessage());
+        }
+    }
+
+    /**
+     * Get Open Key's key
+     * @param handleGetKeyPromise - Promise
+     */
+    @ReactMethod
+    public void handleGetKey(Promise handleGetKeyPromise) {
+        Log.e(TAG, "handleGetKey: ");
+        try {
+            OpenKeyManager.getInstance(mContext).getKey(this);
+
+//            WritableMap params = Arguments.createMap();
+//            params.putString("type", "fetchMobileKeysResponse");
+//            params.putString("response", "MOCK_RESPONSE");
+//            params.putBoolean("status", true);
+//            sendEvent((ReactContext) mContext, OPEN_KEY_EVENT, params);
+
+            WritableMap map = Arguments.createMap();
+            map.putString("Fetching key", "Fetching key");
+            handleGetKeyPromise.resolve(map);
+        } catch (Exception e) {
+            handleGetKeyPromise.reject("-1", e.getMessage());
+        }
+    }
+
+
+    /**
+     * Start lock opening process
+     * @param handleStartScanningPromise - Promise
+     */
+    @ReactMethod
+    public void handleStartScanning(Promise handleStartScanningPromise) {
+        try {
+            Log.e(TAG, "handleStartScanning: ");
+            openDoor();
+
+            WritableMap params = Arguments.createMap();
+            params.putString("type", "startScanningResponse");
+            params.putString("response", "MOCK_RESPONSE");
+            params.putBoolean("status", true);
+            sendEvent((ReactContext) mContext, OPEN_KEY_EVENT, params);
+
+            WritableMap map = Arguments.createMap();
+            map.putString("Scanning", "Scanning");
+            handleStartScanningPromise.resolve(map);
+        } catch (Exception e) {
+            handleStartScanningPromise.reject("-1", e.getMessage());
+        }
+    }
+
+    /**
+     * Stop lock opening process
+     * @param handleStopScanningPromise - Promise
+     */
+    @ReactMethod
+    public void handleStopScanning(Promise handleStopScanningPromise) {
+        try {
+            stopScanning();
+            WritableMap map = Arguments.createMap();
+            map.putString("Stop Scanning", "Stop Scanning");
+            handleStopScanningPromise.resolve(map);
+        } catch (Exception e) {
+            handleStopScanningPromise.reject("-1", e.getMessage());
+        }
+    }
+
+    /**
+     * ################################### END OPEN KEY #########################################
+     */
+
+
 }
