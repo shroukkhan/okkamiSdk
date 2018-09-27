@@ -298,7 +298,15 @@ RCT_EXPORT_MODULE();
     }else{
         self.status = @"foreground";
         if(notification.request.content.userInfo[@"data"][@"command"]){
+            
+            if([notification.request.content.userInfo[@"data"][@"command"] isEqualToString:@"email_verified"]){
+            
+                [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_SCREEN" body:@{@"screen" : @"autologinscreen"}];
+            }
+            else
+            {
             [self.bridge.eventDispatcher sendAppEventWithName:notification.request.content.userInfo[@"data"][@"command"] body:notification.request.content.userInfo[@"data"]];
+            }
         }else if(notification.request.content.userInfo[@"data"][@"status"] && notification.request.content.userInfo[@"data"][@"room_number"]){
             [self.bridge.eventDispatcher sendAppEventWithName:notification.request.content.userInfo[@"data"][@"status"] body:notification.request.content.userInfo[@"data"]];
         }else{
@@ -344,8 +352,16 @@ RCT_EXPORT_MODULE();
         }];
         [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
     }else if(response.notification.request.content.userInfo[@"data"][@"command"]){
-        [self.bridge.eventDispatcher sendAppEventWithName:response.notification.request.content.userInfo[@"data"][@"command"] body:response.notification.request.content.userInfo[@"data"]];
-        [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:response.notification.request.content.userInfo[@"data"]];
+        
+        if([response.notification.request.content.userInfo[@"data"][@"command"] isEqualToString:@"email_verified"]){
+        
+            [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_SCREEN" body:@{@"screen" : @"autologinscreen"}];
+        }
+        else{
+            [self.bridge.eventDispatcher sendAppEventWithName:response.notification.request.content.userInfo[@"data"][@"command"] body:response.notification.request.content.userInfo[@"data"]];
+            [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:response.notification.request.content.userInfo[@"data"]];
+        }
+        
     }else if(response.notification.request.content.userInfo[@"data"][@"status"] && response.notification.request.content.userInfo[@"data"][@"room_number"]){
         [self.bridge.eventDispatcher sendAppEventWithName:response.notification.request.content.userInfo[@"data"][@"status"] body:response.notification.request.content.userInfo[@"data"]];
     }
