@@ -1021,6 +1021,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     @ReactMethod
     public void logoutChatWindow(Promise logoutChatWindowPromise) {
         try {
+            Log.e(TAG, "logoutChatWindow: trying...");
             if (Smooch.getInitializationStatus() == InitializationStatus.Success &&
                     Smooch.getSmoochConnectionStatus() == SmoochConnectionStatus.Connected) {
                 Smooch.logout(new SmoochCallback() {
@@ -1032,9 +1033,10 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
                 ConversationActivity.close();
                 logoutChatWindowPromise.resolve(1);
             }
-            mMethodInvoker.invokeUnsubscribePusher();
         } catch (Exception e) {
             logoutChatWindowPromise.reject(e.getMessage(), e.getMessage());
+        } finally {
+            mMethodInvoker.invokeUnsubscribePusher();
         }
     }
 
