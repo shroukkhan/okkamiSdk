@@ -247,7 +247,7 @@ class OkkamiSdk {
    */
   subscribePusherPropertyChannel (pIdArray) {
     console.log('subscribing pusher with property id array: ', pIdArray)
-    let pIdArrayString = {'properties_info': JSON.stringify(pIdArray)}
+    let pIdArrayString = { 'properties_info': JSON.stringify(pIdArray) }
     OkkamiSdkManager.subscribePushserPropertyChannel(JSON.stringify(pIdArrayString))
   }
 
@@ -257,7 +257,7 @@ class OkkamiSdk {
    */
   unsubscribePusherPropertyChannel (pIdArray) {
     console.log('unsubscribing pusher with property id array: ', pIdArray)
-    let pIdArrayString = {'properties_info': JSON.stringify(pIdArray)}
+    let pIdArrayString = { 'properties_info': JSON.stringify(pIdArray) }
     OkkamiSdkManager.unsubscribePushserPropertyChannel(JSON.stringify(pIdArrayString))
   }
 
@@ -302,7 +302,7 @@ class OkkamiSdk {
    */
   async getLastFCMRegistrationStatus () {
     try {
-      let {lastFcmStatus} = await OkkamiSdkManager.getLastFcmRegistrationStatus()
+      let { lastFcmStatus } = await OkkamiSdkManager.getLastFcmRegistrationStatus()
       return lastFcmStatus
     } catch (e) {
       return e
@@ -421,7 +421,7 @@ class OkkamiSdk {
     }
   }
 
-  /*---------------------------------------------------------------------------------------------------*/
+  /* --------------------------------------------------------------------------------------------------- */
   /**
    * Authenticate the sdk . Strangely, this needs to run before initializing..??
    * @param token
@@ -473,7 +473,7 @@ class OkkamiSdk {
     }
   }
 
-  /*---------------------------------------------------------------------------------------------------*/
+  /* --------------------------------------------------------------------------------------------------- */
 
   /**
    *
@@ -484,9 +484,7 @@ class OkkamiSdk {
       return OkkamiSdkManager.getMobicontrolStatus()
     }
   }
-
 }
 
 let okkamiSdk = new OkkamiSdk()
 export default okkamiSdk
-
