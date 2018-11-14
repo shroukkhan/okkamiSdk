@@ -199,6 +199,16 @@ class OkkamiSdk {
     return await OkkamiSdkManager.logoutChatWindow()
   }
 
+  /**
+   * Closese the current chat window
+   * @returns {Promise}
+   */
+  async closeChatWindow () {
+    if(Metrics.platform==='ios') //TODO: @MARUT implement it in android
+      return await OkkamiSdkManager.closeChatWindow()
+  }
+
+
   async convertTime (time) {
     return await OkkamiSdkManager.convertTime(time)
   }

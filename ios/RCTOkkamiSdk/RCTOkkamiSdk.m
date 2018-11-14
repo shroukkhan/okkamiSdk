@@ -66,23 +66,26 @@ RCT_EXPORT_MODULE();
 }
 
 
-- (void)openSmooch: (NSString*)appToken userId:(NSString*)userId title:(NSString*)title {
-    [Smooch destroy];
-    if([title isEqualToString:@""] || title == nil){
-        self.hotelName = SMOOCH_NAME;
-    }else{
-        self.hotelName = title;
-    }
-    self.currentSmoochToken = appToken;
-    SKTSettings *settings = [SKTSettings settingsWithAppId:appToken];
-    settings.enableAppDelegateSwizzling = NO;
-    settings.enableUserNotificationCenterDelegateOverride = NO;
-    [Smooch initWithSettings:settings completionHandler:nil];
-    [[Smooch conversation] setDelegate:self];
-    [Smooch login:self.smoochUserId jwt:self.smoochUserJwt completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
-        [Smooch show];
-    }];
-}
+//- (void)openSmooch: (NSString*)appToken userId:(NSString*)userId title:(NSString*)title {
+//    [Smooch destroy];
+//    if([title isEqualToString:@""] || title == nil){
+//        self.hotelName = SMOOCH_NAME;
+//    }else{
+//        self.hotelName = title;
+//    }
+//    self.currentSmoochToken = appToken;
+//    SKTSettings *settings = [SKTSettings settingsWithAppId:appToken];
+//    settings.enableAppDelegateSwizzling = NO;
+//    settings.enableUserNotificationCenterDelegateOverride = NO;
+//    [Smooch initWithSettings:settings completionHandler:nil];
+//    [[Smooch conversation] setDelegate:self];
+//    [Smooch login:self.smoochUserId jwt:self.smoochUserJwt completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+//        [Smooch show];
+//
+//    }];
+//}
+
+
 
 
 - (void)handleOkkamiUrlWithDeepLink: (NSString*)url title: (NSString*)title {
@@ -780,6 +783,18 @@ RCT_EXPORT_METHOD(convertTime
     });
 }
 
+- (void) messageUploaded:(NSNotification *) notification
+{
+    // [notification name] should always be @"TestNotification"
+    // unless you use this method for observation of other notifications
+    // as well.
+    
+    if ([[notification name] isEqualToString:@"SKTMessageUploadCompletedNotification"])
+    {
+        [self.bridge.eventDispatcher sendAppEventWithName:@"RESET_INACTIVITY" body:nil];
+    }
+}
+
 RCT_EXPORT_METHOD(openChatWindow
                   
                   :(NSString *) smoochAppToken
@@ -805,6 +820,7 @@ RCT_EXPORT_METHOD(openChatWindow
         [[Smooch conversation] setDelegate:self];
         [Smooch login:self.smoochUserId jwt:self.smoochUserJwt completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
             [Smooch show];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageUploaded:) name:SKTMessageUploadCompletedNotification object:nil];
             resolve(@"");
         }];
         [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
@@ -819,6 +835,19 @@ RCT_EXPORT_METHOD(setAppBadgeIcon :(NSInteger)badgeIcon
     dispatch_async(dispatch_get_main_queue(), ^{
         [UIApplication sharedApplication].applicationIconBadgeNumber = badgeIcon;
     });
+}
+
+RCT_EXPORT_METHOD(closeChatWindow
+                  
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+   
+    @try{
+        [Smooch close];
+    }
+    @catch( NSException *exception){
+        NSLog(@"[logoutChatWindow] Failed with error :  %@", exception.reason);
+    }
 }
 
 RCT_EXPORT_METHOD(logoutChatWindow
