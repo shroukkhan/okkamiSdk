@@ -529,7 +529,8 @@ RCT_EXPORT_METHOD(checkEvent
 
 RCT_EXPORT_METHOD(lineLogin:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject) {
     [LineSDKLogin sharedInstance].delegate = self;
-    [[LineSDKLogin sharedInstance] startLogin];
+   // NSSet *permissions =  [[NSArray alloc] initWithObjects:@"Happy",@"Sad", nil];
+    [[LineSDKLogin sharedInstance] startLoginWithPermissions: [[NSArray alloc] initWithObjects:@"profile", nil]];
     self.loginResolver = resolve;
     self.loginRejecter = reject;
     
