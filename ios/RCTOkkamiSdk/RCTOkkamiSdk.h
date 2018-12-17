@@ -1,5 +1,4 @@
 #import "RCTBridge.h"
-#import "Pusher.h"
 #import "RCTBridgeModule.h"
 #import <UserNotifications/UserNotifications.h>
 #import <LineSDK/LineSDK.h>
@@ -16,7 +15,7 @@
 @import RCTokkamiiossdk;
 @class AppDelegate;
 
-@interface OkkamiSdk : NSObject <RCTBridgeModule, LineSDKLoginDelegate, CLLocationManagerDelegate,UNUserNotificationCenterDelegate, UIApplicationDelegate, SKTConversationDelegate, PTPusherDelegate, SFSafariViewControllerDelegate>
+@interface OkkamiSdk : NSObject <RCTBridgeModule, LineSDKLoginDelegate, CLLocationManagerDelegate,UNUserNotificationCenterDelegate, UIApplicationDelegate, SKTConversationDelegate, SFSafariViewControllerDelegate>
 
 
 @property (nonatomic, copy)NSString * accessToken;
