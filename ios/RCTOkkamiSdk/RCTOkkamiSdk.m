@@ -177,6 +177,181 @@ RCT_EXPORT_MODULE();
     return hexString;
 }
 
+
+#pragma mark Notif Delegate
+
+-(void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error{
+    
+}
+
+//- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+//    [Smooch logoutWithCompletionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+//        [Smooch destroy];
+//    }];
+//    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+//    self.appdel = appDelegate;
+//    [[self.appdel.pusher nativePusher] registerWithDeviceToken:deviceToken];
+//
+//    /*if (!self.appdel.isOkkami) {
+//     [self registerForPusher:deviceToken];
+//     } else {
+//     [[self.appdel.pusher nativePusher] registerWithDeviceToken:deviceToken];
+//     }*/
+//}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    [Smooch logoutWithCompletionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+        [Smooch destroy];
+    }];
+    [self application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:^(UIBackgroundFetchResult result) {
+    }];
+}
+
+-(void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void
+                                                                                                                               (^)(UIBackgroundFetchResult))completionHandler
+{
+    [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:userInfo[@"data"]];
+    completionHandler( UIBackgroundFetchResultNewData );
+
+    if( SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO( @"10.0" ) )
+    {
+        NSLog( @"iOS version >= 10. Let NotificationCenter handle this one." );
+        return;
+    }
+    
+    if( [UIApplication sharedApplication].applicationState == UIApplicationStateInactive )
+    {
+        [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:userInfo[@"data"]];
+        
+        if ([userInfo[@"data"][@"command"] isEqualToString:@"live_chat"]) {
+            completionHandler( UIBackgroundFetchResultNewData );
+            return;
+        }
+        
+        if([userInfo[@"aps"][@"alert"][@"title"] isEqualToString:@""] || userInfo[@"aps"][@"alert"][@"title"] == nil){
+            self.hotelName = SMOOCH_NAME;
+        }else{
+            self.hotelName = userInfo[@"aps"][@"alert"][@"title"];
+        }
+        self.currentSmoochToken = userInfo[@"data"][@"property_smooch_app_id"];
+        self.smoochUserJwt = userInfo[@"data"][@"smooch_user_jwt"];
+        SKTSettings *settings = [SKTSettings settingsWithAppId:userInfo[@"data"][@"property_smooch_app_id"]];
+        settings.enableAppDelegateSwizzling = NO;
+        settings.enableUserNotificationCenterDelegateOverride = NO;
+        [Smooch initWithSettings:settings completionHandler:nil];
+        [[Smooch conversation] setDelegate:self];
+        [Smooch login:self.smoochUserId jwt:self.smoochUserJwt completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+            [Smooch show];
+        }];
+        completionHandler( UIBackgroundFetchResultNewData );
+    }
+    else if( [UIApplication sharedApplication].applicationState == UIApplicationStateBackground )
+    {
+        [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:userInfo[@"data"]];
+        completionHandler( UIBackgroundFetchResultNewData );
+    }
+    else
+    {
+        if(self.isSmoochShow && [userInfo[@"data"][@"property_smooch_app_id"] isEqualToString:self.currentSmoochToken] ){
+            
+        }else{
+            UIUserNotificationType types = UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
+            UIUserNotificationSettings *mySettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+            [[UIApplication sharedApplication] registerUserNotificationSettings:mySettings];
+            
+            UILocalNotification *notification = [[UILocalNotification alloc] init];
+            if (notification)
+            {
+                notification.fireDate = [[NSDate date] dateByAddingTimeInterval:2];
+                notification.alertBody = userInfo[@"aps"][@"alert"][@"body"];
+                notification.soundName = UILocalNotificationDefaultSoundName;
+            }
+            [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+        }
+        completionHandler( UIBackgroundFetchResultNewData );
+    }
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+       willPresentNotification:(UNNotification *)notification
+         withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
+{
+    if(notification.request.content.userInfo[@"SmoochNotification"]){
+        completionHandler(UIUserNotificationTypeNone  | UIUserNotificationTypeBadge);
+    }else{
+        self.status = @"foreground";
+        if(notification.request.content.userInfo[@"data"][@"command"]){
+            
+            if([notification.request.content.userInfo[@"data"][@"command"] isEqualToString:@"email_verified"]){
+                
+                [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_SCREEN" body:@{@"screen" : @"autologinscreen"}];
+            }
+            else
+            {
+                [self.bridge.eventDispatcher sendAppEventWithName:notification.request.content.userInfo[@"data"][@"command"] body:notification.request.content.userInfo[@"data"]];
+            }
+        }else if(notification.request.content.userInfo[@"data"][@"status"] && notification.request.content.userInfo[@"data"][@"room_number"]){
+            [self.bridge.eventDispatcher sendAppEventWithName:notification.request.content.userInfo[@"data"][@"status"] body:notification.request.content.userInfo[@"data"]];
+        }else{
+            [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
+        }
+        
+        if(self.isSmoochShow && [notification.request.content.userInfo[@"data"][@"property_smooch_app_id"] isEqualToString:self.currentSmoochToken]){
+            completionHandler(UIUserNotificationTypeNone  | UIUserNotificationTypeBadge);
+        }else{
+            completionHandler(UIUserNotificationTypeSound |    UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
+        }
+    }
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler{
+    if(response.notification.request.content.userInfo[@"data"][@"property_smooch_app_id"]){
+        [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:nil];
+        if([response.notification.request.content.userInfo[@"data"][@"property_smooch_app_id"] isEqualToString:[ReactNativeConfig envFor:@"OKKAMI_SMOOCH"]]){
+            NSMutableDictionary *newNotif = [[NSMutableDictionary alloc] init];
+            NSMutableDictionary *insideNewNotif = [[NSMutableDictionary alloc] init];
+            [insideNewNotif setObject:[ReactNativeConfig envFor:@"OKKAMI_SMOOCH"] forKey:@"property_smooch_app_id"];
+            [newNotif setObject:insideNewNotif forKey:@"data"];
+            [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:newNotif[@"data"]];
+        }else{
+            [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:response.notification.request.content.userInfo[@"data"]];
+        }
+        
+        [Smooch destroy];
+        if([response.notification.request.content.userInfo[@"aps"][@"alert"][@"title"] isEqualToString:@""] || response.notification.request.content.userInfo[@"aps"][@"alert"][@"title"] == nil){
+            self.hotelName = SMOOCH_NAME;
+        }else{
+            self.hotelName = response.notification.request.content.userInfo[@"aps"][@"alert"][@"title"];
+        }
+        self.currentSmoochToken = response.notification.request.content.userInfo[@"data"][@"property_smooch_app_id"];
+        self.smoochUserJwt = response.notification.request.content.userInfo[@"data"][@"smooch_user_jwt"];
+        SKTSettings *settings = [SKTSettings settingsWithAppId:response.notification.request.content.userInfo[@"data"][@"property_smooch_app_id"]];
+        settings.enableAppDelegateSwizzling = NO;
+        settings.enableUserNotificationCenterDelegateOverride = NO;
+        [Smooch initWithSettings:settings completionHandler:nil];
+        [[Smooch conversation] setDelegate:self];
+        [Smooch login:self.smoochUserId jwt:self.smoochUserJwt completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {
+            [Smooch show];
+        }];
+        [UIApplication sharedApplication].applicationIconBadgeNumber = [UIApplication sharedApplication].applicationIconBadgeNumber -1;
+    }else if(response.notification.request.content.userInfo[@"data"][@"command"]){
+        
+        if([response.notification.request.content.userInfo[@"data"][@"command"] isEqualToString:@"email_verified"]){
+            
+            [self.bridge.eventDispatcher sendAppEventWithName:@"OPEN_SCREEN" body:@{@"screen" : @"autologinscreen"}];
+        }
+        else{
+            [self.bridge.eventDispatcher sendAppEventWithName:response.notification.request.content.userInfo[@"data"][@"command"] body:response.notification.request.content.userInfo[@"data"]];
+            [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NOTIF_CLICKED" body:response.notification.request.content.userInfo[@"data"]];
+        }
+        
+    }else if(response.notification.request.content.userInfo[@"data"][@"status"] && response.notification.request.content.userInfo[@"data"][@"room_number"]){
+        [self.bridge.eventDispatcher sendAppEventWithName:response.notification.request.content.userInfo[@"data"][@"status"] body:response.notification.request.content.userInfo[@"data"]];
+    }
+    completionHandler();
+}
+
 #pragma mark LineSDKLoginDelegate
 
 - (void)didLogin:(LineSDKLogin *)login
