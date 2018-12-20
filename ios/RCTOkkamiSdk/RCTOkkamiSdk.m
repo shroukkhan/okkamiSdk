@@ -925,6 +925,15 @@ RCT_EXPORT_METHOD(setLanguage
     });
 }
 
+
+RCT_EXPORT_METHOD(restartPusher
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    
+    if(self.appdel)
+        [self.appdel restartPusher];
+}
+
 RCT_EXPORT_METHOD(subscribePushser
                   :(NSString *) deviceUid
                   :(RCTPromiseResolveBlock)resolve

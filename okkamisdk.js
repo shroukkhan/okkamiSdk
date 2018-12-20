@@ -243,6 +243,14 @@ class OkkamiSdk {
   }
 
   /**
+   * Restart pusher subscription
+   */
+  restartPusher(){
+    if(Metrics.platform==='ios')
+      OkkamiSdkManager.restartPusher()
+  }
+
+  /**
    * Unsubscribe pusher channel with device id
    * @param dId
    */
