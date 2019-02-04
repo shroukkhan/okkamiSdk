@@ -1,4 +1,4 @@
-import { NativeModules, DeviceEventEmitter } from 'react-native'
+import { DeviceEventEmitter, NativeModules } from 'react-native'
 import Metrics from '../App/Themes/Metrics'
 import moment from 'moment'
 // import {convertRgbaToHex} from '../App/Lib/Utilities'
@@ -204,10 +204,9 @@ class OkkamiSdk {
    * @returns {Promise}
    */
   async closeChatWindow () {
-    if(Metrics.platform==='ios') //TODO: @MARUT implement it in android
+    if (Metrics.platform === 'ios') //TODO: @MARUT implement it in android
       return await OkkamiSdkManager.closeChatWindow()
   }
-
 
   async convertTime (time) {
     return await OkkamiSdkManager.convertTime(time)
@@ -245,8 +244,8 @@ class OkkamiSdk {
   /**
    * Restart pusher subscription
    */
-  restartPusher(){
-    if(Metrics.platform==='ios')
+  restartPusher () {
+    if (Metrics.platform === 'ios')
       OkkamiSdkManager.restartPusher()
   }
 
@@ -265,7 +264,7 @@ class OkkamiSdk {
    */
   subscribePusherPropertyChannel (pIdArray) {
     console.log('subscribing pusher with property id array: ', pIdArray)
-    let pIdArrayString = { 'properties_info': JSON.stringify(pIdArray) }
+    let pIdArrayString = {'properties_info': JSON.stringify(pIdArray)}
     OkkamiSdkManager.subscribePushserPropertyChannel(JSON.stringify(pIdArrayString))
   }
 
@@ -275,7 +274,7 @@ class OkkamiSdk {
    */
   unsubscribePusherPropertyChannel (pIdArray) {
     console.log('unsubscribing pusher with property id array: ', pIdArray)
-    let pIdArrayString = { 'properties_info': JSON.stringify(pIdArray) }
+    let pIdArrayString = {'properties_info': JSON.stringify(pIdArray)}
     OkkamiSdkManager.unsubscribePushserPropertyChannel(JSON.stringify(pIdArrayString))
   }
 
@@ -320,8 +319,20 @@ class OkkamiSdk {
    */
   async getLastFCMRegistrationStatus () {
     try {
-      let { lastFcmStatus } = await OkkamiSdkManager.getLastFcmRegistrationStatus()
+      let {lastFcmStatus} = await OkkamiSdkManager.getLastFcmRegistrationStatus()
       return lastFcmStatus
+    } catch (e) {
+      return e
+    }
+  }
+
+  /**
+   * Reconnects to soti
+   */
+  async reconenctToSoti () {
+    try {
+      if (Metrics.platform === 'ios')
+        await OkkamiSdkManager.reconenctToSoti()
     } catch (e) {
       return e
     }

@@ -213,7 +213,7 @@ RCT_EXPORT_MODULE();
 {
     [self.bridge.eventDispatcher sendAppEventWithName:@"EVENT_NEW_MSG" body:userInfo[@"data"]];
     completionHandler( UIBackgroundFetchResultNewData );
-
+    
     if( SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO( @"10.0" ) )
     {
         NSLog( @"iOS version >= 10. Let NotificationCenter handle this one." );
@@ -511,7 +511,7 @@ RCT_EXPORT_METHOD(checkEvent
 
 RCT_EXPORT_METHOD(lineLogin:(RCTPromiseResolveBlock)resolve :(RCTPromiseRejectBlock)reject) {
     [LineSDKLogin sharedInstance].delegate = self;
-   // NSSet *permissions =  [[NSArray alloc] initWithObjects:@"Happy",@"Sad", nil];
+    // NSSet *permissions =  [[NSArray alloc] initWithObjects:@"Happy",@"Sad", nil];
     [[LineSDKLogin sharedInstance] startLoginWithPermissions: [[NSArray alloc] initWithObjects:@"profile", nil]];
     self.loginResolver = resolve;
     self.loginRejecter = reject;
@@ -824,7 +824,7 @@ RCT_EXPORT_METHOD(closeChatWindow
                   
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject) {
-   
+    
     @try{
         [Smooch close];
     }
@@ -846,8 +846,8 @@ RCT_EXPORT_METHOD(logoutChatWindow
         [self.appdel unsubscribePusher:self.appdel.channel_name];
         //[[self.appdel.pusher nativePusher] unsubscribe:self.appdel.channel
         if (self.appdel.brand_name) {
-           // [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.brand_name];
-           [self.appdel unsubscribePusher:self.appdel.brand_name];
+            // [[self.appdel.pusher nativePusher] unsubscribe:self.appdel.brand_name];
+            [self.appdel unsubscribePusher:self.appdel.brand_name];
         }
     }
     @catch( NSException *exception){
@@ -889,13 +889,13 @@ RCT_EXPORT_METHOD(setUserId
     [self.appdel setChannel_name:channelName];
     [self.appdel setBrand_name:brandName];
     
-//    [[self.appdel.pusher nativePusher] subscribe:channelName];
-//    [[self.appdel.pusher nativePusher] subscribe:brandName];
+    //    [[self.appdel.pusher nativePusher] subscribe:channelName];
+    //    [[self.appdel.pusher nativePusher] subscribe:brandName];
     
     [self.appdel subscribePusher:channelName];
     [self.appdel subscribePusher:brandName];
-   
-
+    
+    
     NSError *error;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
@@ -943,11 +943,11 @@ RCT_EXPORT_METHOD(subscribePushser
     
     if(self.appdel)
         [self.appdel subscribePusher:[NSString stringWithFormat:@"mobile_device_%@", lastIdentifier]];
-   
     
-//    if (self.appdel) {
-//        [[self.appdel.pusher nativePusher] subscribe:[NSString stringWithFormat:@"mobile_device_%@", lastIdentifier]];
-//    }
+    
+    //    if (self.appdel) {
+    //        [[self.appdel.pusher nativePusher] subscribe:[NSString stringWithFormat:@"mobile_device_%@", lastIdentifier]];
+    //    }
 }
 
 RCT_EXPORT_METHOD(subscribePushserPropertyChannel
@@ -1006,8 +1006,8 @@ RCT_EXPORT_METHOD(unsubscribePushserPropertyChannel
             for (NSDictionary * property in jsArray) {
                 NSString * propertyId = [property objectForKey:@"property_id"];
                 NSString * propertyName = [property objectForKey:@"property_name"];
-                 [self.appdel unsubscribePusher:[NSString stringWithFormat:@"mobile_message_property_%@", propertyId]];
-               // [[self.appdel.pusher nativePusher] unsubscribe:[NSString stringWithFormat:@"mobile_message_property_%@", propertyId]];
+                [self.appdel unsubscribePusher:[NSString stringWithFormat:@"mobile_message_property_%@", propertyId]];
+                // [[self.appdel.pusher nativePusher] unsubscribe:[NSString stringWithFormat:@"mobile_message_property_%@", propertyId]];
             }
         }
     }
@@ -1084,6 +1084,28 @@ RCT_EXPORT_METHOD(getMobicontrolStatus
     }
     @catch( NSException *exception){
         resolve(@{@"connectionStatus":@"",@"enrollmentStatus":@"",@"deviceId":@""});
+    }
+}
+
+RCT_EXPORT_METHOD(reconenctToSoti
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    @try{
+#if TARGET_OS_SIMULATOR
+#else
+        [self.appdel.mcManager disconnectFromMobiControl];
+        dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 5); //dispatch after X second
+        dispatch_after(delay, dispatch_get_main_queue(), ^(void){
+            // do work in the UI thread here
+            [self.appdel.mcManager connectToMobiControl];
+            resolve(@{});
+        });
+        
+#endif
+        
+    }
+    @catch( NSException *exception){
+        resolve(@{});
     }
 }
 
