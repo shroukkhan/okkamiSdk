@@ -55,6 +55,7 @@ import com.okkami.android.sdk.model.DeviceAuth;
 import com.okkami.android.sdk.module.HubModule;
 import com.openkey.sdk.OpenKeyManager;
 import com.openkey.sdk.Utilities.Utilities;
+import com.openkey.sdk.api.response.session.SessionResponse;
 import com.openkey.sdk.interfaces.OpenKeyCallBack;
 
 import org.json.JSONArray;
@@ -1347,7 +1348,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
             return;
         }
 
-        if (OpenKeyManager.getInstance(mContext).isKeyAvailable
+        if (OpenKeyManager.getInstance().isKeyAvailable
                 (this)) {
             if (mBluetoothAdapter.enable()) {
 //                showMessage("Scanning..");
@@ -1369,7 +1370,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         isScanning = true;
         handler = new Handler();
         handler.postDelayed(stopper, 10000);
-        OpenKeyManager.getInstance(mContext).startScanning(this);
+        OpenKeyManager.getInstance().startScanning(this);
     }
 
     /**
@@ -1385,7 +1386,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     }
 
 
-    @Override
+    //@Override
     public void authenticated(boolean isAuthenticated, String description) {
         Log.e(TAG, "authenticated: "+description);
 
@@ -1397,6 +1398,12 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     }
 
     @Override
+    public void sessionResponse(SessionResponse sessionResponse) {
+        Log.e(TAG, "sessionResponse: " + sessionResponse.toString());
+
+    }
+
+    @Override
     public void initializationSuccess() {
         Log.e(TAG, "initializationSuccess: ");
         WritableMap params = Arguments.createMap();
@@ -1404,6 +1411,12 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         params.putString("response", "initializationSuccess");
         params.putBoolean("status", true);
         sendEvent((ReactContext) mContext, OPEN_KEY_EVENT, params);
+
+    }
+
+    @Override
+    public void sessionFailure(String s, String s1) {
+        Log.e(TAG, "sessionFailure: "+ s + " |-| " + s1);
 
     }
 
@@ -1448,7 +1461,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
         try {
             if (!TextUtils.isEmpty(token)) {
 //                showMessage("Authenticating...");
-                OpenKeyManager.getInstance(mContext).authenticate(token, this, false);
+                OpenKeyManager.getInstance().authenticate(token, this, false);
                 Log.e(TAG, "handleAuthOpenKey: Authenticating...");
             } else {
 //                Utilities.getInstance().showToast(this, "Token should not be empty.");
@@ -1476,7 +1489,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     public void handleInitOpenKey(Promise handleInitOpenKeyPromise) {
         Log.e(TAG, "handleInitOpenKey: ");
         try {
-            OpenKeyManager.getInstance(mContext).initialize(this);
+            OpenKeyManager.getInstance().initialize(this);
 
 //            WritableMap params = Arguments.createMap();
 //            params.putString("type", "initializeSDKResponse");
@@ -1500,7 +1513,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
     public void handleGetKey(Promise handleGetKeyPromise) {
         Log.e(TAG, "handleGetKey: ");
         try {
-            OpenKeyManager.getInstance(mContext).getKey(this);
+            OpenKeyManager.getInstance().getKey(this);
 
 //            WritableMap params = Arguments.createMap();
 //            params.putString("type", "fetchMobileKeysResponse");
