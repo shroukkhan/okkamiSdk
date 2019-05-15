@@ -9,7 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -942,6 +944,7 @@ public class OkkamiSdkModule extends ReactContextBaseJavaModule implements
             Smooch.setFirebaseCloudMessagingToken("nan");
 
             Intent chatWindow = new Intent();
+
             ComponentName cmp = new ComponentName(getReactApplicationContext().getPackageName(),
                     "com.okkami.android.app.OkkamiConversationActivity");
 
